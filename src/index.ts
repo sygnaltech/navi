@@ -5,6 +5,7 @@
  */
 
 import { HomePage } from "./page/home";
+import { TourPage } from "./page/tour";
 import { RouteDispatcher } from "./routeDispatcher";
 
 // Global vars
@@ -36,9 +37,14 @@ const init = () => {
 
     var routeDispatcher = new RouteDispatcher();
     routeDispatcher.routes = {
-        '/home': () => {
+        '/': () => {
 
             (new HomePage()).init();
+
+        },
+        '/tour/*': () => {
+
+            (new TourPage()).init();
 
         }
     };
