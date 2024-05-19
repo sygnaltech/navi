@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["../src/tourOrder.ts"],
+  "sourcesContent": ["interface Item {\n    product: string;\n    price: number;\n    quantity: number;\n  }\n  \n  export class TourOrder {\n    customerName: string;\n    customerEmail: string;\n    \n    tourName: string;\n    tourCode: string;\n    tourDate: string;\n    \n    processingFees: number = 0.03; // processing fees\n    \n    items: Item[] = []; // array of items\n    \n    total(): number {\n      // Calc price\n      let p = 0;\n      for (let i = 0; i < this.items.length; i++) {\n        p += this.items[i].price * this.items[i].quantity;\n      }\n      return p;\n    }\n    \n    totalFees(): number {\n      return this.total() * this.processingFees;\n    }\n    \n    totalWithFees(): number {\n      return this.total() + this.totalFees();\n    }\n\n    get valid(): boolean {\n      if (!this.tourName)\n        return false;\n      if (!this.tourDate)\n        return false;\n      return true;\n    }\n  }\n  "],
+  "mappings": ";;AAMS,MAAM,YAAN,MAAgB;AAAA,IAAhB;AAQL,4BAAyB;AAEzB,mBAAgB,CAAC;AAAA;AAAA,IAEjB,QAAgB;AAEd,UAAI,IAAI;AACR,eAAS,IAAI,GAAG,IAAI,KAAK,MAAM,QAAQ,KAAK;AAC1C,aAAK,KAAK,MAAM,GAAG,QAAQ,KAAK,MAAM,GAAG;AAAA,MAC3C;AACA,aAAO;AAAA,IACT;AAAA,IAEA,YAAoB;AAClB,aAAO,KAAK,MAAM,IAAI,KAAK;AAAA,IAC7B;AAAA,IAEA,gBAAwB;AACtB,aAAO,KAAK,MAAM,IAAI,KAAK,UAAU;AAAA,IACvC;AAAA,IAEA,IAAI,QAAiB;AACnB,UAAI,CAAC,KAAK;AACR,eAAO;AACT,UAAI,CAAC,KAAK;AACR,eAAO;AACT,aAAO;AAAA,IACT;AAAA,EACF;",
+  "names": []
+}

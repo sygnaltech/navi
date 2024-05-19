@@ -1,5 +1,16 @@
 (() => {
   // src/util.ts
+  function formatAsNumber(n) {
+    if (Number(n) === 0)
+      return "-";
+    return String(n);
+  }
+  function formatAsCurrency(n) {
+    if (Number(n) === 0)
+      return "-";
+    const formatter = new Intl.NumberFormat("en-NZ", { style: "currency", currency: "NZD" });
+    return formatter.format(Number(n)) + " NZD";
+  }
   function findAncestorWithAttribute(element, attributeName) {
     let currentElement = element;
     while (currentElement) {

@@ -1,4 +1,17 @@
 
+
+// Utility Functions
+export function formatAsNumber(n: number | string): string {
+    if (Number(n) === 0) return "-";
+    return String(n);
+}
+  
+export function formatAsCurrency(n: number | string): string {
+    if (Number(n) === 0) return "-";
+    const formatter = new Intl.NumberFormat('en-NZ', { style: 'currency', currency: 'NZD' });
+    return formatter.format(Number(n)) + " NZD";
+}
+
 export function findAncestorWithAttribute(element: HTMLElement, attributeName: string): HTMLElement | null {
     let currentElement: HTMLElement | null = element;
 
