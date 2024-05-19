@@ -132,11 +132,11 @@ export class TourPage {
       // }
     
       // HACK: Fix event data
-      if(event.data.type == 'Enquiry')
-        event.data.numberOfPeople = '1';
-      event.data.childPrice = '100';
+      // if(event.data.type == 'Enquiry')
+      //   event.data.numberOfPeople = '1';
+//      event.data.childPrice = '100';
 
-      console.log(event.data); 
+//      console.log(event.data); 
 
       /**
        * Apply tour data
@@ -148,19 +148,25 @@ export class TourPage {
       if (typeof date === 'string' && typeof numberOfPeople === 'string') {
         const bookingTypeElement = document.getElementById('booking-type') as HTMLSelectElement | null;
         const dateElement = document.getElementById('tour-date') as HTMLInputElement | null;
-        const peopleElement = document.getElementById('adults') as HTMLInputElement | null;
+//        const peopleElement = document.getElementById('adults') as HTMLInputElement | null;
+        const adultPriceInput = document.getElementById('adult-price') as HTMLInputElement;
+        const adultQuantityInput = document.getElementById('adults') as HTMLInputElement;
+        const childPriceInput = document.getElementById('child-price') as HTMLInputElement;
+        const childQuantityInput = document.getElementById('children') as HTMLInputElement;
 
         // Verify setup
-        if (!(bookingTypeElement && dateElement && peopleElement)) {
+        if (!(bookingTypeElement && dateElement && adultQuantityInput)) {
           console.log('One or more form elements were not found!');
           return;
         }
     
         dateElement.value = date;
-        peopleElement.value = numberOfPeople;
-        peopleElement.min = numberOfPeople;
-
+        adultQuantityInput.value = numberOfPeople;
+        adultQuantityInput.min = numberOfPeople;
+        adultPriceInput.value = event.data.price;
+        childPriceInput.value = event.data.priceChild;
         bookingTypeElement.disabled = false;
+
         switch(event.data.type) {
           case 'Book Tour Now':
             bookingTypeElement.value = 'Booking'; 
@@ -172,6 +178,10 @@ export class TourPage {
             this.configureForm();
             break;
         }
+
+// console.log("CALC again")
+
+        this.calcOrder(); 
 
       } else {
         console.log('Received data is not in the expected format!');

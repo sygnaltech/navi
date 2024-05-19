@@ -2529,22 +2529,23 @@
       window.addEventListener("message", (event) => {
         console.log("event received");
         console.log(event.data);
-        if (event.data.type == "Enquiry")
-          event.data.numberOfPeople = "1";
-        event.data.childPrice = "100";
-        console.log(event.data);
         const { date, numberOfPeople } = event.data;
         if (typeof date === "string" && typeof numberOfPeople === "string") {
           const bookingTypeElement = document.getElementById("booking-type");
           const dateElement = document.getElementById("tour-date");
-          const peopleElement = document.getElementById("adults");
-          if (!(bookingTypeElement && dateElement && peopleElement)) {
+          const adultPriceInput = document.getElementById("adult-price");
+          const adultQuantityInput = document.getElementById("adults");
+          const childPriceInput = document.getElementById("child-price");
+          const childQuantityInput = document.getElementById("children");
+          if (!(bookingTypeElement && dateElement && adultQuantityInput)) {
             console.log("One or more form elements were not found!");
             return;
           }
           dateElement.value = date;
-          peopleElement.value = numberOfPeople;
-          peopleElement.min = numberOfPeople;
+          adultQuantityInput.value = numberOfPeople;
+          adultQuantityInput.min = numberOfPeople;
+          adultPriceInput.value = event.data.price;
+          childPriceInput.value = event.data.priceChild;
           bookingTypeElement.disabled = false;
           switch (event.data.type) {
             case "Book Tour Now":
@@ -2557,6 +2558,7 @@
               this.configureForm();
               break;
           }
+          this.calcOrder();
         } else {
           console.log("Received data is not in the expected format!");
         }
