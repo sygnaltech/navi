@@ -5,12 +5,13 @@
  */
 
 import { HomePage } from "./page/home";
+import { PaymentPage } from "./page/payment";
 import { TourPage } from "./page/tour";
 import { RouteDispatcher } from "./routeDispatcher";
 
 // Global vars
 const SITE_NAME = 'Site';
-const VERSION = 'v0.1.3';
+const VERSION = 'v0.1.4';
 
 
 
@@ -45,6 +46,11 @@ const init = () => {
         '/tour/*': () => {
 
             (new TourPage()).init();
+
+        },
+        '/payment': () => {
+
+            (new PaymentPage()).init();
 
         }
     };

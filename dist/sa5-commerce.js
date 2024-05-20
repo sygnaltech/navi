@@ -11,6 +11,10 @@
       urlParams.set("txndata2", this.txndata2);
       urlParams.set("txndata3", this.txndata3);
       urlParams.set("email", this.email);
+      if (this.urlsuccess)
+        urlParams.set("urlsuccess", this.urlsuccess);
+      if (this.urlfail)
+        urlParams.set("urlfail", this.urlfail);
       var newHref = hrefBase + "?" + urlParams.toString();
       newHref = newHref.replace("+", "%20");
       return newHref;
@@ -25,6 +29,8 @@
       urlParams.set("currency_code", this.currency_code);
       urlParams.set("amount", Number(this.amount).toFixed(2));
       urlParams.set("item_name", this.item_name);
+      if (this.return)
+        urlParams.set("return", this.return);
       var newHref = hrefBase + "?" + urlParams.toString();
       return newHref;
     }

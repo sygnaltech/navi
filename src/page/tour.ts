@@ -20,12 +20,12 @@ export class TourPage {
 
     console.log("Tour."); 
 
-console.log((window as any).Tour);
+    console.log((window as any).Tour);
 
-// Assuming window.Tour is already defined
-const tourAid: boolean = !!((window as any).Tour?.TourAidCode && (window as any).Tour.TourAidCode.trim() !== '');
+    // Assuming window.Tour is already defined
+    const tourAid: boolean = !!((window as any).Tour?.TourAidCode && (window as any).Tour.TourAidCode.trim() !== '');
 
-console.log("tourAid?", tourAid);
+    console.log("tourAid?", tourAid);
 
 
     // Initialize datepickers
@@ -36,7 +36,7 @@ console.log("tourAid?", tourAid);
       }
     } else
       this.initializeDatepicker("#tour-date", "d M Y");
-      
+
     this.initializeDatepicker("#arrival-date", "d M Y");
     this.initializeDatepicker("#departure-date", "d M Y");
 
@@ -102,6 +102,9 @@ console.log("tourAid?", tourAid);
         const formData = new FormData(bookingForm);
         const action = bookingForm.getAttribute('action') || '';
         const method = bookingForm.getAttribute('method') || 'POST';
+
+// console.log(order);
+// return;
 
         fetch(action, {
           method: method,
@@ -287,8 +290,8 @@ console.log("tourAid?", tourAid);
 //    createOrder(): TourOrder {
       const order = new TourOrder();
 
-      const customerNameInput = document.getElementById('customer-name') as HTMLInputElement;
-      const customerEmailInput = document.getElementById('customer-email') as HTMLInputElement;
+      const customerNameInput = document.getElementById('name') as HTMLInputElement;
+      const customerEmailInput = document.getElementById('email') as HTMLInputElement;
       const tourNameElement = document.getElementById('tour') as HTMLElement;
       const tourCodeInput = document.getElementById('tour-code') as HTMLInputElement;
       const tourDateInput = document.getElementById('tour-date') as HTMLInputElement;
@@ -319,7 +322,7 @@ console.log("tourAid?", tourAid);
         });
       }
 
-console.log("order", order);
+      console.log("order", order);
 
       return order;
     }

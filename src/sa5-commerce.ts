@@ -25,10 +25,14 @@ export class WindcavePayment {
     txndata2: string;
     txndata3: string;
     email: string;
+    urlsuccess: string; // TEST:
+    urlfail: string; // TEST:
 
     generateUrl(): string {
 
         var hrefBase = "https://sec.windcave.com/pxaccess/pxpay/payform";
+
+// https://www.windcave.com/developer-e-commerce-paylink#paylink_via_Payline
 
         const urlParams = new URLSearchParams();
         urlParams.set("userid", this.userid);
@@ -38,6 +42,11 @@ export class WindcavePayment {
         urlParams.set("txndata2", this.txndata2);
         urlParams.set("txndata3", this.txndata3);
         urlParams.set("email", this.email);
+
+        if(this.urlsuccess)
+            urlParams.set("urlsuccess", this.urlsuccess);
+        if(this.urlfail)
+            urlParams.set("urlfail", this.urlfail);
 
         var newHref = hrefBase + '?' + urlParams.toString();
 
@@ -63,6 +72,7 @@ export class PaypalPayment {
     amount: number; // Amount to pay
     currency_code: string; // Currency
     item_name: string; // Description of what is purchased 
+    return: string; // Url 
 
     generateUrl() {
 
@@ -74,6 +84,9 @@ export class PaypalPayment {
         urlParams.set("currency_code", this.currency_code);
         urlParams.set("amount", Number(this.amount).toFixed(2));
         urlParams.set("item_name", this.item_name);
+
+        if(this.return)
+            urlParams.set("return", this.return);
 
         var newHref = hrefBase + '?' + urlParams.toString();
 

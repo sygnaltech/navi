@@ -8,6 +8,34 @@
     }
   };
 
+  // src/tourOrder.ts
+  var TourOrder = class {
+    constructor() {
+      this.processingFees = 0.03;
+      this.items = [];
+    }
+    total() {
+      let p = 0;
+      for (let i = 0; i < this.items.length; i++) {
+        p += this.items[i].price * this.items[i].quantity;
+      }
+      return p;
+    }
+    totalFees() {
+      return this.total() * this.processingFees;
+    }
+    totalWithFees() {
+      return this.total() + this.totalFees();
+    }
+    get valid() {
+      if (!this.tourName)
+        return false;
+      if (!this.tourDate)
+        return false;
+      return true;
+    }
+  };
+
   // src/util.ts
   function formatAsNumber(n) {
     if (Number(n) === 0)
@@ -20,6 +48,104 @@
     const formatter = new Intl.NumberFormat("en-NZ", { style: "currency", currency: "NZD" });
     return formatter.format(Number(n)) + " NZD";
   }
+
+  // src/sa5-commerce.ts
+  var WindcavePayment = class {
+    generateUrl() {
+      var hrefBase = "https://sec.windcave.com/pxaccess/pxpay/payform";
+      const urlParams = new URLSearchParams();
+      urlParams.set("userid", this.userid);
+      urlParams.set("amount", Number(this.amount).toFixed(2));
+      urlParams.set("currencyname", this.currencyname);
+      urlParams.set("txndata1", this.txndata1);
+      urlParams.set("txndata2", this.txndata2);
+      urlParams.set("txndata3", this.txndata3);
+      urlParams.set("email", this.email);
+      if (this.urlsuccess)
+        urlParams.set("urlsuccess", this.urlsuccess);
+      if (this.urlfail)
+        urlParams.set("urlfail", this.urlfail);
+      var newHref = hrefBase + "?" + urlParams.toString();
+      newHref = newHref.replace("+", "%20");
+      return newHref;
+    }
+  };
+  var PaypalPayment = class {
+    generateUrl() {
+      var hrefBase = "https://www.paypal.com/cgi-bin/webscr";
+      const urlParams = new URLSearchParams();
+      urlParams.set("business", this.business);
+      urlParams.set("cmd", "_xclick");
+      urlParams.set("currency_code", this.currency_code);
+      urlParams.set("amount", Number(this.amount).toFixed(2));
+      urlParams.set("item_name", this.item_name);
+      if (this.return)
+        urlParams.set("return", this.return);
+      var newHref = hrefBase + "?" + urlParams.toString();
+      return newHref;
+    }
+  };
+
+  // src/page/payment.ts
+  var PaymentPage = class {
+    constructor() {
+    }
+    init() {
+      console.log("Payment Page.");
+      const orderJson = localStorage.getItem("order");
+      if (!orderJson)
+        return;
+      const order = Object.assign(new TourOrder(), JSON.parse(orderJson));
+      console.log(order);
+      const adult = order.items.find((e) => e.product === "Adult");
+      const child = order.items.find((e) => e.product === "Child");
+      if (adult && child) {
+        const tourElement = document.getElementById("tour");
+        const adultQtyElement = document.getElementById("adult-qty");
+        const adultTotalElement = document.getElementById("adult-total");
+        const childQtyElement = document.getElementById("child-qty");
+        const childTotalElement = document.getElementById("child-total");
+        const feesElement = document.getElementById("fees");
+        const totalElement = document.getElementById("total");
+        const btnPayCC = document.getElementById("btn-pay-cc");
+        const btnPayPaypal = document.getElementById("btn-pay-paypal");
+        if (tourElement)
+          tourElement.textContent = order.tourName;
+        if (adultQtyElement)
+          adultQtyElement.textContent = formatAsNumber(adult.quantity);
+        if (adultTotalElement)
+          adultTotalElement.textContent = formatAsCurrency(adult.price * adult.quantity);
+        if (childQtyElement)
+          childQtyElement.textContent = formatAsNumber(child.quantity);
+        if (childTotalElement)
+          childTotalElement.textContent = formatAsCurrency(child.price * child.quantity);
+        if (feesElement)
+          feesElement.textContent = formatAsCurrency(order.totalFees());
+        if (totalElement)
+          totalElement.textContent = formatAsCurrency(order.totalWithFees());
+        const totalWithFees = Number(order.totalWithFees()).toFixed(2);
+        const payWindcave = new WindcavePayment();
+        payWindcave.userid = "NaviHoldingLtd_PF";
+        payWindcave.amount = Number(totalWithFees);
+        payWindcave.currencyname = "NZD";
+        payWindcave.txndata1 = order.tourName;
+        payWindcave.txndata2 = order.tourDate;
+        payWindcave.txndata3 = order.customerName;
+        payWindcave.email = order.customerEmail;
+        payWindcave.urlsuccess = "https://www.tournewzealand.com/thanks";
+        if (btnPayCC)
+          btnPayCC.href = payWindcave.generateUrl();
+        const payPaypal = new PaypalPayment();
+        payPaypal.business = "info@navi.co.nz";
+        payPaypal.amount = Number(totalWithFees);
+        payPaypal.currency_code = "NZD";
+        payPaypal.item_name = order.tourName;
+        payPaypal.return = "https://www.tournewzealand.com/thanks";
+        if (btnPayPaypal)
+          btnPayPaypal.href = payPaypal.generateUrl();
+      }
+    }
+  };
 
   // node_modules/flatpickr/dist/esm/types/options.js
   var HOOKS = [
@@ -2360,34 +2486,6 @@
   }
   var esm_default = flatpickr;
 
-  // src/tourOrder.ts
-  var TourOrder = class {
-    constructor() {
-      this.processingFees = 0.03;
-      this.items = [];
-    }
-    total() {
-      let p = 0;
-      for (let i = 0; i < this.items.length; i++) {
-        p += this.items[i].price * this.items[i].quantity;
-      }
-      return p;
-    }
-    totalFees() {
-      return this.total() * this.processingFees;
-    }
-    totalWithFees() {
-      return this.total() + this.totalFees();
-    }
-    get valid() {
-      if (!this.tourName)
-        return false;
-      if (!this.tourDate)
-        return false;
-      return true;
-    }
-  };
-
   // src/page/tour.ts
   var TourPage = class {
     constructor() {
@@ -2420,8 +2518,8 @@
       };
       this.createOrder = () => {
         const order = new TourOrder();
-        const customerNameInput = document.getElementById("customer-name");
-        const customerEmailInput = document.getElementById("customer-email");
+        const customerNameInput = document.getElementById("name");
+        const customerEmailInput = document.getElementById("email");
         const tourNameElement = document.getElementById("tour");
         const tourCodeInput = document.getElementById("tour-code");
         const tourDateInput = document.getElementById("tour-date");
@@ -2640,14 +2738,14 @@
       if (handler) {
         handler();
       } else {
-        console.log("No specific function for this path.");
+        console.log("No specific route for this path.");
       }
     }
   };
 
   // src/index.ts
   var SITE_NAME = "Site";
-  var VERSION = "v0.1.3";
+  var VERSION = "v0.1.4";
   window[SITE_NAME] = window[SITE_NAME] || {};
   var Site = window[SITE_NAME];
   var init = () => {
@@ -2659,6 +2757,9 @@
       },
       "/tour/*": () => {
         new TourPage().init();
+      },
+      "/payment": () => {
+        new PaymentPage().init();
       }
     };
     routeDispatcher.dispatchRoute();
