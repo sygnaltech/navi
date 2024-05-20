@@ -10,7 +10,7 @@ import { RouteDispatcher } from "./routeDispatcher";
 
 // Global vars
 const SITE_NAME = 'Site';
-const VERSION = 'v0.1.1';
+const VERSION = 'v0.1.3';
 
 
 

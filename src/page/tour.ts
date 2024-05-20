@@ -20,8 +20,23 @@ export class TourPage {
 
     console.log("Tour."); 
 
+console.log((window as any).Tour);
+
+// Assuming window.Tour is already defined
+const tourAid: boolean = !!((window as any).Tour?.TourAidCode && (window as any).Tour.TourAidCode.trim() !== '');
+
+console.log("tourAid?", tourAid);
+
+
     // Initialize datepickers
-    this.initializeDatepicker("#tour-date", "d M Y");
+    if(tourAid) {
+      const tourDateElement = document.getElementById('tour-date') as HTMLInputElement;
+      if (tourDateElement) {
+        tourDateElement.disabled = true;
+      }
+    } else
+      this.initializeDatepicker("#tour-date", "d M Y");
+      
     this.initializeDatepicker("#arrival-date", "d M Y");
     this.initializeDatepicker("#departure-date", "d M Y");
 
