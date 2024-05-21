@@ -2607,9 +2607,28 @@
           const formData = new FormData(bookingForm);
           const action = bookingForm.getAttribute("action") || "";
           const method = bookingForm.getAttribute("method") || "POST";
+          console.log(order);
+          console.log(formData);
+          const params = new URLSearchParams(formData);
+          function getInputValueById(id) {
+            const element = document.getElementById(id);
+            return element ? element.value : null;
+          }
+          if (!params.has("date")) {
+            const dateValue = getInputValueById("tour-date");
+            if (dateValue !== null) {
+              params.append("date", dateValue);
+            }
+          }
+          if (!params.has("booking-type")) {
+            const bookingTypeValue = getInputValueById("booking-type");
+            if (bookingTypeValue !== null) {
+              params.append("booking-type", bookingTypeValue);
+            }
+          }
           fetch(action, {
             method,
-            body: new URLSearchParams(formData),
+            body: params,
             headers: {
               "Content-Type": "application/x-www-form-urlencoded"
             }
@@ -2745,7 +2764,7 @@
 
   // src/index.ts
   var SITE_NAME = "Site";
-  var VERSION = "v0.1.4";
+  var VERSION = "v0.1.5";
   window[SITE_NAME] = window[SITE_NAME] || {};
   var Site = window[SITE_NAME];
   var init = () => {

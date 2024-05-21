@@ -103,12 +103,40 @@ export class TourPage {
         const action = bookingForm.getAttribute('action') || '';
         const method = bookingForm.getAttribute('method') || 'POST';
 
-// console.log(order);
-// return;
+console.log(order);
+console.log(formData);
+const params = new URLSearchParams(formData as any);
+
+  // Utility function
+  function getInputValueById(id: string): string | null {
+    const element = document.getElementById(id) as HTMLInputElement | HTMLSelectElement | null;
+    return element ? element.value : null;
+  }
+
+// Populate missing fields
+// that are disabled for UX purposes 
+if(!params.has("date")) {
+  const dateValue = getInputValueById("tour-date");
+  if (dateValue !== null) {
+      params.append("date", dateValue);
+  }
+}
+if (!params.has("booking-type")) {
+  const bookingTypeValue = getInputValueById("booking-type");
+  if (bookingTypeValue !== null) {
+      params.append("booking-type", bookingTypeValue);
+  }
+}
+
+// Debug
+// params.forEach((value, key) => {
+//   console.log(`${key}: ${value}`);
+// });
+
 
         fetch(action, {
           method: method,
-          body: new URLSearchParams(formData as any),
+          body: params, //new URLSearchParams(formData as any),
           headers: {
             'Content-Type': 'application/x-www-form-urlencoded'
           }
