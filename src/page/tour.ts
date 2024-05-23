@@ -101,42 +101,53 @@ export class TourPage {
         // Send data to Tour Aid
         const formData = new FormData(bookingForm);
         const action = bookingForm.getAttribute('action') || '';
+//        const action = 'https://sygnal-n8n-u1282.vm.elestio.app:5678/webhook-test/5be21ed5-f753-4492-89d3-4d7e1206b9ca';
         const method = bookingForm.getAttribute('method') || 'POST';
 
-console.log(order);
-console.log(formData);
-const params = new URLSearchParams(formData as any);
+        // console.log(order);
+        // console.log(formData);
 
-  // Utility function
-  function getInputValueById(id: string): string | null {
-    const element = document.getElementById(id) as HTMLInputElement | HTMLSelectElement | null;
-    return element ? element.value : null;
-  }
+        // Prepare form data for posting
+        const params = new URLSearchParams(formData as any);
 
-// Populate missing fields
-// that are disabled for UX purposes 
-if(!params.has("date")) {
-  const dateValue = getInputValueById("tour-date");
-  if (dateValue !== null) {
-      params.append("date", dateValue);
-  }
-}
-if (!params.has("booking-type")) {
-  const bookingTypeValue = getInputValueById("booking-type");
-  if (bookingTypeValue !== null) {
-      params.append("booking-type", bookingTypeValue);
-  }
-}
+        // Populate missing fields
+        // that are disabled for UX purposes 
+        if(!params.has("date")) {
+          const dateValue = this.getInputValueById("tour-date");
+          if (dateValue !== null) {
+              params.append("date", dateValue);
+          }
+        }
+        if (!params.has("booking-type")) {
+          const bookingTypeValue = this.getInputValueById("booking-type");
+          if (bookingTypeValue !== null) {
+              params.append("booking-type", bookingTypeValue);
+          }
+        }
 
-// Debug
-// params.forEach((value, key) => {
-//   console.log(`${key}: ${value}`);
-// });
+        // Yes, I need total of adults, children, cc fees and grand TOTAL.
+        // Only for calendar-integrated tours is OK.
 
+        if(order) {
+          if (!params.has("total")) {
+            params.append("total", order.total().toString())
+          }
+          if (!params.has("totalFees")) {
+            params.append("totalFees", order.totalFees()?.toString())
+          }
+          if (!params.has("totalWithFees")) {
+            params.append("totalWithFees", order.totalWithFees()?.toString())
+          }
+        }
+
+        // Debug
+        // params.forEach((value, key) => {
+        //   console.log(`${key}: ${value}`);
+        // });
 
         fetch(action, {
           method: method,
-          body: params, //new URLSearchParams(formData as any),
+          body: params, 
           headers: {
             'Content-Type': 'application/x-www-form-urlencoded'
           }
@@ -356,7 +367,11 @@ if (!params.has("booking-type")) {
     }
 
 
-
+  // Utility function
+  getInputValueById(id: string): string | null {
+    const element = document.getElementById(id) as HTMLInputElement | HTMLSelectElement | null;
+    return element ? element.value : null;
+  }
 
 
 

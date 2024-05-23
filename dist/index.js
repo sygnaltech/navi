@@ -2607,23 +2607,28 @@
           const formData = new FormData(bookingForm);
           const action = bookingForm.getAttribute("action") || "";
           const method = bookingForm.getAttribute("method") || "POST";
-          console.log(order);
-          console.log(formData);
           const params = new URLSearchParams(formData);
-          function getInputValueById(id) {
-            const element = document.getElementById(id);
-            return element ? element.value : null;
-          }
           if (!params.has("date")) {
-            const dateValue = getInputValueById("tour-date");
+            const dateValue = this.getInputValueById("tour-date");
             if (dateValue !== null) {
               params.append("date", dateValue);
             }
           }
           if (!params.has("booking-type")) {
-            const bookingTypeValue = getInputValueById("booking-type");
+            const bookingTypeValue = this.getInputValueById("booking-type");
             if (bookingTypeValue !== null) {
               params.append("booking-type", bookingTypeValue);
+            }
+          }
+          if (order) {
+            if (!params.has("total")) {
+              params.append("total", order.total().toString());
+            }
+            if (!params.has("totalFees")) {
+              params.append("totalFees", order.totalFees()?.toString());
+            }
+            if (!params.has("totalWithFees")) {
+              params.append("totalWithFees", order.totalWithFees()?.toString());
             }
           }
           fetch(action, {
@@ -2732,6 +2737,10 @@
         });
       }
     }
+    getInputValueById(id) {
+      const element = document.getElementById(id);
+      return element ? element.value : null;
+    }
   };
 
   // src/routeDispatcher.ts
@@ -2764,7 +2773,7 @@
 
   // src/index.ts
   var SITE_NAME = "Site";
-  var VERSION = "v0.1.5";
+  var VERSION = "v0.1.6";
   window[SITE_NAME] = window[SITE_NAME] || {};
   var Site = window[SITE_NAME];
   var init = () => {
