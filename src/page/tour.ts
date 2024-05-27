@@ -138,6 +138,19 @@ export class TourPage {
           if (!params.has("totalWithFees")) {
             params.append("totalWithFees", order.totalWithFees()?.toString())
           }
+
+          const adult = order.items.find(e => e.product === "Adult");
+          const child = order.items.find(e => e.product === "Child");
+    
+          if (adult && child) {
+            if (!params.has("totalAdults")) {
+              params.append("totalAdults", (adult.price * adult.quantity).toString())
+            }
+            if (!params.has("totalChildren")) {
+              params.append("totalChildren", (child.price * child.quantity).toString())
+            }
+          }
+
         }
 
         // Debug
