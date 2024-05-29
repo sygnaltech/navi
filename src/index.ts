@@ -10,6 +10,7 @@ import { TestAutocompletePage } from "./page/test-autocomplete";
 import { TestCurrencyPage } from "./page/test-currency";
 import { TourPage } from "./page/tour";
 import { RouteDispatcher } from "./routeDispatcher";
+import { TourAutocomplete } from "./tourAutocomplete";
 
 // Global vars
 const SITE_NAME = 'Site';
@@ -37,6 +38,8 @@ declare global {
 const init = () => {
     
     console.log(`${SITE_NAME} package init ${VERSION}`);
+
+    (new TourAutocomplete()).init();
 
     var routeDispatcher = new RouteDispatcher();
     routeDispatcher.routes = {

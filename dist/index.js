@@ -151,13 +151,12 @@
   var TestAutocompletePage = class {
     constructor() {
       this.WFU_AUTOCOMPLETE = "wfu-autocomplete";
-      this.MATCH = "wfu-autocomplete-match";
       this.LIST = "wfu-autocomplete-list";
+      this.MATCH = "wfu-autocomplete-match";
     }
     init() {
       console.log("Test Autocomplete.");
       this.setupInputListener();
-      this.displayMatchingElements("");
     }
     setupInputListener() {
       const inputElement = document.querySelector(`[${this.WFU_AUTOCOMPLETE}]`);
@@ -168,13 +167,8 @@
       }
     }
     displayMatchingElements(matchingString) {
+      console.log("updating", matchingString);
       const listElement = document.querySelector(`[${this.LIST}]`);
-      if (matchingString.trim() === "") {
-        listElement.style.display = "none";
-        return;
-      } else {
-        listElement.style.display = "block";
-      }
       const lowerCaseMatchingString = matchingString.toLowerCase();
       const elements1 = document.querySelectorAll(`[${this.LIST}] [${this.MATCH}]`);
       elements1.forEach((element) => {
@@ -2861,6 +2855,56 @@
     }
   };
 
+  // src/tourAutocomplete.ts
+  var TourAutocomplete = class {
+    constructor() {
+      this.WFU_AUTOCOMPLETE = "wfu-autocomplete";
+      this.LIST = "wfu-autocomplete-list";
+      this.MATCH = "wfu-autocomplete-match";
+      this.SEARCH = "wfu-autocomplete-search";
+    }
+    init() {
+      this.setupListeners();
+    }
+    setupListeners() {
+      const inputElement = document.querySelector(`[${this.WFU_AUTOCOMPLETE}]`);
+      if (inputElement) {
+        inputElement.addEventListener("input", () => {
+          this.displayMatchingElements(inputElement.value);
+        });
+      } else {
+        console.error("no input element found for tour search.");
+      }
+      const searchElement = document.querySelector(`[${this.SEARCH}]`);
+      if (searchElement) {
+        searchElement.addEventListener("click", () => {
+          this.siteSearch(inputElement.value);
+        });
+      }
+    }
+    siteSearch(matchingString) {
+      const query = encodeURIComponent(matchingString);
+      const url = `/search?query=${query}`;
+      window.location.href = url;
+    }
+    displayMatchingElements(matchingString) {
+      const listElement = document.querySelector(`[${this.LIST}]`);
+      const lowerCaseMatchingString = matchingString.toLowerCase();
+      const elements1 = document.querySelectorAll(`[${this.LIST}] [${this.MATCH}]`);
+      elements1.forEach((element) => {
+        element.style.display = "none";
+      });
+      const elements = document.querySelectorAll(`[${this.LIST}] [${this.MATCH}]`);
+      elements.forEach((element) => {
+        const attributeValue = element.getAttribute(this.MATCH)?.toLowerCase();
+        console.log(lowerCaseMatchingString, attributeValue);
+        if (attributeValue && attributeValue.includes(lowerCaseMatchingString)) {
+          element.style.display = "block";
+        }
+      });
+    }
+  };
+
   // src/index.ts
   var SITE_NAME = "Site";
   var VERSION = "v0.1.8";
@@ -2868,6 +2912,7 @@
   var Site = window[SITE_NAME];
   var init = () => {
     console.log(`${SITE_NAME} package init ${VERSION}`);
+    new TourAutocomplete().init();
     var routeDispatcher = new RouteDispatcher();
     routeDispatcher.routes = {
       "/": () => {

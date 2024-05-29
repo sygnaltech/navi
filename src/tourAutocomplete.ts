@@ -1,12 +1,12 @@
 
 /*
- * Page | Home
+ * Component | Tour Autocomplete
  */
 
 import gsap from 'gsap'; 
  
 
-export class TestAutocompletePage {
+export class TourAutocomplete {
 
 //  modelDropdown: WebflowDropdown; 
 
@@ -16,17 +16,16 @@ export class TestAutocompletePage {
   WFU_AUTOCOMPLETE = "wfu-autocomplete"; 
   LIST = "wfu-autocomplete-list"; 
   MATCH = "wfu-autocomplete-match"; 
+  SEARCH = "wfu-autocomplete-search";
 
   init() {
 
-    console.log("Test Autocomplete."); 
-
-    this.setupInputListener(); 
+    this.setupListeners(); 
 //    this.displayMatchingElements(""); 
     
   }
 
-  private setupInputListener(): void {
+  private setupListeners(): void {
     // Find the input element with the custom attribute
     const inputElement = document.querySelector(`[${this.WFU_AUTOCOMPLETE}]`) as HTMLInputElement;
     if (inputElement) {
@@ -34,12 +33,34 @@ export class TestAutocompletePage {
       inputElement.addEventListener('input', () => {
         this.displayMatchingElements(inputElement.value);
       });
+    } else {
+      console.error("no input element found for tour search."); 
+//      return;
+      // error
     }
+
+    // Find the input element with the custom attribute
+    const searchElement = document.querySelector(`[${this.SEARCH}]`) as HTMLLinkElement;
+    if (searchElement) {
+      // Add event listener for input changes
+      searchElement.addEventListener('click', () => {
+        this.siteSearch(inputElement.value);
+      });
+    }
+
   }
 
+  siteSearch(matchingString: string): void {
+    const query = encodeURIComponent(matchingString);
+    const url = `/search?query=${query}`;
+    window.location.href = url;
+  }
+  
   displayMatchingElements(matchingString: string) {
 
-console.log("updating", matchingString); 
+// console.log("updating", matchingString); 
+
+// TODO: ensure it's visible
 
     // Get the list element with the custom attribute
     const listElement = document.querySelector(`[${this.LIST}]`) as HTMLElement;
