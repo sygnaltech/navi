@@ -6,12 +6,14 @@
 
 import { HomePage } from "./page/home";
 import { PaymentPage } from "./page/payment";
+import { TestAutocompletePage } from "./page/test-autocomplete";
+import { TestCurrencyPage } from "./page/test-currency";
 import { TourPage } from "./page/tour";
 import { RouteDispatcher } from "./routeDispatcher";
 
 // Global vars
 const SITE_NAME = 'Site';
-const VERSION = 'v0.1.7';
+const VERSION = 'v0.1.8';
 
 
 
@@ -51,6 +53,16 @@ const init = () => {
         '/payment': () => {
 
             (new PaymentPage()).init();
+
+        },
+        '/test/auto': () => {
+
+            (new TestAutocompletePage()).init();
+
+        },
+        '/test/currency': () => {
+
+            (new TestCurrencyPage()).init();
 
         }
     };

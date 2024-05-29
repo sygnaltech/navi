@@ -147,6 +147,86 @@
     }
   };
 
+  // src/page/test-autocomplete.ts
+  var TestAutocompletePage = class {
+    constructor() {
+      this.WFU_AUTOCOMPLETE = "wfu-autocomplete";
+      this.MATCH = "wfu-autocomplete-match";
+      this.LIST = "wfu-autocomplete-list";
+    }
+    init() {
+      console.log("Test Autocomplete.");
+      this.setupInputListener();
+      this.displayMatchingElements("");
+    }
+    setupInputListener() {
+      const inputElement = document.querySelector(`[${this.WFU_AUTOCOMPLETE}]`);
+      if (inputElement) {
+        inputElement.addEventListener("input", () => {
+          this.displayMatchingElements(inputElement.value);
+        });
+      }
+    }
+    displayMatchingElements(matchingString) {
+      const listElement = document.querySelector(`[${this.LIST}]`);
+      if (matchingString.trim() === "") {
+        listElement.style.display = "none";
+        return;
+      } else {
+        listElement.style.display = "block";
+      }
+      const lowerCaseMatchingString = matchingString.toLowerCase();
+      const elements1 = document.querySelectorAll(`[${this.LIST}] [${this.MATCH}]`);
+      elements1.forEach((element) => {
+        element.style.display = "none";
+      });
+      const elements = document.querySelectorAll(`[${this.LIST}] [${this.MATCH}]`);
+      elements.forEach((element) => {
+        const attributeValue = element.getAttribute(this.MATCH)?.toLowerCase();
+        console.log(lowerCaseMatchingString, attributeValue);
+        if (attributeValue && attributeValue.includes(lowerCaseMatchingString)) {
+          element.style.display = "block";
+        }
+      });
+    }
+  };
+
+  // src/page/test-currency.ts
+  var EXCHANGE_RATE_API_KEY = "66103ce28f8033af8f05023e";
+  async function getVisitorCurrency() {
+    return "GBP";
+  }
+  async function getExchangeRate(fromCurrency, toCurrency) {
+    const response = await fetch(`https://v6.exchangerate-api.com/v6/${EXCHANGE_RATE_API_KEY}/latest/${fromCurrency}`);
+    const data = await response.json();
+    console.log(data);
+    return data.conversion_rates[toCurrency];
+  }
+  async function updatePrices() {
+    try {
+      const localCurrency = await getVisitorCurrency();
+      console.log(localCurrency);
+      const exchangeRate = await getExchangeRate("NZD", localCurrency);
+      console.log("exchangeRate", exchangeRate);
+      const priceElements = document.querySelectorAll("[data-nzd-price]");
+      priceElements.forEach((element) => {
+        const nzdPrice = parseFloat(element.dataset.nzdPrice || "0");
+        const localPrice = (nzdPrice * exchangeRate).toFixed(2);
+        element.innerHTML = `${localPrice} ${localCurrency}`;
+      });
+    } catch (error) {
+      console.error("Error updating prices:", error);
+    }
+  }
+  var TestCurrencyPage = class {
+    constructor() {
+    }
+    init() {
+      console.log("Home.");
+      updatePrices();
+    }
+  };
+
   // node_modules/flatpickr/dist/esm/types/options.js
   var HOOKS = [
     "onChange",
@@ -2783,7 +2863,7 @@
 
   // src/index.ts
   var SITE_NAME = "Site";
-  var VERSION = "v0.1.7";
+  var VERSION = "v0.1.8";
   window[SITE_NAME] = window[SITE_NAME] || {};
   var Site = window[SITE_NAME];
   var init = () => {
@@ -2798,6 +2878,12 @@
       },
       "/payment": () => {
         new PaymentPage().init();
+      },
+      "/test/auto": () => {
+        new TestAutocompletePage().init();
+      },
+      "/test/currency": () => {
+        new TestCurrencyPage().init();
       }
     };
     routeDispatcher.dispatchRoute();
