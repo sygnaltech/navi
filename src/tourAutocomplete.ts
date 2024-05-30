@@ -5,6 +5,11 @@
 
 import gsap from 'gsap'; 
  
+  
+const AUTOCOMPLETE_ELEM = "wfu-autocomplete"; 
+const AUTOCOMPLETE_LIST = "wfu-autocomplete-list"; 
+const AUTOCOMPLETE_MATCH = "wfu-autocomplete-match"; 
+const AUTOCOMPLETE_SEARCH = "wfu-autocomplete-search";
 
 export class TourAutocomplete {
 
@@ -12,11 +17,6 @@ export class TourAutocomplete {
 
   constructor() {
   }
-  
-  WFU_AUTOCOMPLETE = "wfu-autocomplete"; 
-  LIST = "wfu-autocomplete-list"; 
-  MATCH = "wfu-autocomplete-match"; 
-  SEARCH = "wfu-autocomplete-search";
 
   init() {
 
@@ -27,7 +27,7 @@ export class TourAutocomplete {
 
   private setupListeners(): void {
     // Find the input element with the custom attribute
-    const inputElement = document.querySelector(`[${this.WFU_AUTOCOMPLETE}]`) as HTMLInputElement;
+    const inputElement = document.querySelector(`[${AUTOCOMPLETE_ELEM}]`) as HTMLInputElement;
     if (inputElement) {
       // Add event listener for input changes
       inputElement.addEventListener('input', () => {
@@ -40,7 +40,7 @@ export class TourAutocomplete {
     }
 
     // Find the input element with the custom attribute
-    const searchElement = document.querySelector(`[${this.SEARCH}]`) as HTMLLinkElement;
+    const searchElement = document.querySelector(`[${AUTOCOMPLETE_SEARCH}]`) as HTMLLinkElement;
     if (searchElement) {
       // Add event listener for input changes
       searchElement.addEventListener('click', () => {
@@ -63,7 +63,7 @@ export class TourAutocomplete {
 // TODO: ensure it's visible
 
     // Get the list element with the custom attribute
-    const listElement = document.querySelector(`[${this.LIST}]`) as HTMLElement;
+    const listElement = document.querySelector(`[${AUTOCOMPLETE_LIST}]`) as HTMLElement;
     
     // Show or hide the list element based on the input content
     // if (matchingString.trim() === "") {
@@ -77,17 +77,17 @@ export class TourAutocomplete {
     const lowerCaseMatchingString = matchingString.toLowerCase();
   
     // Get all elements with the custom attribute and hide them initially
-    const elements1: NodeListOf<Element> = document.querySelectorAll(`[${this.LIST}] [${this.MATCH}]`);
+    const elements1: NodeListOf<Element> = document.querySelectorAll(`[${AUTOCOMPLETE_LIST}] [${AUTOCOMPLETE_MATCH}]`);
     elements1.forEach(element => {
       (element as HTMLElement).style.display = 'none';
     });
   
     // Get all elements with the custom attribute
-    const elements = document.querySelectorAll(`[${this.LIST}] [${this.MATCH}]`);
+    const elements = document.querySelectorAll(`[${AUTOCOMPLETE_LIST}] [${AUTOCOMPLETE_MATCH}]`);
   
     // Loop through all elements and check if the attribute value contains the matching string (case-insensitive)
     elements.forEach(element => {
-      const attributeValue = element.getAttribute(this.MATCH)?.toLowerCase();
+      const attributeValue = element.getAttribute(AUTOCOMPLETE_MATCH)?.toLowerCase();
       console.log(lowerCaseMatchingString, attributeValue);
       if (attributeValue && attributeValue.includes(lowerCaseMatchingString)) {
         // If it matches, set display to block
