@@ -77,3 +77,40 @@ export class TestCurrencyPage {
 
 
 }
+
+// https://docs.google.com/spreadsheets/d/1FTFIXNjLnm9MhNXd408xDqb7YASt2bCvH1V2YXKoMXo/edit#gid=0
+
+function getCurrencyCode(countryCode: string): string {
+  const currencyMap: { [key: string]: string } = {
+    US: 'USD',
+    AU: 'AUD',
+    NZ: 'NZD',
+    GB: 'GBP',
+    CA: 'CAD',
+    CN: 'CNY',
+    JP: 'JPY',
+    DE: 'EUR',
+    SG: 'SGD',
+    HK: 'HKD',
+    IN: 'INR',
+    NL: 'EUR',
+    FR: 'EUR',
+    PH: 'PHP',
+    ID: 'IDR',
+    TW: 'TWD',
+    DK: 'DKK',
+    CH: 'CHF',
+    MY: 'MYR',
+    SE: 'SEK',
+    ES: 'EUR',
+    PL: 'PLN',
+    AT: 'EUR'
+  };
+
+  return currencyMap[countryCode.toUpperCase()] || 'USD';
+}
+
+// Example usage:
+console.log(getCurrencyCode('AU')); // Output: AUD
+console.log(getCurrencyCode('JP')); // Output: JPY
+console.log(getCurrencyCode('XX')); // Output: USD
