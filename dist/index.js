@@ -220,6 +220,37 @@
       updatePrices();
     }
   };
+  function getCurrencyCode(countryCode) {
+    const currencyMap = {
+      US: "USD",
+      AU: "AUD",
+      NZ: "NZD",
+      GB: "GBP",
+      CA: "CAD",
+      CN: "CNY",
+      JP: "JPY",
+      DE: "EUR",
+      SG: "SGD",
+      HK: "HKD",
+      IN: "INR",
+      NL: "EUR",
+      FR: "EUR",
+      PH: "PHP",
+      ID: "IDR",
+      TW: "TWD",
+      DK: "DKK",
+      CH: "CHF",
+      MY: "MYR",
+      SE: "SEK",
+      ES: "EUR",
+      PL: "PLN",
+      AT: "EUR"
+    };
+    return currencyMap[countryCode.toUpperCase()] || "USD";
+  }
+  console.log(getCurrencyCode("AU"));
+  console.log(getCurrencyCode("JP"));
+  console.log(getCurrencyCode("XX"));
 
   // node_modules/flatpickr/dist/esm/types/options.js
   var HOOKS = [

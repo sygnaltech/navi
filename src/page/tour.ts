@@ -79,6 +79,8 @@ export class TourPage {
       event.preventDefault();
     });
 
+// wf-form-New-Tour-Request-Form
+
     const bookingForm = document.getElementById('booking-form') as HTMLFormElement;
     if (bookingForm) {
       bookingForm.addEventListener('submit', (event) => {
@@ -101,7 +103,9 @@ export class TourPage {
         // Send data to Tour Aid
         const formData = new FormData(bookingForm);
         const action = bookingForm.getAttribute('action') || '';
-//        const action = 'https://sygnal-n8n-u1282.vm.elestio.app:5678/webhook-test/5be21ed5-f753-4492-89d3-4d7e1206b9ca';
+
+        
+//        const action = 'https://sygnal-n8n-u1282.vm.elestio.app/webhook-test/5be21ed5-f753-4492-89d3-4d7e1206b9ca';
         const method = bookingForm.getAttribute('method') || 'POST';
 
         // console.log(order);
