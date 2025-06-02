@@ -14,7 +14,7 @@ import { TourAutocomplete } from "./tourAutocomplete";
 
 // Global vars
 const SITE_NAME = 'Site';
-const VERSION = 'v0.1.8';
+const VERSION = 'v0.1.10';
 
 
 

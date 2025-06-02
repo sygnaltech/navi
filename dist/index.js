@@ -2668,10 +2668,13 @@
       if (tourAid) {
         const tourDateElement = document.getElementById("tour-date");
         if (tourDateElement) {
-          tourDateElement.disabled = true;
+          tourDateElement.onfocus = () => tourDateElement.blur();
+          tourDateElement.style.pointerEvents = "none";
+          tourDateElement.style.backgroundColor = "#f5f5f5";
         }
-      } else
+      } else {
         this.initializeDatepicker("#tour-date", "d M Y");
+      }
       this.initializeDatepicker("#arrival-date", "d M Y");
       this.initializeDatepicker("#departure-date", "d M Y");
       this.init_TourAidCalendar();
@@ -2938,7 +2941,7 @@
 
   // src/index.ts
   var SITE_NAME = "Site";
-  var VERSION = "v0.1.8";
+  var VERSION = "v0.1.10";
   window[SITE_NAME] = window[SITE_NAME] || {};
   var Site = window[SITE_NAME];
   var init = () => {

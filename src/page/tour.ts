@@ -29,13 +29,28 @@ export class TourPage {
 
 
     // Initialize datepickers
-    if(tourAid) {
+    if(tourAid) { 
+
       const tourDateElement = document.getElementById('tour-date') as HTMLInputElement;
       if (tourDateElement) {
-        tourDateElement.disabled = true;
-      }
-    } else
-      this.initializeDatepicker("#tour-date", "d M Y");
+
+        // Prevent user editing by blurring on focus
+        tourDateElement.onfocus = () => tourDateElement.blur();
+
+        // Also make it non-clickable via CSS
+        tourDateElement.style.pointerEvents = 'none';
+
+          // Optional: add styling to indicate it's non-editable
+        tourDateElement.style.backgroundColor = '#f5f5f5';
+
+//        tourDateElement.readOnly = true;
+      } 
+
+    } else { 
+
+      this.initializeDatepicker("#tour-date", "d M Y"); 
+
+    }
 
     this.initializeDatepicker("#arrival-date", "d M Y");
     this.initializeDatepicker("#departure-date", "d M Y");
