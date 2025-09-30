@@ -1,6 +1,8 @@
 
 /*
  * Page | Tour
+ *
+ * Original reference code-
  * https://codepen.io/memetican/pen/WNWPoJq/dad2a4c9f1ed011aaefa61f6853a5659
  */
 
@@ -10,8 +12,6 @@ import flatpickr from "flatpickr";
 import { TourOrder } from '../tourOrder';
 
 export class TourPage {
-
-//  modelDropdown: WebflowDropdown; 
 
   constructor() {
   }
@@ -28,7 +28,10 @@ export class TourPage {
     console.log("tourAid?", tourAid);
 
 
-    // Initialize datepickers
+    /**
+     * Initialize datepickers
+     */
+    
     if(tourAid) { 
 
       const tourDateElement = document.getElementById('tour-date') as HTMLInputElement;
@@ -55,11 +58,17 @@ export class TourPage {
     this.initializeDatepicker("#arrival-date", "d M Y");
     this.initializeDatepicker("#departure-date", "d M Y");
 
+    /**
+     * Init TourAid 
+     */
+    
     this.init_TourAidCalendar();
 
-    // const elements: NodeListOf<Element> = document.querySelectorAll(`.${item.className}`);
-    // console.log("Making elements visible", elements);
-    // gsap.to(elements, { display: 'block' });
+    /**
+     * Init Form elements 
+     */
+
+    // Booking Type 
     const bookingTypeElement = document.getElementById('booking-type') as HTMLSelectElement;
     if (bookingTypeElement) {
         bookingTypeElement.addEventListener('change', this.configureForm);
@@ -86,15 +95,17 @@ export class TourPage {
 
   }
 
-  
+
+  /**
+   * Handle Form Submission 
+   */
+
   init_bookingFormHandler(): void {
   
     // Disable default submit
     document.removeEventListener('submit', (event) => {
       event.preventDefault();
     });
-
-// wf-form-New-Tour-Request-Form
 
     const bookingForm = document.getElementById('booking-form') as HTMLFormElement;
     if (bookingForm) {
@@ -117,16 +128,18 @@ export class TourPage {
 
         // Send data to Tour Aid
         const formData = new FormData(bookingForm);
+
+
+        // Get submission URL from <form action>         
         const action = bookingForm.getAttribute('action') || '';
 
-        
-//        const action = 'https://sygnal-n8n-u1282.vm.elestio.app/webhook-test/5be21ed5-f753-4492-89d3-4d7e1206b9ca';
+        // Get submission GET/POST method from <form method>         
         const method = bookingForm.getAttribute('method') || 'POST';
 
-        // console.log(order);
-        // console.log(formData);
+        /**
+         * Prepare form data for posting 
+         */
 
-        // Prepare form data for posting
         const params = new URLSearchParams(formData as any);
 
         // Populate missing fields
@@ -144,7 +157,7 @@ export class TourPage {
           }
         }
 
-        // Yes, I need total of adults, children, cc fees and grand TOTAL.
+        // Total of adults, children, cc fees and grand TOTAL.
         // Only for calendar-integrated tours is OK.
 
         if(order) {
@@ -177,6 +190,10 @@ export class TourPage {
         //   console.log(`${key}: ${value}`);
         // });
 
+        /**
+         * Perform form submission 
+         */
+
         fetch(action, {
           method: method,
           body: params, 
@@ -207,6 +224,10 @@ export class TourPage {
   }
 
   
+  /**
+   * Init TourAid Calendar 
+   */
+
   init_TourAidCalendar() {
 
     window.addEventListener('message', (event: MessageEvent) => { 
@@ -268,8 +289,7 @@ export class TourPage {
             break;
         }
 
-// console.log("CALC again")
-
+        // Recalculate 
         this.calcOrder(); 
 
       } else {
@@ -279,124 +299,124 @@ export class TourPage {
 
   }
 
-    configureForm(): void { 
+  configureForm(): void { 
 
-      const formElement = document.getElementById('booking-form') as HTMLFormElement;
-      const infoEnquiry = document.getElementById('info-enquiry');
-      const infoBooking = document.getElementById('info-booking');
-      const infoPayment = document.getElementById('info-payment');
-      const submitBtn = document.getElementById('submit-btn') as HTMLInputElement;
-      const canPayOnlineElement = document.getElementById('can-pay-online') as HTMLInputElement;
-      const bookingTypeElement = document.getElementById('booking-type') as HTMLSelectElement;
-    
-      if (infoEnquiry) infoEnquiry.style.display = 'none';
-      if (infoBooking) infoBooking.style.display = 'none';
-      if (infoPayment) infoPayment.style.display = 'none';
-    
-      const canPayOnline = canPayOnlineElement.value === 'true';
-      const bookNow = bookingTypeElement.value === 'Booking';
-    
-      if (bookNow) {
-        submitBtn.value = 'Book Tour Now';
-        if (canPayOnline) {
-          formElement.setAttribute('data-redirect', '/payment');
-          if (infoPayment) infoPayment.style.display = 'block';
-        } else {
-          formElement.setAttribute('data-redirect', '/thanks');
-          if (infoBooking) infoBooking.style.display = 'block';
-        }
+    const formElement = document.getElementById('booking-form') as HTMLFormElement;
+    const infoEnquiry = document.getElementById('info-enquiry');
+    const infoBooking = document.getElementById('info-booking');
+    const infoPayment = document.getElementById('info-payment');
+    const submitBtn = document.getElementById('submit-btn') as HTMLInputElement;
+    const canPayOnlineElement = document.getElementById('can-pay-online') as HTMLInputElement;
+    const bookingTypeElement = document.getElementById('booking-type') as HTMLSelectElement;
+  
+    if (infoEnquiry) infoEnquiry.style.display = 'none';
+    if (infoBooking) infoBooking.style.display = 'none';
+    if (infoPayment) infoPayment.style.display = 'none';
+  
+    const canPayOnline = canPayOnlineElement.value === 'true';
+    const bookNow = bookingTypeElement.value === 'Booking';
+  
+    if (bookNow) {
+      submitBtn.value = 'Book Tour Now';
+      if (canPayOnline) {
+        formElement.setAttribute('data-redirect', '/payment');
+        if (infoPayment) infoPayment.style.display = 'block';
       } else {
         formElement.setAttribute('data-redirect', '/thanks');
-        submitBtn.value = 'Enquire Now';
-        if (infoEnquiry) infoEnquiry.style.display = 'block';
+        if (infoBooking) infoBooking.style.display = 'block';
       }
-
+    } else {
+      formElement.setAttribute('data-redirect', '/thanks');
+      submitBtn.value = 'Enquire Now';
+      if (infoEnquiry) infoEnquiry.style.display = 'block';
     }
+
+  }
 
 
   
-    initializeDatepicker(selector: string, dateFormat: string): void {
-      const element = document.querySelector(selector);
-      if (element) {
-        flatpickr(element, {
-          dateFormat: dateFormat
-        });
-      }
+  initializeDatepicker(selector: string, dateFormat: string): void {
+    const element = document.querySelector(selector);
+    if (element) {
+      flatpickr(element, {
+        dateFormat: dateFormat
+      });
     }
+  }
 
 
-    // Order Calculation
-    calcOrder = (): void => {
+  // Order Calculation
+  calcOrder = (): void => {
 //    calcOrder(): void {
 
-      console.log("calculating order"); 
+    console.log("calculating order"); 
 
-      const order = this.createOrder();
-      
-      // Find adult and child items
-      const adult = order.items.find(e => e.product === "Adult");
-      const child = order.items.find(e => e.product === "Child");
+    const order = this.createOrder();
+    
+    // Find adult and child items
+    const adult = order.items.find(e => e.product === "Adult");
+    const child = order.items.find(e => e.product === "Child");
 
-      // Ensure the elements exist before accessing their properties
-      if (adult && child) {
-        const adultQty = document.getElementById("adult-qty");
-        const adultTotal = document.getElementById("adult-total");
-        const childQty = document.getElementById("child-qty");
-        const childTotal = document.getElementById("child-total");
-        const fees = document.getElementById("fees");
-        const total = document.getElementById("total");
+    // Ensure the elements exist before accessing their properties
+    if (adult && child) {
+      const adultQty = document.getElementById("adult-qty");
+      const adultTotal = document.getElementById("adult-total");
+      const childQty = document.getElementById("child-qty");
+      const childTotal = document.getElementById("child-total");
+      const fees = document.getElementById("fees");
+      const total = document.getElementById("total");
 
-        if (adultQty) adultQty.innerHTML = formatAsNumber(adult.quantity);
-        if (adultTotal) adultTotal.innerHTML = formatAsCurrency(adult.price * adult.quantity);
-        if (childQty) childQty.innerHTML = formatAsNumber(child.quantity);
-        if (childTotal) childTotal.innerHTML = formatAsCurrency(child.price * child.quantity);
-        if (fees) fees.innerHTML = formatAsCurrency(order.totalFees());
-        if (total) total.innerHTML = formatAsCurrency(order.totalWithFees());
-      }
-
-      console.log("test");
+      if (adultQty) adultQty.innerHTML = formatAsNumber(adult.quantity);
+      if (adultTotal) adultTotal.innerHTML = formatAsCurrency(adult.price * adult.quantity);
+      if (childQty) childQty.innerHTML = formatAsNumber(child.quantity);
+      if (childTotal) childTotal.innerHTML = formatAsCurrency(child.price * child.quantity);
+      if (fees) fees.innerHTML = formatAsCurrency(order.totalFees());
+      if (total) total.innerHTML = formatAsCurrency(order.totalWithFees());
     }
 
-    createOrder = (): TourOrder => {
-//    createOrder(): TourOrder {
-      const order = new TourOrder();
+    console.log("test");
+  }
 
-      const customerNameInput = document.getElementById('name') as HTMLInputElement;
-      const customerEmailInput = document.getElementById('email') as HTMLInputElement;
-      const tourNameElement = document.getElementById('tour') as HTMLElement;
-      const tourCodeInput = document.getElementById('tour-code') as HTMLInputElement;
-      const tourDateInput = document.getElementById('tour-date') as HTMLInputElement;
-      const adultPriceInput = document.getElementById('adult-price') as HTMLInputElement;
-      const adultQuantityInput = document.getElementById('adults') as HTMLInputElement;
-      const childPriceInput = document.getElementById('child-price') as HTMLInputElement;
-      const childQuantityInput = document.getElementById('children') as HTMLInputElement;
+  createOrder = (): TourOrder => {
 
-      if (customerNameInput) order.customerName = customerNameInput.value;
-      if (customerEmailInput) order.customerEmail = customerEmailInput.value;
-      if (tourNameElement) order.tourName = tourNameElement.textContent || "";
-      if (tourCodeInput) order.tourCode = tourCodeInput.value;
-      if (tourDateInput) order.tourDate = tourDateInput.value;
+    const order = new TourOrder();
 
-      if (adultPriceInput && adultQuantityInput) {
-        order.items.push({
-          product: "Adult",
-          price: parseFloat(adultPriceInput.value || '0'),
-          quantity: parseInt(adultQuantityInput.value || '0', 10)
-        });
-      }
+    const customerNameInput = document.getElementById('name') as HTMLInputElement;
+    const customerEmailInput = document.getElementById('email') as HTMLInputElement;
+    const tourNameElement = document.getElementById('tour') as HTMLElement;
+    const tourCodeInput = document.getElementById('tour-code') as HTMLInputElement;
+    const tourDateInput = document.getElementById('tour-date') as HTMLInputElement;
+    const adultPriceInput = document.getElementById('adult-price') as HTMLInputElement;
+    const adultQuantityInput = document.getElementById('adults') as HTMLInputElement;
+    const childPriceInput = document.getElementById('child-price') as HTMLInputElement;
+    const childQuantityInput = document.getElementById('children') as HTMLInputElement;
 
-      if (childPriceInput && childQuantityInput) {
-        order.items.push({
-          product: "Child",
-          price: parseFloat(childPriceInput.value || '0'),
-          quantity: parseInt(childQuantityInput.value || '0', 10)
-        });
-      }
+    if (customerNameInput) order.customerName = customerNameInput.value;
+    if (customerEmailInput) order.customerEmail = customerEmailInput.value;
+    if (tourNameElement) order.tourName = tourNameElement.textContent || "";
+    if (tourCodeInput) order.tourCode = tourCodeInput.value;
+    if (tourDateInput) order.tourDate = tourDateInput.value;
 
-      console.log("order", order);
-
-      return order;
+    if (adultPriceInput && adultQuantityInput) {
+      order.items.push({
+        product: "Adult",
+        price: parseFloat(adultPriceInput.value || '0'),
+        quantity: parseInt(adultQuantityInput.value || '0', 10)
+      });
     }
+
+    if (childPriceInput && childQuantityInput) {
+      order.items.push({
+        product: "Child",
+        price: parseFloat(childPriceInput.value || '0'),
+        quantity: parseInt(childQuantityInput.value || '0', 10)
+      });
+    }
+
+    console.log("order", order);
+
+    return order;
+  }
 
 
   // Utility function
