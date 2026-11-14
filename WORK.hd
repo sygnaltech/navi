@@ -1,0 +1,74 @@
+---
+id: 2blYJ6Z5nXzV7XstiJBBHJ
+format-version: 2
+---
+
+We are fully Migrating the navi website from Webflow to Astro + Sanity.
+
+Source:
+
+```
+https://www.tournewzealand.com/
+```
+
+The HTML and CSS styling must be exact, except content in sanity must be unfolded so they it is easily edited, not stored as HTML chunks.
+
+# Approach
+
+Track and report all progress succinctly and briefly in PROGRESS.hd
+
+I always need to know what has been done and what is remaining
+
+Be succinct in all replies throughout this project.
+
+Also good notes here, which we are developing as an ongoing reference for these migrations.
+
+D:\\Projects\\Clients\\sdm\\WEBFLOW-SANITY-MIGRATION.hd
+
+# Phase 1 - Prepare
+
+Download the full site first into \_source/
+
+Setup the initial sanity configuration, and let me know what ID's, tokens etc. you need to do the full build.
+
+# Phase 2 - Build
+
+Full migration, all content
+
+All static pages, every section, every element, 100%
+
+CMS content, structures, and site integrations
+
+The HTML and CSS styling must be exact, except content in sanity must be unfolded so they it is easily edited, not stored as HTML chunks.
+
+## Code Integration
+
+There may be externally-linked "engine" code, sometimes called SSE code for this specific site. Typically this would drive If this exists we want to bring it internal into the build rather than keeping it as an external "engine" library.
+
+## Sitemap
+
+Must be fully migrated-
+
+```
+/sitemap.xml
+```
+
+## Redirect
+
+Check and inventory Webflow redirects, which you can find here if any are defined-
+
+```
+/manifest.json
+```
+
+## Sanity Studio
+
+The sanity studio build
+
+# Phase 3 - Audit
+
+PM will start the dev server
+
+Perform a full page-by-page audit between our dev site and the original to ensure 100% compliance
+
+Store and track succinct results, problems, and fixes in AUDIT.hd

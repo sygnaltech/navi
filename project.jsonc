@@ -1,0 +1,17 @@
+{
+	"sanity": {
+	  "projectId": "6gnkakot",
+	  "dataset": "production",
+	  "studioHost": "navi"
+	},
+	"cloudflare": {
+		"accountId": "9095ee3415dc7ee4e497da2a3c8d1992", // Sygnal 
+		"zone": "sygnal.cloud", 
+		"routes": [
+			"navi.sygnal.cloud"
+		], 
+		"worker": {
+			"name": "site-navi"
+		}
+	}
+}
