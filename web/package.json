@@ -1,0 +1,30 @@
+{
+  "name": "tournewzealand-web",
+  "type": "module",
+  "private": true,
+  "version": "0.1.0",
+  "description": "www.tournewzealand.com — the Astro site. Deployed to Cloudflare Workers.",
+  "scripts": {
+    "dev": "astro dev",
+    "prebuild": "node ../migration-scripts/gen-redirects.mjs",
+    "build": "astro build",
+    "check": "astro check"
+  },
+  "dependencies": {
+    "@sanity/client": "^8.16.0",
+    "@sanity/image-url": "^2.1.1",
+    "astro": "^7.4.12",
+    "astro-portabletext": "^1.0.1",
+    "jsonc-parser": "^3.3.1"
+  },
+  "devDependencies": {
+    "@astrojs/check": "^0.9.12",
+    "@astrojs/cloudflare": "^14.4.8",
+    "typescript": "^5.9.3"
+  },
+  "allowScripts": {
+    "esbuild@0.28.2": true,
+    "workerd@1.20261110.1": true,
+    "workerd@1.20261113.1": true
+  }
+}

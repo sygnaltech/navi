@@ -1,0 +1,46 @@
+{
+  "name": "tournewzealand-com",
+  "type": "module",
+  "version": "0.1.0",
+  "private": true,
+  "description": "www.tournewzealand.com — repo root. The site is web/, the Studio is studio/; schema/, config/, project.jsonc and migration-scripts/ are shared by both.",
+  "scripts": {
+    "//": "The trailing `--` on every delegating script is load-bearing. Without it, `npm run localise:assets -- --dry-run` appends the flag to THIS command, where npm reads it as its own flag and never forwards it — and localise:assets then writes instead of reporting.",
+    "dev": "npm --prefix web run dev --",
+    "build": "npm --prefix web run build --",
+    "check": "npm --prefix web run check --",
+    "preview": "wrangler dev",
+    "guard:deploy": "node migration-scripts/guard-production-deploy.mjs",
+    "deploy": "npm run guard:deploy && npm run build && wrangler deploy --config wrangler.prod.jsonc",
+    "check:deploy": "wrangler deploy --dry-run --config wrangler.prod.jsonc",
+    "studio:dev": "npm --prefix studio run dev --",
+    "studio:build": "npm --prefix studio run build --",
+    "studio:deploy": "node migration-scripts/guard-production-deploy.mjs --studio && npm --prefix studio run deploy --",
+    "extract": "node migration-scripts/extract-webflow-page.mjs",
+    "fetch:assets": "node migration-scripts/fetch-webflow-assets.mjs",
+    "localise:assets": "node migration-scripts/localise-webflow-assets.mjs",
+    "assets:check": "node migration-scripts/check-assets.mjs",
+    "verify": "node migration-scripts/verify-port.mjs",
+    "sitemap": "node migration-scripts/check-sitemap.mjs",
+    "redirects": "node migration-scripts/gen-redirects.mjs",
+    "seams": "node migration-scripts/cms-seams.mjs",
+    "wf:pull": "node migration-scripts/webflow/pull.mjs",
+    "wf:from-dump": "node migration-scripts/webflow/from-mcp-dump.mjs",
+    "sanity:convert": "node migration-scripts/sanity/convert.mjs --report",
+    "sanity:import": "node migration-scripts/sanity/import.mjs",
+    "sanity:verify": "node migration-scripts/sanity/verify.mjs",
+    "test": "node migration-scripts/sanity/test-converter.mjs && node migration-scripts/sanity/test-portable.mjs",
+    "preflight": "npm run build && npm test && npm run check && npm run verify && npm run sitemap && npm run assets:check && npm run sanity:verify"
+  },
+  "dependencies": {
+    "jsonc-parser": "^3.3.1"
+  },
+  "devDependencies": {
+    "jsdom": "^31.0.1",
+    "wrangler": "^4.162.0"
+  },
+  "allowScripts": {
+    "esbuild@0.28.2": true,
+    "workerd@1.20261113.1": true
+  }
+}

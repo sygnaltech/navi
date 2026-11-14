@@ -1,8 +1,18 @@
 node_modules
-.env
 .DS_STORE
 
+# Secrets. The `.example` templates beside them ARE committed.
+.env
+.env.*
+!.env.example
+
+# Build output and tool caches
+dist
+.astro
+.wrangler
+.sanity
+
 # The archived copy of the live Webflow site. `_source/pages/` is the audit
-# reference and is committed; the binary assets are ~200MB and are re-fetched
+# reference and is committed; the binary assets are ~320MB and are re-fetched
 # into the build by `npm run localise:assets`, so they stay out of git.
 _source/assets/

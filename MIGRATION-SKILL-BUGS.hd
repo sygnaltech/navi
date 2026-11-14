@@ -1,0 +1,197 @@
+---
+id: 5AW6PiyZTM7yDPycg8Mo6p
+title: "Migration skill — bugs and gaps"
+format-version: 2
+date: 2026-11-14
+---
+
+# Migration skill — bugs and gaps
+
+Found scaffolding `tournewzealand.com`, the second site through
+`webflow-sanity:migration`. Everything here cost time on this migration and will cost it again
+on the next one. Ordered by what hurt most.
+
+The skill is at `~/.claude/skills/webflow-sanity/skills/migration/` — `SKILL.md`,
+`references/scaffold.md`, `templates/` (6 files), `migration-scripts/` (the engine).
+
+## 1. The scaffold ships no files — only prose
+
+**The single biggest gap.** §2 says *"Copy the config from a finished migration rather than
+writing it"*, and `references/scaffold.md` describes the root scripts, the Wrangler configs, the
+JSONC readers and the acceptance checks — **in prose, with nothing to copy.** `templates/`
+contains six files and not one of them is a scaffold file.
+
+So §2 is unactionable as written, and every file below had to be authored from scratch, from
+prose, with the mistakes that implies:
+
+| Area | Files the skill does not ship |
+|---|---|
+| Root | `package.json`, `.env.example`, `.gitignore` entries, `wrangler.jsonc`, `wrangler.prod.jsonc` |
+| Config readers | `config/parse-project.mjs`, `config/read-project.mjs`, `config/read-project.cjs` |
+| Schema | `schema/index.mjs` |
+| Site | `web/package.json`, `web/astro.config.mjs`, `web/tsconfig.json`, `web/src/env.d.ts`, `web/src/lib/project.ts`, `web/src/lib/sanity.ts`, `web/src/lib/assets.ts`, `web/public/.assetsignore` |
+| Studio | `studio/package.json`, `studio/sanity.config.ts`, `studio/sanity.cli.ts`, `studio/tsconfig.json`, `studio/project-config.ts`, `studio/types/raw-modules.d.ts`, `studio/.env.example` |
+
+**Fix:** ship all of them under `templates/scaffold/`, mirroring the repo layout, and give §2 a
+`cp -r` block exactly like the one §0 already has for `migration-scripts/`. Prose describing a
+file is not a template.
+
+**This is also why Phase 1 came out incomplete here.** Without the files, "set up the initial
+Sanity configuration" has no concrete deliverable, so there was nowhere for the PM to put the
+project values and no Studio to point at.
+
+## 2. The engine's own dependencies are undeclared
+
+`migration-scripts/` imports `jsdom` and `jsonc-parser`. Nothing in the skill says so. The
+symptom is `npm test` and `npm run sanity:verify` dying with:
+
+```
+Error [ERR_MODULE_NOT_FOUND]: Cannot find package 'jsdom' imported from
+  migration-scripts/sanity/html-to-portable-text.mjs
+```
+
+**Fix:** name them in §0 beside the `cp -r`, and have them in the shipped root `package.json`.
+
+## 3. §2 leads with a layout the engine does not support
+
+`scaffold.md` opens with *"For an Astro app at the repository root, merge these entries into
+package.json"* and treats `web/` as the variant. But **every** engine script hardcodes it:
+
+```js
+const WEB = join(ROOT, 'web');
+```
+
+`extract-webflow-page.mjs`, `fetch-webflow-assets.mjs`, `localise-webflow-assets.mjs`,
+`check-assets.mjs`, `verify-port.mjs`, `check-sitemap.mjs`, `gen-redirects.mjs` — all of them.
+Follow the documented primary shape and the engine writes into a `web/` that does not exist,
+silently, until a later step cannot find `pages.json`.
+
+**Fix:** state `web/` + `studio/` + root orchestration as **the** layout, or read the app
+directory from `project.jsonc`. Do not present a choice the engine cannot honour.
+
+## 4. The doc and the only worked example disagree on where Wrangler configs live
+
+`scaffold.md`: *"keep deploy orchestration and both Wrangler configs at the repository root."*
+The reference migration (`sdm`) has them in `web/`.
+
+Root is the better answer — `wrangler` then installs once at the root and
+`"$schema": "node_modules/wrangler/config-schema.json"` resolves — but the contradiction has to
+go.
+
+## 5. The Cloudflare output layout in §8 is stale
+
+§8 and `scaffold.md` prescribe:
+
+```jsonc
+"main": "./dist/_worker.js/index.js",
+"assets": {"directory": "./dist", ...}
+```
+
+and a `public/.assetsignore` containing `_worker.js` and `_routes.json`.
+
+With **Astro 7 + `@astrojs/cloudflare` 14**, a static build emits none of that:
+
+| Prescribed | Actual |
+|---|---|
+| `dist/_worker.js/index.js` | does not exist |
+| `dist/_routes.json` | does not exist |
+| `assets.directory: ./dist` | the site is in **`dist/client/`** |
+| — | `dist/server/` exists and is **empty** when everything prerenders |
+| — | the adapter writes its own **`dist/client/wrangler.json`** declaring a SESSION KV and an IMAGES binding |
+
+For a fully-prerendered site the correct production config has **no `main` at all** — it is an
+assets-only deployment. Copying the prescribed shape yields a Worker entry pointing at a file
+that was never written.
+
+**Fix:** stop prescribing paths. Tell the reader to build first and read what the adapter
+actually emitted, document the v14 layout, and spell out what changes the moment one route sets
+`prerender = false` — add `main` (the adapter's real server entry, read not guessed), drop
+`not_found_handling`, and carry over the adapter's bindings.
+
+## 6. `not_found_handling` guidance points at a file that no longer exists
+
+The §8 decision table is still correct in substance, but its verification step is
+`cat dist/_routes.json` — which v14 does not produce. The check is now
+`grep -rn "prerender = false" web/src/` plus reading `web/dist/client/wrangler.json`.
+
+## 7. Reading `project.jsonc` from site code breaks the prerender
+
+`scaffold.md` says to *"use an ESM filesystem reader anchored to the root command's working
+directory"* and warns that *"Astro may relocate bundled modules."* That is not enough to act on.
+What actually happens when a page imports the ESM reader:
+
+```
+TypeError: The "path" argument must be of type string or an instance of URL. Received undefined
+    at fileURLToPath (node-internal:internal_url)
+    at web/dist/server/.prerender/chunks/index_DoNnIZDQ.mjs:776
+```
+
+`import.meta.url` is `undefined` once Astro bundles the module into a hashed prerender chunk, and
+the stack frame points into that chunk rather than at the cause.
+
+**The pattern that works:** resolve `project.jsonc` once in `astro.config.mjs` — plain Node,
+never bundled — and inject it with Vite `define`. No filesystem reader ever enters the bundle, so
+the failure is structurally impossible rather than merely fixed.
+
+**Fix:** prescribe that, and ship `web/astro.config.mjs` + `web/src/lib/project.ts` as templates.
+
+## 8. The `define` pattern has two traps of its own
+
+Both cost a build cycle here, and both will recur, so they belong in the doc alongside item 7.
+
+> [!WARNING]
+> **A local `declare const` is erased along with the export that uses it.** esbuild treats
+> `declare const __PROJECT_CONFIG__` as a type-only binding and strips the `export default` that
+> references it, failing with the thoroughly misleading
+> `[MISSING_EXPORT] "default" is not exported by "src/lib/project.ts"`. Declare it as a
+> `declare global { var … }` instead.
+
+> [!WARNING]
+> **Vite `define` replaces the BARE identifier only.** `globalThis.__PROJECT_CONFIG__` is a
+> member expression, is never matched, and is `undefined` at render time **with no build error
+> at all** — the worst available failure mode.
+
+## 9. A fourth asset-URL trap, missing from §5
+
+§5 documents the HTML-vs-CSS terminator and the parentheses-in-filenames trap. There is a third
+form on this site: Webflow writes inline backgrounds as
+
+```html
+style="background-image:url(&quot;https://cdn.prod.website-files.com/…&quot;)"
+```
+
+A scanner that does not **decode entities before matching** runs past the closing `&quot;` and
+captures a URL ending in `&quot;)`. Webflow answers those with **403**, so they present as dead
+assets rather than as the local bug they are — 127 of them on the first pass here.
+
+**Fix:** add to §5's trap table — decode entities first, *then* apply the per-context terminator.
+
+## 10. There is no definition of "the scaffold is done"
+
+§9's checklist is cut-over oriented. `scaffold.md`'s acceptance list is all commands and no
+files, so a scaffold can pass every listed check while the Studio does not exist — which is
+exactly what happened.
+
+**Fix:** a §2 acceptance list of **files that must exist**, followed by the commands. Phase 1 is
+complete when the PM can fill in two env files and nothing else is missing.
+
+## 11. Smaller things
+
+- **Per-site templates crash instead of refusing.** `templates/verify.mjs` and
+  `templates/collections.mjs` ship with `<parentCollection>` placeholders, so `npm run
+  sanity:verify` dies with `ENOENT: migration/raw/<parentCollection>.json`. The fixtures check
+  gets this right — *"Create it and add verbatim excerpts…"* — and these should match it.
+- **npm 11 blocks postinstall scripts by default.** `esbuild` and `workerd` are gated, so
+  `wrangler` has no binary until `npm install-scripts approve esbuild workerd` is run, in each
+  package that depends on them. Worth one line in §2.
+- **`.env` location is load-bearing and only explained in the reference repo's comments.** With
+  the app in `web/`, `.env` stays at the ROOT and `web/astro.config.mjs` needs
+  `vite.envDir: '..'`, aligned with the guard's `--env-dir`. Get it wrong and the build succeeds
+  while every query reads the wrong dataset. `scaffold.md` mentions the setting but not the
+  consequence.
+- **`studioHost` availability is not verifiable up front.** `navi.sanity.studio` already 302s to
+  a studio under another org id, and `sanity deploy --dry-run` only says *"name availability is
+  checked on deploy"*. Worth a §2 note to check the hostname early, since it cannot be confirmed
+  without deploying.
+- **`sanity deploy --dry-run` exists and is genuinely non-publishing** on CLI 8.29. §2's
+  acceptance hedges on this; it can be stated.

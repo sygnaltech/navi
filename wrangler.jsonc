@@ -1,0 +1,23 @@
+{
+	"$schema": "node_modules/wrangler/config-schema.json",
+	"name": "site-navi",
+	"compatibility_date": "2026-11-14",
+	"compatibility_flags": ["nodejs_compat"],
+
+	// LOCAL ONLY — the default config, used by `npm run preview` (wrangler dev)
+	// to serve a built ./web/dist/client the way Cloudflare will. Nothing
+	// deploys from this file: `npm run deploy` names wrangler.prod.jsonc
+	// explicitly, which is the same thing plus the route.
+	//
+	// Mirrors production, `not_found_handling` included — otherwise preview
+	// serves a different 404 than the live site and the local check is worthless
+	// for exactly the case you would use it on. See wrangler.prod.jsonc.
+	"assets": {
+		"directory": "./web/dist/client",
+		"not_found_handling": "404-page"
+	},
+
+	"observability": {
+		"enabled": true
+	}
+}

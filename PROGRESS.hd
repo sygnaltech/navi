@@ -13,26 +13,70 @@ Webflow → Astro + Sanity, `www.tournewzealand.com`. Process: `webflow-sanity:m
 
 | Phase | State |
 |---|---|
-| 1 — Prepare | complete, except the items **blocked on tokens and decisions** below |
+| 1 — Prepare | complete — site downloaded, scaffold built and verified; waiting on keys |
 | 2 — Build | not started |
 | 3 — Audit | not started |
 
-## Phase 1 — done
+Gaps in the migration skill found along the way are written up in
+[MIGRATION-SKILL-BUGS.hd](MIGRATION-SKILL-BUGS.hd).
 
-- Reconnaissance complete (below). Webflow site id `59f0db6e0aad1d00010940db`.
+## Phase 1 — the site
+
 - `_source/pages/` — 91 live pages, verbatim HTML (7.5 MB).
 - `_source/assets/` — 609/609 Webflow-hosted assets, no failures (323 MB), including the
   Webflow CSS bundle, four JS chunks and the CloudFront jQuery.
 - `_source/sitemap.xml`, `_source/manifest.json` — live sitemap and Webflow's own route/redirect manifest.
-- `project.jsonc` — filled in (webflow source + site id, Sanity, Cloudflare).
-- `migration-scripts/` — process engine copied in verbatim.
-- `.env.example` — the two tokens needed.
 
-## Phase 1 — blocked
+## Phase 1 — the scaffold
 
-- `WEBFLOW_API_TOKEN` — blocks the CMS pull, therefore all of §4.
-- `SANITY_AUTH_TOKEN` — blocks dataset import and Studio deploy.
-- Decisions listed under [Open decisions](#open-decisions).
+| Where | What |
+|---|---|
+| `project.jsonc` | the one config file — Webflow source + site id, Sanity, Cloudflare |
+| `config/` | the three `project.jsonc` readers — pure parser, ESM (Node), CJS (Sanity CLI) |
+| `package.json` | root orchestration, every migration command, `preflight` |
+| `web/` | the Astro site — Cloudflare adapter, static output, `build.format: 'file'` |
+| `studio/` | the Sanity Studio — config, CLI config, tsconfig |
+| `schema/index.mjs` | shared by Studio and converter. **Empty until the CMS is read** (§4) |
+| `wrangler.jsonc` | local preview config |
+| `wrangler.prod.jsonc` | production config, **both routes commented out until cut-over** |
+| `migration-scripts/` | the process engine, verbatim, plus the five per-site files to author |
+
+Verified, not asserted:
+
+| Check | Result |
+|---|---|
+| `npm run build` | passes — 1 page, `web/dist/client` |
+| `npm run check` | 0 errors, 0 warnings |
+| `npm run studio:build` | passes |
+| `npm run check:deploy` | production Wrangler config valid |
+| `npm run studio:deploy -- --dry-run` | project `6gnkakot`, would create `navi.sanity.studio`; nothing published |
+| deploy guard, site + Studio | passes clean; blocks a non-production dataset or a mismatched project id from the shell |
+| `npm run redirects` | writes `web/public/_redirects` |
+| `npm run wf:pull` | correctly refuses, naming the missing token |
+| `npm test` | correctly refuses — no fixtures yet (§4) |
+
+Not exercised: the guard's **env-file** sources. Same code path as the shell source, but testing
+it means writing a `.env*` file, which is the PM's to create.
+
+## Phase 1 — what the PM fills in
+
+Two files, both from the committed templates beside them:
+
+1. **`.env`** — copy `.env.example`. Needs `WEBFLOW_API_TOKEN` (blocks the CMS pull, therefore
+   all of §4) and `SANITY_AUTH_TOKEN` (blocks the dataset import).
+2. **`studio/.env`** — copy `studio/.env.example`. Needs `SANITY_AUTH_TOKEN` with **both**
+   Editor and "Deploy Studio" roles.
+
+Everything non-secret is already in `project.jsonc`.
+
+Two things to confirm:
+
+- **`navi.sanity.studio` is already claimed** — it 302s to a studio under org `orm7q7eqz`.
+  Confirm that is ours, or change `sanity.studioHost`.
+- **Cloudflare auth** — `wrangler` is not yet proven authenticated for account `9095ee…`; either
+  `wrangler login` or `CLOUDFLARE_API_TOKEN` in `.env`.
+
+Plus the seven [open decisions](#open-decisions).
 
 ## URL inventory
 

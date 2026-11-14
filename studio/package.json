@@ -1,0 +1,25 @@
+{
+  "name": "tournewzealand-studio",
+  "private": true,
+  "version": "0.1.0",
+  "description": "Sanity Studio for www.tournewzealand.com",
+  "scripts": {
+    "dev": "sanity dev",
+    "build": "sanity build",
+    "deploy": "node ../migration-scripts/guard-production-deploy.mjs --studio && sanity deploy",
+    "schema:deploy": "sanity schema deploy",
+    "export": "sanity dataset export production ../migration/backup/production.tar.gz",
+    "import": "sanity dataset import ../migration/sanity/content.ndjson production"
+  },
+  "dependencies": {
+    "@sanity/vision": "^6.23.0",
+    "jsonc-parser": "^3.3.1",
+    "react": "^19.3.1",
+    "react-dom": "^19.3.1",
+    "sanity": "^6.23.0",
+    "styled-components": "^6.6.0"
+  },
+  "devDependencies": {
+    "typescript": "^5.9.3"
+  }
+}

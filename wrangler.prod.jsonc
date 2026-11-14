@@ -1,0 +1,69 @@
+{
+	"$schema": "node_modules/wrangler/config-schema.json",
+	"name": "site-navi",
+	"account_id": "9095ee3415dc7ee4e497da2a3c8d1992",
+	"compatibility_date": "2026-11-14",
+	"compatibility_flags": ["nodejs_compat"],
+
+	// PRODUCTION — what answers on the live domain, and the only config anything
+	// ever deploys from:
+	//   npm run deploy
+	// wrangler.jsonc is the same thing minus the route, and exists purely so
+	// `wrangler dev` has a local config. Deploy always means production.
+
+	// NO `main`, DELIBERATELY. Every route prerenders today, so
+	// @astrojs/cloudflare v14 writes the whole site to `web/dist/client` and
+	// leaves `web/dist/server` EMPTY — there is no Worker to point at, and this
+	// is an assets-only deployment.
+	//
+	// THE MOMENT A ROUTE OPTS OUT with `export const prerender = false`:
+	//   1. add `"main"` pointing at the adapter's generated server entry under
+	//      web/dist/server (read what it actually emits — do not guess the
+	//      filename, and never use `@astrojs/cloudflare/entrypoints/server`,
+	//      which exports `createExports(manifest)` and has no fetch handler);
+	//   2. REMOVE `not_found_handling` below — see the note on it;
+	//   3. carry over whatever bindings the adapter declares in
+	//      `web/dist/client/wrangler.json` (currently a SESSION KV namespace and
+	//      an IMAGES binding), which an assets-only deploy does not need.
+
+	// BOTH ROUTES ARE COMMENTED OUT, DELIBERATELY.
+	//
+	// Attaching a custom domain takes the hostname over from whatever serves it
+	// today, so uncommenting the second line IS the cut-over from Webflow — the
+	// public site moves the moment the deploy succeeds. Neither line goes live
+	// without the PM saying so for that specific deploy.
+	//
+	// Review on the *.workers.dev URL first (workers_dev below), then the
+	// staging host, then production.
+	"routes": [],
+	// "routes": [{ "pattern": "navi.sygnal.cloud", "custom_domain": true }],
+	// "routes": [{ "pattern": "www.tournewzealand.com", "custom_domain": true }],
+
+	// True while the custom domains are still commented out, so staging builds
+	// are reachable for review. Set to false at cut-over so there is no second
+	// indexable copy of every page.
+	"workers_dev": true,
+
+	// "404-page" = when no static file matches, serve 404.html.
+	//
+	// CORRECT ONLY WHILE EVERY ROUTE PRERENDERS, which is the case today. An
+	// unmatched path never reaches a Worker, so WITHOUT this line Cloudflare
+	// answers with its own bare 404 and the ported 404 page can never be served.
+	//
+	// WRONG the moment anything renders on demand: "404-page" is answered by the
+	// asset layer BEFORE the Worker runs, and an on-demand route is by definition
+	// a path with no matching file — so it would intercept exactly the routes the
+	// Worker exists to render.
+	//
+	// Re-check before cut-over with:
+	//   grep -rn "prerender = false" web/src/
+	//   cat web/dist/client/wrangler.json
+	"assets": {
+		"directory": "./web/dist/client",
+		"not_found_handling": "404-page"
+	},
+
+	"observability": {
+		"enabled": true
+	}
+}
