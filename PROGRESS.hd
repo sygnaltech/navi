@@ -1,0 +1,136 @@
+---
+id: 50yeUBvWcNcfP5s0zqAVPc
+title: "Migration progress"
+format-version: 2
+date: 2026-11-14
+---
+
+# Migration progress
+
+Webflow → Astro + Sanity, `www.tournewzealand.com`. Process: `webflow-sanity:migration` skill.
+
+## Status
+
+| Phase | State |
+|---|---|
+| 1 — Prepare | complete, except the items **blocked on tokens and decisions** below |
+| 2 — Build | not started |
+| 3 — Audit | not started |
+
+## Phase 1 — done
+
+- Reconnaissance complete (below). Webflow site id `59f0db6e0aad1d00010940db`.
+- `_source/pages/` — 91 live pages, verbatim HTML (7.5 MB).
+- `_source/assets/` — 609/609 Webflow-hosted assets, no failures (323 MB), including the
+  Webflow CSS bundle, four JS chunks and the CloudFront jQuery.
+- `_source/sitemap.xml`, `_source/manifest.json` — live sitemap and Webflow's own route/redirect manifest.
+- `project.jsonc` — filled in (webflow source + site id, Sanity, Cloudflare).
+- `migration-scripts/` — process engine copied in verbatim.
+- `.env.example` — the two tokens needed.
+
+## Phase 1 — blocked
+
+- `WEBFLOW_API_TOKEN` — blocks the CMS pull, therefore all of §4.
+- `SANITY_AUTH_TOKEN` — blocks dataset import and Studio deploy.
+- Decisions listed under [Open decisions](#open-decisions).
+
+## URL inventory
+
+**91 live pages**, reconciled:
+
+| Count | Surface |
+|---|---|
+| 1 | home |
+| 21 | static pages |
+| 1 | `/data/llms` — live, absent from sitemap |
+| 28 | `/tour/<slug>` |
+| 9 | `/tours/<category>` |
+| 15 | `/area/<slug>` |
+| 4 | `/tag/<slug>` |
+| 11 | `/reviews/<slug>` |
+| 1 | `/news/<slug>` |
+
+Sitemap lists 90; of those, 89 are live. Differences from the live surface:
+
+- `/tour/hobbiton-rotorua-tour-kuirau-park-footbath-experience` — in the sitemap, **404 on the live site**.
+- `/tour/black-water-rafting-tour-1-day` — live, **not in the sitemap**.
+- `/data/llms` — live, not in the sitemap.
+- 6 `/test/*` pages in `manifest.json` are Webflow-password-protected (401) and were not archived.
+
+Collection count is provisional until the CMS pull: the sitemap is demonstrably not a reliable
+index of what is published.
+
+## CMS
+
+Webflow's `manifest.json` declares six collections with detail templates:
+
+| Collection | Route |
+|---|---|
+| `tour` | `/tour/<slug>` |
+| `tours` | `/tours/<slug>` (category) |
+| `area` | `/area/<slug>` |
+| `tag` | `/tag/<slug>` |
+| `reviews` | `/reviews/<slug>` |
+| `news` | `/news/<slug>` |
+
+Collections without a detail template will only surface in the pull.
+
+## Shell
+
+- **Header** — one unclassed top-level `div` holding `.site-bar` (EN/JA switcher), `.brand-section`, `.alert-bar`, `.navigation-bar.w-nav`.
+- **Footer** — up to three top-level divs: `.subscribe`, `.footer`, `.copyright-section`. **Composition varies per template** — `/area/*` has no `.copyright-section`, `/reviews/*` and `/news/*` have no `.subscribe`. The punch-out must tolerate absence rather than assume the set.
+- `/tour/*` wraps the entire page in `div.page-wrapper`; every other template does not.
+- `/data/llms` has no shell at all.
+- **The shell is CMS-driven**: ~9 `.w-dyn-list` wrappers live in the header and footer on every page.
+
+## Assets
+
+- **609 distinct Webflow-hosted asset URLs** across the 91 pages and the ported stylesheet
+  (604 on Webflow's CDN, 5 on its CloudFront). All must be localised before cut-over.
+- **No `@font-face` WOFF2 files** — type comes from Google Fonts via `webfont.js`. The usual
+  font trap does not apply here; Google Fonts stays external (known gap).
+- Webflow CDN filenames in the CSS contain `%20(1)`-style parentheses, so the HTML and CSS
+  URL patterns must differ as the process requires.
+- **A third trap, new on this site:** Webflow writes inline backgrounds as
+  `style="background-image:url(&quot;https://…&quot;)"`. A scanner that does not decode entities
+  before matching runs past the closing `&quot;` and captures a URL ending in `&quot;)`. Webflow
+  answers those with **403**, so they read as dead assets rather than as the local bug they are —
+  127 of them on the first pass here. Decode entities first, then apply the per-context
+  terminator. Worth folding into the process notes.
+
+## Integrations
+
+| What | Where | Treatment |
+|---|---|---|
+| `engine/` — SSE bundle, served as `sygnaltech/navi@0.1.10` from jsDelivr | every page | **Bring internal.** Local `engine/dist/index.js` is byte-identical to the deployed tag. |
+| CodePen pen module (`codepen.io/memetican/pen/…`) | all 91 pages | Internalise. |
+| `000690842.deployed.codepen.website/scripts/payment.js` | `/payment` + all 28 tour pages | Internalise. Payment flow depends on it. |
+| Webflow site search → `/search` | site-wide | **Does not survive the migration.** Needs a replacement. |
+| Booking form → `navi.co.nz/tours/bookEnglishTours.php` | `/booking` | Client-owned endpoint; survives. |
+| Contact form → `usebasin.com` | `/contact`, one other | Survives. |
+| Subscribe form → Mailchimp `list-manage.com` | site-wide | Survives. |
+| n8n `…/webhook-test/…` | all 28 tour pages | A **test** webhook URL in production markup. Confirm intent. |
+| Tawk.to chat, PostHog, GTM | site-wide | Survives; carry over. |
+| flatpickr, mixitup, `webflow-util`, jquery-form-validator, jQuery UI CSS | booking + tour pages | jsDelivr/cdnjs; keep or vendor. |
+| Google Maps embed | `/pick-up` + all tour pages | Survives. |
+| Vimeo player | 1 tour page | Survives. |
+| `docs.google.com` document exports | 3 tour pages | Confirm intent. |
+| `goo.gl/forms` links | `/custom-tours`, `/store` | Survives; `goo.gl` shortlinks are being retired. |
+| Japanese sister site `navi.co.nz/tours/` | header switcher | Out of scope. |
+
+## Redirects
+
+19 redirects in Webflow's `manifest.json`. **8 of them point at URLs that now 404** —
+`/cosplay`, `/gallery/cosplay`, `/matakana`, `/waipoua`, `/tour/gs16anr-gs48s`, and three
+`/tours/tour?id=…` entries. They need re-pointing or dropping; carrying them forward as-is
+ports a redirect to a 404.
+
+## Open decisions
+
+1. Replacement for Webflow site search (`/search`).
+2. The 8 stale redirects — re-point, or drop?
+3. The dead sitemap entry — drop from the new sitemap?
+4. Port `/data/llms`?
+5. The 6 password-protected `/test/*` pages — exclude?
+6. The two CodePen-hosted scripts — confirm they are ours to internalise.
+7. The n8n `webhook-test` URL — intended, or a leftover?

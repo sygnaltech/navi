@@ -1,15 +1,38 @@
+// The one per-site configuration file, read by the migration scripts, the
+// Studio and the site's read client.
+//
+// None of these values is a secret: the Sanity project id ships in the Studio
+// bundle, and the Cloudflare account id is not a credential. Tokens live in
+// .env, which is gitignored.
+//
+// Anything that is CONTENT rather than configuration (an address, a phone
+// number, SEO copy) belongs in the Sanity dataset, not here.
 {
+	"webflow": {
+		// The live Webflow site being ported, canonical form, no trailing slash.
+		// Also the site's own canonical host after cut-over, since the URLs are
+		// byte-identical across the switch.
+		"source": "https://www.tournewzealand.com",
+		// Webflow site id, from data-wf-site on any rendered page. Recorded so a
+		// CMS pull cannot silently target a different site.
+		"siteId": "59f0db6e0aad1d00010940db"
+	},
 	"sanity": {
-	  "projectId": "6gnkakot",
-	  "dataset": "production",
-	  "studioHost": "navi"
+		"projectId": "6gnkakot",
+		"dataset": "production",
+		"studioHost": "navi",
+		// "vX" is Sanity's own token for "always the newest API". Replace with a
+		// "YYYY-MM-DD" date only to pin a site whose queries must stop moving.
+		"apiVersion": "vX"
 	},
 	"cloudflare": {
-		"accountId": "9095ee3415dc7ee4e497da2a3c8d1992", // Sygnal 
-		"zone": "sygnal.cloud", 
+		"accountId": "9095ee3415dc7ee4e497da2a3c8d1992", // Sygnal
+		"zone": "sygnal.cloud",
+		// The staging route. The production route stays COMMENTED OUT in the
+		// wrangler config until cut-over.
 		"routes": [
 			"navi.sygnal.cloud"
-		], 
+		],
 		"worker": {
 			"name": "site-navi"
 		}
