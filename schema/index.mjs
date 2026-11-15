@@ -6,14 +6,38 @@
  * and both must see the identical definitions. A converter that emits a field
  * the Studio does not declare produces documents an editor cannot open.
  *
- * EMPTY UNTIL THE CMS HAS BEEN READ. The content model is authored in §4 of the
- * migration process, AFTER `npm run wf:pull` dumps the real collections — not
- * from the rendered pages and never carried over from another site. On the
- * reference migration, a model written from rendered HTML was substantially
- * wrong: unrendered duplicate rich-text fields, a switch wired to nothing, a
- * collection whose order lived only in its parent's reference array, and a
- * purchased template's demo data still sitting in every collection.
+ * MODELLED FROM THE CMS, NOT THE RENDERED PAGES — §4 of the migration process,
+ * after `npm run wf:pull`. What that read changed about the model, which a port
+ * written from rendered HTML would have got wrong:
  *
- * Add one file per document type beside this one and list it here.
+ *   - `name` and `title` are separate fields with different content on every
+ *     area, tag and special. Short label vs page heading.
+ *   - Three of the thirteen Webflow collections are empty shells and are not
+ *     represented at all.
+ *   - Six fields are never set on a live item and are not carried.
+ *   - `tour.pricing-section-intro-text` is populated and rendered nowhere; two
+ *     of its four values are visibly stale.
+ *   - `tour.island` is an Option storing an opaque id; `area.island` is a
+ *     reference to a document. Two mechanisms, both kept as found.
  */
-export const schemaTypes = [];
+import {richText} from './richText.mjs';
+import {tour} from './tour.mjs';
+import {tourCategory, area, tag, island} from './taxonomy.mjs';
+import {review, news, pickUp, special, featured} from './marketing.mjs';
+
+export const schemaTypes = [
+  // Object types first — documents reference them.
+  richText,
+
+  // Documents, in the order they should appear in the desk.
+  tour,
+  tourCategory,
+  area,
+  tag,
+  island,
+  review,
+  news,
+  pickUp,
+  special,
+  featured,
+];

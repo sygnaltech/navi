@@ -65,19 +65,39 @@ const dryRun = process.argv.includes('--dry-run');
  * Any Webflow-hosted URL.
  *
  * TWO PATTERNS, because the terminator differs by context and getting it wrong
- * is silent. A first version used one broad class that excluded `)` — which
- * truncated filenames containing parentheses mid-name, then reported them as
- * 403s from Webflow rather than as the local bug they were.
+ * is silent. Both forms below were wrong in a way that reported as a 403 from
+ * Webflow rather than as the local bug it was — which is the worst possible
+ * symptom, because it looks like the asset is gone.
  *
- *   HTML  the URL sits inside an attribute: stop at the quote.
- *   CSS   the URL sits inside `url(...)`: stop at `)` or a quote.
+ *   HTML  the URL sits inside an attribute: stop at the quote. It must NOT
+ *         exclude `)`, because Webflow filenames routinely contain parentheses
+ *         and percent-escaped spaces — `IMG_2698 (1).avif`, `photo (Medium).jpeg`.
  *
- * Webflow filenames routinely contain parentheses and percent-escaped spaces,
- * so the HTML pattern must NOT exclude `)`.
+ *         AND IT MUST STOP AT AN ENTITY-ENCODED QUOTE. Webflow writes inline
+ *         backgrounds as `style="background-image:url(&quot;https://…&quot;)"`,
+ *         so a pattern that only knows about a literal `"` runs straight past
+ *         the closing `&quot;` and captures a URL ending in `&quot;)`. That was
+ *         127 phantom 403s on this site.
+ *
+ *   CSS   the URL sits inside `url(...)`. Stopping at the first `)` TRUNCATES
+ *         every parenthesised filename mid-name — `…photo-1469897573800%20(1`
+ *         — which is the same trap the HTML pattern was fixed for,
+ *         reintroduced by the fix. Nor can it stop at the LAST `)`: a lazy
+ *         match with a lookahead still halts at the one inside `(1)`.
+ *
+ *         The quote is the real terminator. Webflow quotes every url() it
+ *         emits — 117 of 117 in this site's stylesheet — so the CSS context
+ *         needs no `)` handling at all, and the one pattern below serves both.
+ *         An unquoted `url(...)` would need the construct matched as a whole;
+ *         assert rather than assume if a future site has any.
  */
 const WF_HOST = String.raw`https:\/\/(?:[a-z0-9.-]*\.)?website-files\.com\/`;
-const WF_IN_HTML = new RegExp(`${WF_HOST}[^"'\\s]+`, 'g');
-const WF_IN_CSS = new RegExp(`${WF_HOST}[^"')\\s]+`, 'g');
+
+/** Stop at a literal quote, whitespace, `<`/`>`, or an entity-encoded quote. */
+const WF_URL = new RegExp(`${WF_HOST}(?:(?!&quot;|&#0?39;|&apos;)[^"'\\s<>])+`, 'g');
+
+const WF_IN_HTML = WF_URL;
+const WF_IN_CSS = WF_URL;
 
 /**
  * Assets that CANNOT be fetched, with the reason.

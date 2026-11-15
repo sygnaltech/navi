@@ -1,0 +1,408 @@
+{
+  "extractedFrom": "https://www.tournewzealand.com",
+  "pages": {
+    "home": {
+      "path": "/",
+      "template": false,
+      "wfPage": "5b4d2188c8412fb14e21fd0a",
+      "lang": "en",
+      "bodyAttrs": {
+        "data-ix": "full-opacity-on-load"
+      },
+      "title": "Hobbiton Tours - Hobbiton, Rotorua, Waitomo, Waitakeres, Northland, Coromandel, and more",
+      "description": "See the wonders of New Zealand with Navi Tours- we'll pick you up at your Auckland hotel and show you the very best of NZ!",
+      "ogTitle": "Hobbiton Tours - Hobbiton, Rotorua, Waitomo, Waitakeres, Northland, Coromandel, and more",
+      "ogDescription": "See the wonders of New Zealand with Navi Tours- we'll pick you up at your Auckland hotel and show you the very best of NZ!",
+      "shell": "full",
+      "headExtra": false
+    },
+    "about": {
+      "path": "/about",
+      "template": false,
+      "wfPage": "59f0db6e0aad1d00010940e5",
+      "lang": "en",
+      "bodyAttrs": {
+        "data-ix": "full-opacity-on-load"
+      },
+      "title": "About Navi Tours",
+      "description": "With New Zealand's strong sense of environmental awareness, it is a leading country in Eco Tourism.  Strict rules apply to these tours and our firm provides these tours with the permission of the Department of Conservation in New Zealand.",
+      "ogTitle": "About Navi Tours",
+      "ogDescription": "With New Zealand's strong sense of environmental awareness, it is a leading country in Eco Tourism.  Strict rules apply to these tours and our firm provides these tours with the permission of the Department of Conservation in New Zealand.",
+      "shell": "full",
+      "headExtra": false
+    },
+    "agents": {
+      "path": "/agents",
+      "template": false,
+      "wfPage": "5b46d92a76d89c47225d522d",
+      "lang": "en",
+      "bodyAttrs": {
+        "data-ix": "full-opacity-on-load"
+      },
+      "title": "Hobbiton Tours - Travel Agent Registration",
+      "description": "Special registration just for travel agents- resell our unique Hobbiton and Hobbiton Plus tour packages to your customers.",
+      "ogTitle": "Hobbiton Tours - Travel Agent Registration",
+      "ogDescription": "Special registration just for travel agents- resell our unique Hobbiton and Hobbiton Plus tour packages to your customers.",
+      "shell": "full",
+      "headExtra": false
+    },
+    "booking": {
+      "path": "/booking",
+      "template": false,
+      "wfPage": "59f19503422cdf00019167e1",
+      "lang": "en",
+      "bodyAttrs": {
+        "data-ix": "full-opacity-on-load"
+      },
+      "title": "Book a Tour in Hobbiton or Auckland",
+      "ogTitle": "Book a Tour in Hobbiton or Auckland",
+      "shell": "full",
+      "headExtra": true
+    },
+    "contact": {
+      "path": "/contact",
+      "template": false,
+      "wfPage": "59f0db6e0aad1d00010940e6",
+      "lang": "en",
+      "bodyAttrs": {
+        "data-ix": "full-opacity-on-load"
+      },
+      "title": "Hobbiton Tours - Contact Us",
+      "ogTitle": "Hobbiton Tours - Contact Us",
+      "shell": "full",
+      "headExtra": false
+    },
+    "custom-tours": {
+      "path": "/custom-tours",
+      "template": false,
+      "wfPage": "5c50d28a3365277202ba1368",
+      "lang": "en",
+      "bodyAttrs": {
+        "data-ix": "full-opacity-on-load"
+      },
+      "title": "Custom New Zealand Tours - Wherever You Want to Go",
+      "description": "Navi Tours is pleased to provide the best pricing available anywhere. We pick you up at your hotel accommodation, and make your tour experience as comfortable as possible, New Zealand-wide!",
+      "ogTitle": "Custom New Zealand Tours - Wherever You Want to Go",
+      "ogDescription": "Navi Tours is pleased to provide the best pricing available anywhere. We pick you up at your hotel accommodation, and make your tour experience as comfortable as possible, New Zealand-wide!",
+      "shell": "full",
+      "headExtra": false
+    },
+    "faq": {
+      "path": "/faq",
+      "template": false,
+      "wfPage": "59f0db6e0aad1d00010940ee",
+      "lang": "en",
+      "bodyAttrs": {
+        "data-ix": "full-opacity-on-load"
+      },
+      "title": "Hobbiton & Auckland Tour FAQs",
+      "description": "Frequently asked questions about touring Auckland and New Zealand.",
+      "ogTitle": "Hobbiton & Auckland Tour FAQs",
+      "ogDescription": "Frequently asked questions about touring Auckland and New Zealand.",
+      "shell": "full",
+      "headExtra": false
+    },
+    "great-walks": {
+      "path": "/great-walks",
+      "template": false,
+      "wfPage": "5c47a287c604e5addb12faea",
+      "lang": "en",
+      "bodyAttrs": {
+        "data-ix": "full-opacity-on-load"
+      },
+      "title": "New Zealand's Great Walks - Navi Tours",
+      "description": "With New Zealand's strong sense of environmental awareness, it is a leading country in Eco Tourism.  Strict rules apply to these tours and our firm provides these tours with the permission of the Department of Conservation in New Zealand.",
+      "ogTitle": "New Zealand's Great Walks - Navi Tours",
+      "ogDescription": "With New Zealand's strong sense of environmental awareness, it is a leading country in Eco Tourism.  Strict rules apply to these tours and our firm provides these tours with the permission of the Department of Conservation in New Zealand.",
+      "shell": "full",
+      "headExtra": false
+    },
+    "map": {
+      "path": "/map",
+      "template": false,
+      "wfPage": "5c4a8bd31252d5f1679bc859",
+      "lang": "en",
+      "bodyAttrs": {
+        "data-ix": "full-opacity-on-load"
+      },
+      "title": "Tour Map of New Zealand",
+      "description": "With New Zealand's strong sense of environmental awareness, it is a leading country in Eco Tourism.  Strict rules apply to these tours and our firm provides these tours with the permission of the Department of Conservation in New Zealand.",
+      "ogTitle": "Tour Map of New Zealand",
+      "ogDescription": "With New Zealand's strong sense of environmental awareness, it is a leading country in Eco Tourism.  Strict rules apply to these tours and our firm provides these tours with the permission of the Department of Conservation in New Zealand.",
+      "shell": "full",
+      "headExtra": false
+    },
+    "payment": {
+      "path": "/payment",
+      "template": false,
+      "wfPage": "6353a8e905de39770c0a720d",
+      "lang": "en",
+      "bodyAttrs": {
+        "data-ix": "full-opacity-on-load",
+        "order": "payment"
+      },
+      "title": "Payment",
+      "description": "We are excited to give you the best experience possible in New Zealand, and we look forward to meeting you!",
+      "ogTitle": "Payment",
+      "ogDescription": "We are excited to give you the best experience possible in New Zealand, and we look forward to meeting you!",
+      "shell": "full",
+      "headExtra": false
+    },
+    "pick-up": {
+      "path": "/pick-up",
+      "template": false,
+      "wfPage": "664c254c9f95b051a65eaadc",
+      "lang": "en",
+      "bodyAttrs": {
+        "data-ix": "full-opacity-on-load"
+      },
+      "title": "Pick-Up",
+      "description": "With New Zealand's strong sense of environmental awareness, it is a leading country in Eco Tourism.  Strict rules apply to these tours and our firm provides these tours with the permission of the Department of Conservation in New Zealand.",
+      "ogTitle": "Pick-Up",
+      "ogDescription": "With New Zealand's strong sense of environmental awareness, it is a leading country in Eco Tourism.  Strict rules apply to these tours and our firm provides these tours with the permission of the Department of Conservation in New Zealand.",
+      "shell": "full",
+      "headExtra": false
+    },
+    "portfolio": {
+      "path": "/portfolio",
+      "template": false,
+      "wfPage": "59f0db6e0aad1d00010940f3",
+      "lang": "en",
+      "bodyAttrs": {
+        "data-ix": "full-opacity-on-load"
+      },
+      "title": "Hobbiton Tours - So many great options",
+      "description": "Have a look at our favourite picks for tours in Auckland and the surrounding regions.",
+      "ogTitle": "Hobbiton Tours - So many great options",
+      "ogDescription": "Have a look at our favourite picks for tours in Auckland and the surrounding regions.",
+      "shell": "full",
+      "headExtra": false
+    },
+    "privacy": {
+      "path": "/privacy",
+      "template": false,
+      "wfPage": "59f95c52269fd60001397620",
+      "lang": "en",
+      "bodyAttrs": {
+        "data-ix": "full-opacity-on-load"
+      },
+      "title": "Privacy Policy - Navi New Zealand",
+      "description": "With New Zealand's strong sense of environmental awareness, it is a leading country in Eco Tourism.  Strict rules apply to these tours and our firm provides these tours with the permission of the Department of Conservation in New Zealand.",
+      "ogTitle": "Privacy Policy - Navi New Zealand",
+      "ogDescription": "With New Zealand's strong sense of environmental awareness, it is a leading country in Eco Tourism.  Strict rules apply to these tours and our firm provides these tours with the permission of the Department of Conservation in New Zealand.",
+      "shell": "full",
+      "headExtra": false
+    },
+    "qualmark": {
+      "path": "/qualmark",
+      "template": false,
+      "wfPage": "5ca17d14f4c36ee58f80bf0b",
+      "lang": "en",
+      "bodyAttrs": {
+        "data-ix": "full-opacity-on-load"
+      },
+      "title": "Qualmark Silver - Navi Tours New Zealand",
+      "description": "With New Zealand's strong sense of environmental awareness, it is a leading country in Eco Tourism.  Strict rules apply to these tours and our firm provides these tours with the permission of the Department of Conservation in New Zealand.",
+      "ogTitle": "Qualmark Silver - Navi Tours New Zealand",
+      "ogDescription": "With New Zealand's strong sense of environmental awareness, it is a leading country in Eco Tourism.  Strict rules apply to these tours and our firm provides these tours with the permission of the Department of Conservation in New Zealand.",
+      "shell": "full",
+      "headExtra": false
+    },
+    "reviews": {
+      "path": "/reviews",
+      "template": false,
+      "wfPage": "674e7529ec54d43c390a61c0",
+      "lang": "en",
+      "bodyAttrs": {
+        "data-ix": "full-opacity-on-load"
+      },
+      "title": "Reviews",
+      "description": "With New Zealand's strong sense of environmental awareness, it is a leading country in Eco Tourism.  Strict rules apply to these tours and our firm provides these tours with the permission of the Department of Conservation in New Zealand.",
+      "ogTitle": "Reviews",
+      "ogDescription": "With New Zealand's strong sense of environmental awareness, it is a leading country in Eco Tourism.  Strict rules apply to these tours and our firm provides these tours with the permission of the Department of Conservation in New Zealand.",
+      "shell": "full",
+      "headExtra": false
+    },
+    "sitemap": {
+      "path": "/sitemap",
+      "template": false,
+      "wfPage": "5c3fa99efcd62d13b7310073",
+      "lang": "en",
+      "bodyAttrs": {
+        "data-ix": "full-opacity-on-load"
+      },
+      "title": "Tour Auckland - Site Map",
+      "description": "With New Zealand's strong sense of environmental awareness, it is a leading country in Eco Tourism.  Strict rules apply to these tours and our firm provides these tours with the permission of the Department of Conservation in New Zealand.",
+      "ogTitle": "Tour Auckland - Site Map",
+      "ogDescription": "With New Zealand's strong sense of environmental awareness, it is a leading country in Eco Tourism.  Strict rules apply to these tours and our firm provides these tours with the permission of the Department of Conservation in New Zealand.",
+      "shell": "full",
+      "headExtra": false
+    },
+    "store": {
+      "path": "/store",
+      "template": false,
+      "wfPage": "5bc5214f514198a2aeda8899",
+      "lang": "en",
+      "bodyAttrs": {
+        "data-ix": "full-opacity-on-load"
+      },
+      "title": "New Zealand & Hobbiton Merchandise Store",
+      "description": "Want some great New Zealand or Hobbiton mementos? T-shirts, mugs, and more!",
+      "ogTitle": "New Zealand & Hobbiton Merchandise Store",
+      "ogDescription": "Want some great New Zealand or Hobbiton mementos? T-shirts, mugs, and more!",
+      "shell": "full",
+      "headExtra": false
+    },
+    "terms": {
+      "path": "/terms",
+      "template": false,
+      "wfPage": "59f95cc1269fd60001397630",
+      "lang": "en",
+      "bodyAttrs": {
+        "data-ix": "full-opacity-on-load"
+      },
+      "title": "Hobbiton Tours - Terms & Conditions",
+      "description": "With New Zealand's strong sense of environmental awareness, it is a leading country in Eco Tourism.  Strict rules apply to these tours and our firm provides these tours with the permission of the Department of Conservation in New Zealand.",
+      "ogTitle": "Hobbiton Tours - Terms & Conditions",
+      "ogDescription": "With New Zealand's strong sense of environmental awareness, it is a leading country in Eco Tourism.  Strict rules apply to these tours and our firm provides these tours with the permission of the Department of Conservation in New Zealand.",
+      "shell": "full",
+      "headExtra": false
+    },
+    "thanks": {
+      "path": "/thanks",
+      "template": false,
+      "wfPage": "5ba02dfe0596e11538eedff8",
+      "lang": "en",
+      "bodyAttrs": {
+        "data-ix": "full-opacity-on-load"
+      },
+      "title": "Thanks for Booking our Tours!",
+      "description": "We are excited to give you the best experience possible in New Zealand, and we look forward to meeting you!",
+      "ogTitle": "Thanks for Booking our Tours!",
+      "ogDescription": "We are excited to give you the best experience possible in New Zealand, and we look forward to meeting you!",
+      "shell": "full",
+      "headExtra": false
+    },
+    "tours": {
+      "path": "/tours",
+      "template": false,
+      "wfPage": "59f0db6e0aad1d00010940f4",
+      "lang": "en",
+      "bodyAttrs": {
+        "data-ix": "full-opacity-on-load"
+      },
+      "title": "Hobbiton Tours - See all the best places",
+      "description": "Have a look at our favourite picks for tours in Auckland and the surrounding regions.",
+      "ogTitle": "Hobbiton Tours - See all the best places",
+      "ogDescription": "Have a look at our favourite picks for tours in Auckland and the surrounding regions.",
+      "shell": "full",
+      "headExtra": false
+    },
+    "why": {
+      "path": "/why",
+      "template": false,
+      "wfPage": "5b95f8be6708aa6fa7e2df51",
+      "lang": "en",
+      "bodyAttrs": {
+        "data-ix": "full-opacity-on-load"
+      },
+      "title": "Tour New Zealand - Best Prices anywhere!",
+      "description": "Navi Tours is pleased to provide the best pricing available anywhere. We pick you up at your hotel accommodation, and make your tour experience as comfortable as possible, New Zealand-wide!",
+      "ogTitle": "Tour New Zealand - Best Prices anywhere!",
+      "ogDescription": "Navi Tours is pleased to provide the best pricing available anywhere. We pick you up at your hotel accommodation, and make your tour experience as comfortable as possible, New Zealand-wide!",
+      "shell": "full",
+      "headExtra": false
+    },
+    "data/llms": {
+      "path": "/data/llms",
+      "template": false,
+      "wfPage": "67fc694814442d00a7626406",
+      "lang": "en",
+      "bodyAttrs": {},
+      "title": "LLMs",
+      "ogTitle": "LLMs",
+      "shell": "bare",
+      "headExtra": true
+    },
+    "tpl-tour": {
+      "path": "/tour/hobbiton-movie-set-tour-1-day",
+      "template": true,
+      "wfPage": "59f151be8464770001a3cb6c",
+      "lang": "en",
+      "bodyAttrs": {},
+      "title": "Hobbiton Movie Set Tour | Navi Tours",
+      "description": "Discover the real Middle-earth on the most picturesque private farmland near Matamata in the North Island of New Zealand.",
+      "ogTitle": "Hobbiton Movie Set Tour | Navi Tours",
+      "ogDescription": "Discover the real Middle-earth on the most picturesque private farmland near Matamata in the North Island of New Zealand.",
+      "shell": "full",
+      "headExtra": true
+    },
+    "tpl-tourCategory": {
+      "path": "/tours/family-tours",
+      "template": true,
+      "wfPage": "59f152308464770001a3cc32",
+      "lang": "en",
+      "bodyAttrs": {},
+      "title": "Family Tours | Navi Tours",
+      "description": "Discover the magic of New Zealand with our family-friendly tours, perfect for creating lifelong memories.",
+      "ogTitle": "Family Tours | Navi Tours",
+      "ogDescription": "Discover the magic of New Zealand with our family-friendly tours, perfect for creating lifelong memories.",
+      "shell": "full",
+      "headExtra": true
+    },
+    "tpl-area": {
+      "path": "/area/queenstown",
+      "template": true,
+      "wfPage": "5ba1d0899e3d9ff9bbd8cec9",
+      "lang": "en",
+      "bodyAttrs": {},
+      "title": "Queenstown & Wanaka | Navi Tours",
+      "description": "Mountains, skiiing, lakes and extreme sports",
+      "ogTitle": "Queenstown & Wanaka | Navi Tours",
+      "ogDescription": "Mountains, skiiing, lakes and extreme sports",
+      "shell": "full",
+      "headExtra": true
+    },
+    "tpl-tag": {
+      "path": "/tag/1-day",
+      "template": true,
+      "wfPage": "59f0db6e0aad1d00010940ed",
+      "lang": "en",
+      "bodyAttrs": {
+        "data-ix": "full-opacity-on-load"
+      },
+      "title": "1 Day | Navi Tours",
+      "ogTitle": "1 Day | Navi Tours",
+      "shell": "full",
+      "headExtra": true
+    },
+    "tpl-review": {
+      "path": "/reviews/sumeet-g",
+      "template": true,
+      "wfPage": "674e681457d5f259f4b250e0",
+      "lang": "en",
+      "bodyAttrs": {},
+      "title": "Navi",
+      "shell": "full",
+      "headExtra": false
+    },
+    "tpl-news": {
+      "path": "/news/10-coolest-things-auckland",
+      "template": true,
+      "wfPage": "6747e3edf32b8fbebe2bf61b",
+      "lang": "en",
+      "bodyAttrs": {},
+      "title": "Navi",
+      "shell": "full",
+      "headExtra": false
+    }
+  },
+  "assets": {
+    "https://d3e54v103j8qbb.cloudfront.net/js/jquery-3.5.1.min.dc5e7f18c8.js?site=59f0db6e0aad1d00010940db": "js/jquery-3.5.1.min.dc5e7f18c8.js",
+    "https://cdn.prod.website-files.com/59f0db6e0aad1d00010940db/js/navi-tours.schunk.45a0a6650236d163.js": "js/navi-tours.schunk.45a0a6650236d163.js",
+    "https://cdn.prod.website-files.com/59f0db6e0aad1d00010940db/js/navi-tours.970275a3.d42d78cb1921a92d.js": "js/navi-tours.970275a3.d42d78cb1921a92d.js",
+    "https://cdn.prod.website-files.com/59f0db6e0aad1d00010940db/css/navi-tours.shared.9c7a31b8b.css": "css/navi-tours.shared.9c7a31b8b.css",
+    "https://cdn.prod.website-files.com/59f0db6e0aad1d00010940db/js/navi-tours.schunk.36b8fb49256177c8.js": "js/navi-tours.schunk.36b8fb49256177c8.js",
+    "https://cdn.prod.website-files.com/59f0db6e0aad1d00010940db/js/navi-tours.821384e9.45957695d7496273.js": "js/navi-tours.821384e9.45957695d7496273.js"
+  }
+}

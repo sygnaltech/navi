@@ -130,15 +130,26 @@ if (/<br\b/i.test(sourceAll)) {
   );
 }
 
-if (/&nbsp;| /.test(sourceAll)) {
+// ESCAPES, NOT LITERAL CHARACTERS. Both of these tests used to carry a literal
+// U+00A0 and a literal U+200C in their source, and both characters were lost —
+// replaced by an ordinary space and by nothing — somewhere in transit. The
+// consequence is not a test that fails to fire: `/&nbsp;| /` matches any text
+// containing a SPACE, and `.includes(' ')` is true of essentially all prose, so
+// the assertion inverted to "fails on every site, always", reporting a
+// converter bug that did not exist. Invisible characters must be written as
+// escapes so a transcription cannot silently change what is being asserted.
+const NBSP = ' '; // non-breaking space
+const ZWNJ = '‌'; // zero-width non-joiner
+
+if (new RegExp(`&nbsp;|${NBSP}`).test(sourceAll)) {
   check(
     'no literal nbsp survives',
-    !portableTextToPlain(all).includes(' '),
+    !portableTextToPlain(all).includes(NBSP),
     'U+00A0 still present; Webflow spacing was not normalised',
   );
 }
 
-if (/‌|&zwnj;/.test(sourceAll)) {
+if (new RegExp(`${ZWNJ}|&zwnj;`).test(sourceAll)) {
   check(
     'U+200C-only paragraph produced no empty block',
     !all.some((x) => x._type === 'block' && !portableTextToPlain([x]).trim()),

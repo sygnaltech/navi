@@ -38,8 +38,10 @@ import { CMS_PAGES } from './pages.config.mjs';
 import { userAgent } from './lib/ua.mjs';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
-const WEB = join(ROOT, 'web');
-const DIST = join(WEB, 'dist');
+// WEB and DIST come from lib/paths.mjs so the three scripts that read the build
+// output cannot disagree about where it is — see the note there about the
+// adapter moving `dist` to `dist/client`.
+const { WEB, DIST } = await import('./lib/paths.mjs');
 
 const manifest = JSON.parse(await readFile(join(WEB, 'src/data/pages.json'), 'utf8'));
 const ORIGIN = manifest.extractedFrom;
@@ -63,6 +65,31 @@ const includeCms = args.includes('--cms');
 const only = args.filter((a) => !a.startsWith('--'));
 
 /** Visible text lines, with <script>/<style> contents removed first. */
+/**
+ * Decode the entity forms that differ between generators but render the same.
+ *
+ * REQUIRED, not a nicety. Webflow writes an apostrophe as `&#x27;` and Astro
+ * writes `&#39;` — the same character, two spellings, and a comparison of
+ * visible TEXT must not see a difference. Without this, every page whose
+ * copy contains an apostrophe, a quote or an ampersand reports as a failed
+ * port: on this site `/great-walks` failed on its own title while its tag
+ * counts matched exactly, 596 to 596.
+ *
+ * Numeric forms are decoded generically, so `&#8217;` and `&#x2019;` collapse
+ * too.
+ */
+const decodeEntities = (s) =>
+  s
+    .replace(/&#x([0-9a-f]+);/gi, (_, h) => String.fromCodePoint(parseInt(h, 16)))
+    .replace(/&#(\d+);/g, (_, d) => String.fromCodePoint(Number(d)))
+    .replace(/&nbsp;/g, ' ')
+    .replace(/&lt;/g, '<')
+    .replace(/&gt;/g, '>')
+    .replace(/&quot;/g, '"')
+    .replace(/&apos;/g, "'")
+    // Last: an encoded `&amp;#39;` must not become an apostrophe on the way.
+    .replace(/&amp;/g, '&');
+
 function textLines(html) {
   const stripped = html
     .replace(/<(script|style)\b[\s\S]*?<\/\1>/gi, '')
@@ -70,7 +97,7 @@ function textLines(html) {
     .replace(/<[^>]+>/g, '\n');
   return stripped
     .split('\n')
-    .map((l) => l.trim())
+    .map((l) => decodeEntities(l).replace(/\s+/g, ' ').trim())
     .filter(Boolean);
 }
 

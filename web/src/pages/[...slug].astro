@@ -1,0 +1,29 @@
+---
+/**
+ * Every ported static page, including the home page.
+ *
+ * One rest route rather than a file per page: the inventory lives in
+ * `migration-scripts/pages.config.mjs` and is already in the manifest, so
+ * hand-written route files would be a second copy of it that can drift.
+ *
+ * The rest parameter is what makes `/data/llms` work — it has a slash in its
+ * path, which a single `[slug]` route cannot express.
+ *
+ * Home is `slug: undefined`, which Astro renders to the site root. With
+ * `build.format: 'file'` every other page is written as `<slug>.html` and
+ * served extensionless, so the URLs stay byte-identical to Webflow's.
+ */
+import Ported from '../layouts/Ported.astro';
+import {routablePages} from '../lib/ported';
+
+export function getStaticPaths() {
+  return routablePages.map(([slug, page]) => ({
+    params: {slug: page.path === '/' ? undefined : slug},
+    props: {slug},
+  }));
+}
+
+const {slug} = Astro.props;
+---
+
+<Ported slug={slug} />

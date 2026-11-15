@@ -12,6 +12,10 @@ dist
 .wrangler
 .sanity
 
+# The verbatim Webflow CMS dump. Large, re-pullable with `npm run wf:pull`, and
+# the committed artifact is the converted NDJSON rather than the input.
+migration/raw/
+
 # The archived copy of the live Webflow site. `_source/pages/` is the audit
 # reference and is committed; the binary assets are ~320MB and are re-fetched
 # into the build by `npm run localise:assets`, so they stay out of git.

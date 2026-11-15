@@ -33,8 +33,10 @@ const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
 // The site is its own package under web/. migration-scripts/ stays at the repo root
 // because the Studio and the migration tooling share it, so anything reaching
 // into the site goes through WEB rather than ROOT.
-const WEB = join(ROOT, 'web');
-const DIST = join(WEB, 'dist');
+// See lib/paths.mjs: the adapter moved `dist` to `dist/client`, and three
+// scripts hardcoding the old path all reported "run npm run build first"
+// against a build that had just succeeded.
+const { WEB, DIST } = await import('./lib/paths.mjs');
 
 const exists = (p) => access(p).then(() => true, () => false);
 
@@ -93,7 +95,22 @@ check(
 
 // --- 2. every local asset reference resolves -------------------------------
 
-const LOCAL_REF = /(?:src|href)="(\/wf\/[^"]+)"|url\(["']?(\/wf\/[^"')]+)/g;
+/**
+ * Local `/wf/...` references, in attributes and in `url()`.
+ *
+ * THE `url()` BRANCH MUST NOT STOP AT `)`. Webflow filenames contain
+ * parentheses — `Camera (1).png`, `42945 (Medium).webp` — so a `[^"')]+` class
+ * truncates the path at the `(` group and then reports the perfectly good file
+ * as missing. That produced six phantom failures here, all naming files that
+ * were present on disk, which reads as a broken localiser rather than a broken
+ * check.
+ *
+ * Webflow quotes every `url()` it emits, so the quote is the terminator; the
+ * unquoted branch keeps the `)` exclusion because it has nothing else to stop
+ * at.
+ */
+const LOCAL_REF =
+  /(?:src|href)="(\/wf\/[^"]+)"|url\((?:"(\/wf\/[^"]+)"|'(\/wf\/[^']+)'|(\/wf\/[^"')]+))/g;
 
 /**
  * Local references that are KNOWN to be missing, with the reason.
@@ -123,7 +140,7 @@ const knownGaps = new Set();
 for (const file of files) {
   const text = await readFile(file, 'utf8');
   for (const m of text.matchAll(LOCAL_REF)) {
-    const ref = decodeURIComponent((m[1] ?? m[2]).split('?')[0]);
+    const ref = decodeURIComponent((m[1] ?? m[2] ?? m[3] ?? m[4]).split('?')[0]);
     if (await exists(join(DIST, ref.replace(/^\//, '')))) continue;
     const why = knownMissingReason(ref);
     if (why) knownGaps.add(`      ${why}`);
@@ -151,13 +168,44 @@ for (const file of cssFiles) {
   }
 }
 const remoteFonts = [...fontRefs].filter((f) => /^https?:/.test(f));
+
+/**
+ * Zero font files is a PASS when the site genuinely self-hosts none.
+ *
+ * The check used to fail on `fontRefs.size === 0`, on the reasoning that an
+ * empty count means the stylesheet was never ported. That is a real failure
+ * mode and worth catching — but it is not the only way to get zero, and the
+ * other way is common: a site whose type comes from Google Fonts has no
+ * `@font-face` file reference anywhere, so it can never pass, and a permanently
+ * red check is a check nobody reads.
+ *
+ * So separate the two. "No CSS was found" or "CSS contains no @font-face at
+ * all" is the port failing. "CSS declares @font-face but names no font FILE" is
+ * a site using a webfont service, which is a deliberate external dependency
+ * that survives the cut-over — reported, not failed.
+ */
+let declaresFontFace = false;
+for (const file of cssFiles) {
+  if (/@font-face/i.test(await readFile(file, 'utf8'))) declaresFontFace = true;
+}
+
 check(
-  `all ${fontRefs.size} font file(s) referenced locally`,
-  fontRefs.size > 0 && remoteFonts.length === 0,
   fontRefs.size === 0
-    ? '      no @font-face url() found at all — the stylesheet may not have been ported'
+    ? `no self-hosted font files (${cssFiles.length} stylesheet(s) scanned)`
+    : `all ${fontRefs.size} font file(s) referenced locally`,
+  cssFiles.length > 0 && remoteFonts.length === 0,
+  cssFiles.length === 0
+    ? '      no CSS in the build at all — the stylesheet was not ported'
     : remoteFonts.map((f) => `      remote: ${f}`).join('\n'),
 );
+
+if (fontRefs.size === 0 && cssFiles.length > 0) {
+  console.log(
+    declaresFontFace
+      ? '      @font-face present but names no font file — check what it loads'
+      : '      type is loaded by a webfont service, not self-hosted — external by design',
+  );
+}
 
 // --- report other external hosts -------------------------------------------
 

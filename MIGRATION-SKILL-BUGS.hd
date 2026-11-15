@@ -175,7 +175,169 @@ exactly what happened.
 **Fix:** a §2 acceptance list of **files that must exist**, followed by the commands. Phase 1 is
 complete when the PM can fill in two env files and nothing else is missing.
 
-## 11. Smaller things
+## 11. There is no way to discover the collection ids the pull needs
+
+`wf:pull` imports `COLLECTIONS` from `collections.mjs` — a map of name to Webflow collection id —
+so the pull cannot run until the ids are known. **Nothing in the engine produces them**, and §4
+opens with `npm run wf:pull` as though it were the first step.
+
+Webflow's `manifest.json` is not a substitute: it names only the collections that have a DETAIL
+TEMPLATE. On this site that is 6 of 13. The other seven appear only inside a list on another page
+— `faq`, `island`, `pickUp`, `special`, `featured`, `alert`, `cancellationPolicy` — and are
+exactly the ones that get missed.
+
+**Fix:** ship a discovery script. Written here as
+`migration-scripts/webflow/list-collections.mjs`; it needs no configuration at all (site id from
+`project.jsonc`, token through `lib/env.mjs`), which is the point, since it runs before there is
+any. `--fields` dumps each collection's field schema, which is what `FIELD_MAP` is authored from.
+
+## 12. "Which rich-text field does the site actually render?" needs a stated method
+
+§4 says a reference site had *"two rich-text fields where the site renders the second"* but not how
+to tell. The obvious method — look for the field's value in the item's own detail page — **reports
+live fields as dead**, because a summary field typically renders on listing cards somewhere else
+entirely. On this site `tourCategory.brief` renders in the nav on *all 94* pages and on its own
+category page not at all.
+
+**Fix:** state the method. Search every archived page, not the item's own; normalise `&nbsp;`,
+` `, zero-width characters, curly quotes and en/em dashes on both sides before comparing; and
+report *where* each field was found, because the location is the evidence for what the field is
+for. That is also what distinguishes a genuinely dead field —
+`tour.pricing-section-intro-text` here, populated on four live tours and rendered nowhere.
+
+## 13. The shipped engine has nine defects that each cost a debugging cycle
+
+These are not documentation gaps — they are bugs in `migration-scripts/`, found by running it.
+All nine are fixed in this repo and the fixes should go back to the skill.
+
+### 13.1 `SHELL` cannot express a multi-part shell
+
+`pages.config.mjs` takes ONE `{tag, cls}` for the nav and one for the footer, and
+`extract-webflow-page.mjs` calls `findSpan` once for each. This site's header is four sibling
+blocks inside an unclassed wrapper, and its footer is three siblings whose composition varies by
+template. Neither is expressible. **Fix:** accept an array and take the contiguous range from the
+first matched part to the last. Matching a common ancestor instead is wrong — on a `/tour/*` page
+the nav's outermost ancestor is `.page-wrapper`, i.e. the whole page.
+
+### 13.2 `data-wf-page-id` makes the shared shell page-specific
+
+Webflow stamps the current page's id onto every `<form>`, including forms inside the nav and
+footer. The nav fragments were otherwise byte-identical at 43735 bytes each, and the extract
+aborted with "nav differs from the shared nav.html". **Fix:** `stripCurrent` must replace it with
+a marker the route substitutes per page — the same treatment `w--current` already gets.
+
+### 13.3 The shared-shell comparison must ignore ALL whitespace
+
+Webflow indents by nesting depth, so a template whose shell sits one level deeper emits identical
+furniture with every line shifted — 994 bytes of indentation here. And `>\s+<` is not enough: the
+shell contains an embedded `<style>` block whose CSS indentation also shifts, so the comparison
+still failed 21349 bytes in with both sides looking identical on screen. **Fix:** compare on
+`replace(/\s+/g, ' ')`. Safe, because the verifier compares visible text and tag counts, not bytes.
+
+### 13.4 `<body>` attributes are never captured, and they are load-bearing
+
+The extractor records `lang` and `data-wf-page` from `<html>` and nothing from `<body>`. This site
+has three variants across 94 pages: bare, `data-ix="full-opacity-on-load"`, and one page carrying
+`order="payment"` that its own JS dispatches on. Hardcoding one variant would add an IX2
+opacity animation to the 69 pages without it — and IX2 animates opacity **from 0**, so those pages
+render blank if the runtime ever fails — while dropping the attribute the payment flow needs.
+**Fix:** capture `<body>`'s attributes per page into the manifest.
+
+### 13.5 Webflow's `preconnect` survives the port and fails `assets:check`
+
+`<link rel="preconnect" href="https://cdn.prod.website-files.com">` carries no path, so the
+localiser — which matches a host followed by `/` — never sees it. It reaches every built page and
+`assets:check` then fails all 23 of them on a bare host with nothing to rewrite, which reads as an
+unlocalised asset. **Fix:** drop `preconnect`/`dns-prefetch` to Webflow hosts during extraction.
+
+### 13.6 `localise:assets` truncates parenthesised filenames — again
+
+The skill documents this trap and the shipped code still has it, in the CSS branch:
+`[^"')\s]+` stops at the `)` inside `photo%20(1).webp`. Nor can a lazy match with a lookahead fix
+it — it halts at the same paren. Separately the HTML branch does not stop at an **entity-encoded**
+quote, so `style="background-image:url(&quot;…&quot;)"` yields a URL ending in `&quot;)`. Both
+report as 403s from Webflow rather than as local bugs: 127 of them on the first pass here.
+**Fix:** one pattern that stops at a literal quote, whitespace, `<`/`>`, or an entity-encoded
+quote. Webflow quotes every `url()` it emits — 117 of 117 in this stylesheet — so the CSS branch
+needs no paren handling at all.
+
+> [!CAUTION]
+> **The first, buggy pass rewrites files in place**, so the truncated paths are then baked into
+> `src/html` and the ported CSS and re-running the fixed localiser cannot repair them. Recovery is
+> re-extract plus re-fetch the stylesheet. Worth a warning in §5.
+
+### 13.7 `check-assets` truncates the same filenames, and fails a site with no self-hosted fonts
+
+Its `LOCAL_REF` pattern has the identical `[^"')]+` bug, so it reported six files as missing that
+were present on disk. And the font check fails on `fontRefs.size === 0`, which cannot pass on a
+site whose type comes from Google Fonts — a permanently red check is a check nobody reads.
+**Fix:** quote-terminated branches for `url()`; and distinguish "no CSS was found" (the port
+failed) from "CSS declares no font file" (a webfont service, external by design).
+
+### 13.8 `verify-port` does not decode entities, so an apostrophe fails the page
+
+Webflow writes `&#x27;`, Astro writes `&#39;` — the same character, two spellings. The verifier
+compares visible TEXT and must not see a difference. `/great-walks` failed on its own title while
+its tag counts matched exactly, 596 to 596. **Fix:** decode numeric and named entities on both
+sides before comparing.
+
+### 13.9 Three scripts hardcode `web/dist`, which the adapter moved
+
+`verify-port`, `check-assets` and `check-sitemap` all read `web/dist`. `@astrojs/cloudflare` v14
+writes the site to `web/dist/client`. All three reported "run npm run build first" against a build
+that had just succeeded — a failure that reads as a missing step rather than a stale path.
+**Fix:** resolve it once in a shared `lib/paths.mjs`, probing for `dist/client`.
+
+## 14. Three of the shipped TESTS cannot pass
+
+Worse than a bug in the engine: a test that fails on correct output teaches everyone to ignore it.
+
+### 14.1 `test-converter`: the invisible characters were lost from the source
+
+The nbsp assertion reads `if (/&nbsp;| /.test(sourceAll))` and
+`!portableTextToPlain(all).includes(' ')` — and both of those are a **plain space, 0x20**, not
+U+00A0. So the guard matches any text containing a space and the assertion is false for
+essentially all prose: it fails on every site, always, reporting a converter bug that does not
+exist. The U+200C assertion beside it has the same shape. **Fix:** write invisible characters as
+` ` / `‌` escapes so a transcription cannot silently change what is asserted.
+
+### 14.2 `test-portable`: the nested-list assertion forbids markup
+
+`/<li>[^<]*<(ul|ol)\b/` additionally demands no markup between the `<li>` and the nested list, so
+a correctly nested list fails the moment its parent item contains a `<strong>` — which real
+content always does. **Fix:** `/<li>(?:(?!<\/li>)[\s\S])*?<(ul|ol)\b/`.
+
+### 14.3 `verify-lib`: `sig()` is applied to both sides and only one is HTML
+
+`compareBody` runs the same signature over the Webflow source and the converted Portable Text.
+`sig` strips `<[^>]+>` before decoding entities — right for HTML, destructive for text. This
+site's copy contains `&lt; Option 1 : Halfday Rotorua sightseeing Tour &gt;`: on the HTML side the
+brackets survive tag-stripping and decode to `<Option 1…>`, on the converted side they arrive
+already decoded and are deleted as a tag. The verifier reported a divergence in a field the
+converter handled perfectly, and the "fix" would have been to break the converter. **Fix:** a
+separate `sigText` for the already-decoded side.
+
+## 15. The per-site `verify.mjs` template teaches a broken GROQ idiom
+
+Its reference check is shaped like
+`count(categories[^._ref in *[_type=="x"]._id]) != count(categories)`. `^` does not reach the
+array element there, so the inner filter matches nothing and **every** document counts as broken —
+29 of 29 tours and 9 of 9 reviews here. A reference check that fails on everything is the tell.
+**Fix:** dereference and compare lengths — `count(categories) != count(categories[]->_id)`.
+
+## 16. Reference fields point at non-live items, and nothing in §4 mentions it
+
+Webflow does not clean up references when an item is archived. 21 `relatedTours` and review
+`tours` entries here name tours that are archived or draft. Converted as-is they are dangling
+references, which import without complaint and surface later as a blank card or a "related tour"
+link to a 404 — they are already broken on the live site.
+
+**Fix:** §4 should say to build the set of live ids per collection FIRST, prune reference arrays
+against it, and report every pruned entry. Then assert in `verify.mjs` that no document lost its
+last category or area in the process, because a tour with neither falls out of every listing on
+the site.
+
+## 17. Smaller things
 
 - **Per-site templates crash instead of refusing.** `templates/verify.mjs` and
   `templates/collections.mjs` ship with `<parentCollection>` placeholders, so `npm run

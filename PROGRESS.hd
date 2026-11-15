@@ -13,9 +13,36 @@ Webflow → Astro + Sanity, `www.tournewzealand.com`. Process: `webflow-sanity:m
 
 | Phase | State |
 |---|---|
-| 1 — Prepare | complete — site downloaded, scaffold built and verified; waiting on keys |
-| 2 — Build | not started |
+| 1 — Prepare | complete |
+| 2 — Build | static pages done, assets localised, dataset imported and verified. **CMS routes remain.** |
 | 3 — Audit | not started |
+
+## Where it stands
+
+**Done and proven, not asserted:**
+
+| | Check |
+|---|---|
+| 22/22 static pages structurally identical to the live site | `npm run verify -- --cms` |
+| no Webflow-hosted asset anywhere in the build; 149 local files | `npm run assets:check` |
+| converter loses no visible character, on 7 real fixtures | `npm test` |
+| serialiser round-trips every fixture | `npm test` |
+| 85 documents imported, 246 images | `npm run sanity:import` |
+| 93 rich-text fields identical character for character; every reference resolves; every hero image landed | `npm run sanity:verify` |
+
+**Not done — this is what "can I publish" is waiting on:**
+
+- **CMS routes (§6).** 71 of the 94 pages do not exist yet: `/tour/<slug>` ×29,
+  `/tours/<slug>` ×11, `/area/<slug>` ×15, `/tag/<slug>` ×4, `/reviews/<slug>` ×11,
+  `/news/<slug>` ×1. The six templates are extracted and their 30 list regions are mapped
+  (`npm run seams`), but nothing is bound to the dataset yet.
+- **The shared shell's own 9 collection lists** are currently frozen with the content they had
+  at extraction time. They render correctly and will go stale.
+- **Sitemap and redirects (§7).** Not started.
+- **The engine (`engine/`) is still loaded from jsDelivr**, plus two CodePen-hosted scripts.
+- **Cut-over (§8).** Not started. Both Wrangler routes are still commented out.
+
+So: not publishable. The static site is real and correct; the CMS half of the site is not built.
 
 Gaps in the migration skill found along the way are written up in
 [MIGRATION-SKILL-BUGS.hd](MIGRATION-SKILL-BUGS.hd).
@@ -80,44 +107,95 @@ Plus the seven [open decisions](#open-decisions).
 
 ## URL inventory
 
-**91 live pages**, reconciled:
+**94 live pages**, reconciled against the CMS rather than the sitemap:
 
 | Count | Surface |
 |---|---|
 | 1 | home |
 | 21 | static pages |
 | 1 | `/data/llms` — live, absent from sitemap |
-| 28 | `/tour/<slug>` |
-| 9 | `/tours/<category>` |
+| 29 | `/tour/<slug>` |
+| 11 | `/tours/<category>` |
 | 15 | `/area/<slug>` |
 | 4 | `/tag/<slug>` |
 | 11 | `/reviews/<slug>` |
 | 1 | `/news/<slug>` |
 
-Sitemap lists 90; of those, 89 are live. Differences from the live surface:
+**The sitemap is wrong in both directions.** It lists 90 URLs: one of them 404s, and it omits four
+pages that are live. Confirmed by diffing live CMS items against the archive:
 
-- `/tour/hobbiton-rotorua-tour-kuirau-park-footbath-experience` — in the sitemap, **404 on the live site**.
-- `/tour/black-water-rafting-tour-1-day` — live, **not in the sitemap**.
-- `/data/llms` — live, not in the sitemap.
-- 6 `/test/*` pages in `manifest.json` are Webflow-password-protected (401) and were not archived.
+| URL | State |
+|---|---|
+| `/tour/hobbiton-rotorua-tour-kuirau-park-footbath-experience` | in the sitemap, **404 on the live site** |
+| `/tour/black-water-rafting-tour-1-day` | live, not in the sitemap |
+| `/tour/rotorua-express-tour` | live, not in the sitemap |
+| `/tours/half-day` | live, not in the sitemap |
+| `/tours/transfers` | live, not in the sitemap |
+| `/data/llms` | live, not in the sitemap |
 
-Collection count is provisional until the CMS pull: the sitemap is demonstrably not a reliable
-index of what is published.
+All four missing pages are now archived. The 6 `/test/*` pages in `manifest.json` are
+Webflow-password-protected (401) and were not archived.
 
 ## CMS
 
-Webflow's `manifest.json` declares six collections with detail templates:
+**Thirteen collections, not six.** Webflow's `manifest.json` names only the six with a detail
+template; the other seven appear only inside lists on other pages and are invisible there. Ids and
+field schemas are in [migration-scripts/webflow/collections.mjs](migration-scripts/webflow/collections.mjs).
 
-| Collection | Route |
-|---|---|
-| `tour` | `/tour/<slug>` |
-| `tours` | `/tours/<slug>` (category) |
-| `area` | `/area/<slug>` |
-| `tag` | `/tag/<slug>` |
-| `reviews` | `/reviews/<slug>` |
-| `news` | `/news/<slug>` |
+Pulled verbatim to `migration/raw/` (gitignored, re-pullable):
 
-Collections without a detail template will only surface in the pull.
+| Collection | Items | Live | Route |
+|---|---|---|---|
+| `tour` | 102 | **29** | `/tour/<slug>` |
+| `tourCategory` | 11 | 11 | `/tours/<slug>` |
+| `area` | 17 | 15 | `/area/<slug>` |
+| `tag` | 4 | 4 | `/tag/<slug>` |
+| `review` | 12 | 11 | `/reviews/<slug>` |
+| `news` | 2 | 1 | `/news/<slug>` |
+| `island` | 2 | 2 | — |
+| `pickUp` | 5 | 5 | — |
+| `special` | 5 | 5 | — |
+| `featured` | 4 | 2 | — |
+| `faq` | **0** | 0 | — |
+| `alert` | 1 | **0** | — |
+| `cancellationPolicy` | 1 | **0** | — |
+
+Live counts reconcile exactly to the URL inventory above.
+
+### What the read found
+
+- **`tour` is 71% dead weight** — 102 items, 29 live. The 73 archived/draft items are the single
+  biggest exclusion and must be dropped at convert time, by Webflow's own
+  `isArchived`/`isDraft` flags rather than by any list of slugs.
+- **Three collections are empty shells.** `faq` has no items at all — despite a `/faq` page, so
+  that page's content is static HTML, not CMS. `alert` and `cancellationPolicy` hold one
+  unpublished item each. All three are candidates for wholesale exclusion.
+- **A populated field that nothing renders: `tour.pricing-section-intro-text`.** Set on four live
+  tours, rendered on no page on the site. The content is real copy, and two of the four are
+  **stale** — "This rate is applied till end of SEP 2025", "☆From Sep to Mar 2025". A
+  field-by-field importer would publish expired pricing notes.
+- **Five fields are never set on any live item**: `tour.halal`, `area.featured`, `area.seq`,
+  `tag.description`, `tag.text`, `special.pos`. `area.seq` and `special.pos` being empty means
+  neither collection has a working order field — area ordering comes from somewhere else and has
+  to be found.
+- **Two mechanisms for one concept.** `area.island` is a Reference to the `island` collection;
+  `tour.island` is a plain Option field. They must not be modelled as one thing without deciding
+  which wins.
+- **The apparent duplicate fields are not duplicates.** Checked by searching every archived page
+  for each field's value: `tourCategory.brief` renders in the nav on *every* page,
+  `brief-text` only on the category page intro, `text` only in its body. Same for
+  `review.brief` / `general-brief` / `full`. All live, three distinct roles each — none to exclude.
+- **`special` barely surfaces.** One of the five is a homepage banner (`homepage-banner` switch
+  plus hero image and link); the rest appear only in the `/sitemap` page listing. One
+  `special.text` is a single affiliate link carrying a referral code; another is two
+  zero-width-character paragraphs, i.e. empty.
+
+### Fixture candidates
+
+Real excerpts for the converter tests (`migration/fixtures/`), each chosen because it breaks a
+naive conversion: `id=""` attribute noise on `<p>`, paragraphs containing only a zero-width
+joiner, and `<strong>` nested inside a `<p id="">`. All three are in
+`tour.pricing-section-intro-text` alone.
 
 ## Shell
 

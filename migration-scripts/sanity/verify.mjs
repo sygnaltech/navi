@@ -1,184 +1,211 @@
 /**
- * PER-SITE. Copy to `migration-scripts/sanity/verify.mjs` and write the assertions for
- * this site's content model.
- *
- * Check what is actually in the Sanity dataset against the Webflow source.
+ * PER-SITE. Prove the imported dataset matches the raw Webflow dump.
  *
  *   node migration-scripts/sanity/verify.mjs
  *
- * WHAT TO ASSERT, in rough order of what it would catch:
+ * Separate from the converter's own self-checks: those prove the NDJSON is
+ * internally consistent, this proves the IMPORT LANDED — reading the dataset
+ * back over the query API and comparing it to the input the converter saw.
  *
- *   counts        one document per live Webflow item, per type
- *   references    every parent/child/leaf edge resolves
- *   ordering      children come back in the order the parent listed them
- *   assets        every image became a real Sanity asset with a URL
- *   bodies        the text of every converted rich-text field still matches the
- *                 source HTML, character for character once whitespace is
- *                 normalised — the one that catches a converter regression
- *                 after a schema change
- *   slugs         every route the site will generate has a document, and every
- *                 redirect target exists while its source is gone
- *
- * The machinery is in ./verify-lib.mjs. Everything below is the part that is
- * about THIS site.
+ * The assertions are ordered cheapest-first, so a failure is diagnosed by the
+ * earliest check that fires rather than by a wall of text diffs.
  */
-import { query, raw, check, compareBody, done } from './verify-lib.mjs';
-import { EXPECTED } from '../webflow/collections.mjs';
-import { REDIRECTS } from '../redirects.config.mjs';
+import {query, raw, check, sig, sigText, compareBody, done} from './verify-lib.mjs';
+import {EXPECTED, EXCLUDED, RICH_TEXT_FIELDS} from '../webflow/collections.mjs';
 
-// ---------------------------------------------------------------------------
-// Counts
-// ---------------------------------------------------------------------------
+const live = (items) => items.filter((i) => !EXCLUDED.notLive(i));
 
-const [parents, children] = await Promise.all([
-  raw('<parentCollection>'),
-  raw('<childCollection>'),
-]);
+// ── 1. counts, per type ────────────────────────────────────────────────────
+// The cheapest guard against a half-landed import.
 
-const counts = await query(`{
-  "<parentType>": count(*[_type == "<parentType>"]),
-  "<childType>":  count(*[_type == "<childType>"]),
-  "siteSettings": count(*[_type == "siteSettings"]),
-  "<excludedType>": count(*[_type == "<excludedType>"])
-}`);
+const counts = await query(
+  `{${Object.keys(EXPECTED)
+    .map((t) => `"${t}": count(*[_type == "${t}"])`)
+    .join(',')}}`,
+);
 
-for (const [type, expected] of Object.entries(EXPECTED)) {
-  if (type === '<excludedCollection>') continue;
-  check(`count ${type} = ${expected}`, counts[type] === expected, `got ${counts[type]}`);
+for (const [type, want] of Object.entries(EXPECTED)) {
+  check(`${type}: ${want} document(s)`, counts[type] === want, `found ${counts[type]}`);
 }
-check('siteSettings singleton = 1', counts.siteSettings === 1, `got ${counts.siteSettings}`);
 
-// A collection excluded wholesale must have produced NOTHING. Assert it rather
-// than assume it — this is the check that catches an exclusion rule that
-// stopped matching after a converter edit.
-check(
-  'no <excludedType> documents',
-  counts['<excludedType>'] === 0,
-  `got ${counts['<excludedType>']}`,
+// ── 2. the wholesale exclusions really are absent ──────────────────────────
+// A type that was decided against must have zero documents, not "probably
+// none". If someone populates the collection in Webflow later, this fails
+// rather than the content silently appearing.
+
+const excludedCounts = await query(
+  `{${EXCLUDED.collections.map((t) => `"${t}": count(*[_type == "${t}"])`).join(',')}}`,
 );
+for (const type of EXCLUDED.collections) {
+  check(`${type}: excluded, 0 documents`, excludedCounts[type] === 0, `found ${excludedCounts[type]}`);
+}
 
-// ---------------------------------------------------------------------------
-// References and ordering
-// ---------------------------------------------------------------------------
+// ── 3. every slug present and unique, per routed type ──────────────────────
+// A duplicate slug is two documents fighting over one URL; a missing one is a
+// page that cannot be built.
 
-const tree = await query(`*[_type == "<parentType>"] | order(coalesce(order, 999) asc) {
-  "slug": slug.current, order,
-  "children": *[_type == "<childType>" && parent._ref == ^._id]
-    | order(coalesce(order, 999) asc) { "slug": slug.current, order }
-}`);
+const ROUTED = {tour: 'tour', tourCategory: 'tours', area: 'area', tag: 'tag', review: 'reviews', news: 'news'};
 
-check(
-  'every child belongs to a parent',
-  tree.flatMap((p) => p.children).length === EXPECTED['<childType>'],
-  `${tree.flatMap((p) => p.children).length} reachable, expected ${EXPECTED['<childType>']}`,
-);
+for (const [type, base] of Object.entries(ROUTED)) {
+  const slugs = await query(`*[_type == "${type}"].slug.current`);
+  const sourceSlugs = live(await raw(type)).map((i) => i.fieldData.slug).sort();
+  const missing = sourceSlugs.filter((s) => !slugs.includes(s));
+  const dupes = slugs.filter((s, i) => slugs.indexOf(s) !== i);
 
-/**
- * Ordering. Where Webflow has NO order field on the child collection, the
- * parent's reference array was the only record of it and the converter turned
- * that into numbers. This re-derives the expected order from the raw dump and
- * compares — the only way to prove the order survived.
- */
-const expectedOrder = new Map();
-for (const parent of parents) {
-  const hit = REDIRECTS.find((r) => r.from === `/<base-path>/${parent.fieldData.slug}`);
-  const slug = hit ? hit.to.split('/').pop() : parent.fieldData.slug;
-  expectedOrder.set(
-    slug,
-    (parent.fieldData['<reference-array-field>'] ?? [])
-      .map((id) => children.find((c) => c.id === id)?.fieldData.slug)
-      .filter(Boolean),
+  check(
+    `/${base}/<slug>: ${sourceSlugs.length} slug(s), all present and unique`,
+    missing.length === 0 && dupes.length === 0 && slugs.every(Boolean),
+    [
+      missing.length ? `missing: ${missing.join(', ')}` : '',
+      dupes.length ? `duplicated: ${[...new Set(dupes)].join(', ')}` : '',
+    ]
+      .filter(Boolean)
+      .join('; '),
   );
 }
 
-const orderProblems = [];
-for (const parent of tree) {
-  const want = expectedOrder.get(parent.slug) ?? [];
-  const got = parent.children.map((c) => c.slug);
-  if (want.join('|') !== got.join('|')) {
-    orderProblems.push(
-      `${parent.slug}\n        want ${want.join(', ')}\n        got  ${got.join(', ')}`,
-    );
+// ── 4. required images actually landed ─────────────────────────────────────
+// THE MISTAKE MOST LIKELY TO SHIP is text binding correctly while every page
+// shows the same image, so assert the asset reference per document rather than
+// trusting the import summary.
+
+const heroless = await query(
+  `{"tour": *[_type == "tour" && !defined(heroImage.asset)].slug.current,
+    "tourCategory": *[_type == "tourCategory" && !defined(hero.asset)].slug.current,
+    "tag": *[_type == "tag" && !defined(hero.asset)].slug.current,
+    "featured": *[_type == "featured" && !defined(heroImage.asset)].slug.current}`,
+);
+for (const [type, slugs] of Object.entries(heroless)) {
+  check(`${type}: every document has its hero image`, slugs.length === 0, `without one: ${slugs.join(', ')}`);
+}
+
+// Tour photo galleries: 29 of 29 tours had photos in Webflow, so none may be empty.
+const photoCounts = await query(`*[_type == "tour"]{"slug": slug.current, "n": count(photos)}`);
+const noPhotos = photoCounts.filter((t) => !t.n);
+check(
+  `tour: all ${photoCounts.length} galleries populated (${photoCounts.reduce((a, t) => a + (t.n ?? 0), 0)} photos)`,
+  noPhotos.length === 0,
+  `empty: ${noPhotos.map((t) => t.slug).join(', ')}`,
+);
+
+// ── 5. references resolve to real documents ────────────────────────────────
+// A dangling reference imports without complaint and surfaces weeks later as a
+// blank card.
+
+// DEREFERENCE AND COUNT, rather than testing membership inside an array
+// filter. `count(categories[^._ref in *[...]._id])` looks like it asks "how
+// many of these refs resolve" and does not — `^` does not reach the array
+// element there, so the inner filter matches nothing and EVERY document counts
+// as broken. It reported 29 of 29 tours and 9 of 9 reviews, which is the tell:
+// a reference check that fails on everything is testing the wrong thing.
+//
+// `categories[]->_id` drops any reference that does not resolve, so comparing
+// its length to the raw array's length is the real question.
+const broken = await query(
+  `{"tourCategories": count(*[_type == "tour" && count(categories) != count(categories[]->_id)]),
+    "tourAreas": count(*[_type == "tour" && count(areas) != count(areas[]->_id)]),
+    "areaIsland": count(*[_type == "area" && defined(island) && !defined(island->_id)]),
+    "reviewTours": count(*[_type == "review" && defined(tours) && count(tours) != count(tours[]->_id)]),
+    "tourTag": count(*[_type == "tour" && defined(tag) && !defined(tag->_id)]),
+    "tourRelated": count(*[_type == "tour" && defined(relatedTours) && count(relatedTours) != count(relatedTours[]->_id)]),
+    "tourSpecial": count(*[_type == "tour" && defined(special) && !defined(special->_id)])}`,
+);
+for (const [what, n] of Object.entries(broken)) {
+  check(`${what}: every reference resolves`, n === 0, `${n} document(s) with a dangling reference`);
+}
+
+// Every tour must keep at least one category and one area, or it falls out of
+// every listing on the site — the pruning of non-live references in the
+// converter must not have emptied them.
+const orphanTours = await query(
+  `*[_type == "tour" && (count(categories) == 0 || count(areas) == 0)].slug.current`,
+);
+check(
+  'tour: every tour still has a category and an area',
+  orphanTours.length === 0,
+  `orphaned: ${orphanTours.join(', ')}`,
+);
+
+// ── 6. rich text, character for character ──────────────────────────────────
+// THE CENTRAL ASSERTION. Everything above can pass while the client's
+// published wording has quietly changed.
+
+const FIELD_TO_SANITY = {
+  'tour.highlights': ['tour', 'highlights'],
+  'tour.text': ['tour', 'body'],
+  'tour.pricing-section-notes': ['tour', 'pricingNotes'],
+  'tour.special-cancellation-policy': ['tour', 'specialCancellationPolicy'],
+  'tourCategory.text': ['tourCategory', 'body'],
+  'area.text': ['area', 'body'],
+  'review.full': ['review', 'body'],
+  'news.post-body': ['news', 'body'],
+  'special.text': ['special', 'body'],
+  'featured.article': ['featured', 'body'],
+};
+
+const problems = [];
+let compared = 0;
+
+for (const path of RICH_TEXT_FIELDS) {
+  const mapping = FIELD_TO_SANITY[path];
+  if (!mapping) {
+    problems.push(`${path}: no Sanity field mapped — add it to FIELD_TO_SANITY`);
+    continue;
+  }
+  const [type, sanityField] = mapping;
+  const [, webflowField] = path.split('.');
+
+  const docs = await query(`*[_type == "${type}"]{"slug": slug.current, "body": ${sanityField}}`);
+  const bySlug = new Map(docs.map((d) => [d.slug, d.body]));
+
+  for (const item of live(await raw(type))) {
+    const source = item.fieldData[webflowField];
+    if (!source || !sig(source)) continue;
+    compared += 1;
+    compareBody(problems, `${path}/${item.fieldData.slug}`, source, bySlug.get(item.fieldData.slug));
+  }
+}
+
+check(
+  `rich text: ${compared} field(s) identical character for character`,
+  problems.length === 0,
+  problems.slice(0, 8).join('\n      '),
+);
+
+// ── 7. plain-text fields the site depends on ───────────────────────────────
+
+const plainProblems = [];
+for (const [type, pairs] of Object.entries({
+  tour: [['name', 'title'], ['brief', 'brief'], ['navi-code', 'naviCode']],
+  tourCategory: [['name', 'name'], ['brief', 'brief']],
+  area: [['name', 'name'], ['title', 'title']],
+  tag: [['name', 'name'], ['title', 'title']],
+  review: [['name', 'title'], ['general-brief', 'generalBrief']],
+  pickUp: [['address', 'address'], ['latitude', 'latitude'], ['longitude', 'longitude']],
+})) {
+  const fields = pairs.map(([, s]) => `"${s}": ${s}`).join(',');
+  const docs = await query(`*[_type == "${type}"]{"slug": slug.current, ${fields}}`);
+  const bySlug = new Map(docs.map((d) => [d.slug, d]));
+
+  for (const item of live(await raw(type))) {
+    const doc = bySlug.get(item.fieldData.slug);
+    if (!doc) continue;
+    for (const [webflowField, sanityField] of pairs) {
+      // `sig` for the Webflow side (may hold entities), `sigText` for ours
+      // (already decoded) — stripping tags from plain text deletes any literal
+      // angle bracket in the copy.
+      const want = sig(item.fieldData[webflowField] ?? '');
+      const got = sigText(String(doc[sanityField] ?? ''));
+      if (want !== got) {
+        plainProblems.push(`${type}.${webflowField}/${item.fieldData.slug}: "${want}" vs "${got}"`);
+      }
+    }
   }
 }
 check(
-  'child order matches the parent reference arrays',
-  orderProblems.length === 0,
-  orderProblems.join('\n      '),
+  'plain text: names, briefs, codes and addresses identical',
+  plainProblems.length === 0,
+  plainProblems.slice(0, 8).join('\n      '),
 );
 
-// ---------------------------------------------------------------------------
-// Assets
-// ---------------------------------------------------------------------------
-// Assert a COUNT, not merely "no broken references". An image that silently
-// failed to convert leaves a document with no image at all, which no
-// reference check sees. Where an item legitimately has no image in Webflow,
-// say so in the check name so the number is not a mystery later.
-
-const assets = await query(`{
-  "childHeroes":  count(*[_type == "<childType>" && defined(heroImage.asset)]),
-  "parentHeroes": count(*[_type == "<parentType>" && defined(heroImage.asset)]),
-  "broken":       count(*[defined(heroImage) && !defined(heroImage.asset._ref)])
-}`);
-
-check(
-  `all ${EXPECTED['<childType>']} <childType> have a hero image`,
-  assets.childHeroes === EXPECTED['<childType>'],
-  `got ${assets.childHeroes}`,
-);
-check('no unresolved image references', assets.broken === 0, `got ${assets.broken}`);
-
-// ---------------------------------------------------------------------------
-// Bodies — the text must survive conversion
-// ---------------------------------------------------------------------------
-
-const bodies = await query(`{
-  "children": *[_type == "<childType>"]{ "slug": slug.current, body }
-}`);
-
-const bodyProblems = [];
-for (const doc of bodies.children) {
-  const src = children.find((c) => c.fieldData.slug === doc.slug);
-  if (src) {
-    compareBody(bodyProblems, `<childType>/${doc.slug}`, src.fieldData['<rich-text-field>'], doc.body);
-  }
-}
-
-check(
-  `rich text preserved across ${bodies.children.length} field(s)`,
-  bodyProblems.length === 0,
-  bodyProblems.slice(0, 5).join('\n      '),
-);
-
-// ---------------------------------------------------------------------------
-// Slugs and redirects
-// ---------------------------------------------------------------------------
-
-const slugs = await query(`{
-  "parents":  *[_type == "<parentType>"].slug.current,
-  "children": *[_type == "<childType>"].slug.current
-}`);
-
-for (const r of REDIRECTS) {
-  const target = r.to.split('/').pop();
-  const pool = r.to.startsWith('/<base-path>/') ? slugs.parents : slugs.children;
-  check(
-    `redirect target exists: ${r.to}`,
-    pool.includes(target),
-    `no document with slug "${target}" — the 301 would land on a 404`,
-  );
-  const stale = r.from.split('/').pop();
-  check(
-    `old slug is gone: ${r.from}`,
-    !pool.includes(stale),
-    `"${stale}" still exists, so both URLs resolve and the canonical is ambiguous`,
-  );
-}
-
-check(
-  'no slug collides within a collection',
-  Object.values(slugs).every((list) => new Set(list).size === list.length),
-  'duplicate slug',
-);
-
-done('verified against migration/raw/');
+done(`${Object.values(EXPECTED).reduce((a, b) => a + b, 0)} documents`);

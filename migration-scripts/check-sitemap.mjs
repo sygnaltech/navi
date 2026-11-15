@@ -29,8 +29,8 @@ import { WEBFLOW_SOURCE } from './lib/project.mjs';
 import { userAgent } from './lib/ua.mjs';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
-const WEB = join(ROOT, 'web');
-const DIST = join(WEB, 'dist');
+// See lib/paths.mjs for why this is probed rather than hardcoded.
+const { WEB, DIST } = await import('./lib/paths.mjs');
 const ORIGIN = WEBFLOW_SOURCE;
 
 const exists = (p) => access(p).then(() => true, () => false);

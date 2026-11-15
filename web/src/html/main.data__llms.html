@@ -1,0 +1,516 @@
+
+    <div class="w-embed">
+      <style>
+        /* RESET - Normalize spacing and inheritance */
+        *,
+        *::before,
+        *::after {
+          box-sizing: border-box;
+          margin: 0;
+          padding: 0;
+        }
+
+        html,
+        body {
+          height: 100%;
+          font-family: system-ui, sans-serif;
+          font-size: 16px;
+          line-height: 1.6;
+          background: #fff;
+          color: #222;
+          -webkit-font-smoothing: antialiased;
+          -moz-osx-font-smoothing: grayscale;
+        }
+
+        /* Clear Webflow-specific defaults */
+        body,
+        h1,
+        h2,
+        h3,
+        h4,
+        h5,
+        h6,
+        p,
+        ul,
+        ol,
+        li,
+        a,
+        blockquote,
+        pre,
+        code,
+        table,
+        th,
+        td {
+          all: unset;
+          display: revert;
+        }
+
+        /* Typography container */
+        body {
+          padding: 2rem;
+          max-width: 720px;
+          margin: auto;
+        }
+
+        /* Headings */
+        h1,
+        h2,
+        h3,
+        h4,
+        h5,
+        h6 {
+          font-weight: 600;
+          line-height: 1.25;
+          margin-top: 2em;
+          margin-bottom: 0.5em;
+        }
+
+        h1 {
+          font-size: 2rem;
+        }
+
+        h2 {
+          font-size: 1.75rem;
+        }
+
+        h3 {
+          font-size: 1.5rem;
+        }
+
+        h4 {
+          font-size: 1.25rem;
+        }
+
+        h5 {
+          font-size: 1.1rem;
+        }
+
+        h6 {
+          font-size: 1rem;
+        }
+
+        /* Paragraphs */
+        p {
+          margin-bottom: 1rem;
+        }
+
+        /* Lists */
+        ul,
+        ol {
+          padding-left: 2rem;
+          margin-bottom: 1rem;
+        }
+
+        li {
+          margin-bottom: 0.5rem;
+        }
+
+        /* Links */
+        a {
+          color: #0366d6;
+          text-decoration: underline;
+        }
+
+        a:hover {
+          text-decoration: none;
+        }
+
+        /* Inline code */
+        code {
+          font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
+          background: #f6f8fa;
+          padding: 0.2em 0.4em;
+          border-radius: 4px;
+          font-size: 0.95em;
+        }
+
+        /* Code blocks */
+        pre {
+          background: #f6f8fa;
+          padding: 1em;
+          border-radius: 6px;
+          overflow-x: auto;
+          margin-bottom: 1.5rem;
+        }
+
+        pre code {
+          background: none;
+          padding: 0;
+        }
+
+        /* Blockquotes */
+        blockquote {
+          border-left: 4px solid #ccc;
+          padding-left: 1em;
+          color: #555;
+          margin: 1rem 0;
+          font-style: italic;
+          font-size: 1em;
+          line-height: inherit;
+        }
+
+        /* Tables */
+        table {
+          border-collapse: collapse;
+          width: 100%;
+          margin-bottom: 1.5rem;
+        }
+
+        th,
+        td {
+          border: 1px solid #ddd;
+          padding: 0.5em 1em;
+          text-align: left;
+        }
+
+        thead {
+          background: #f0f0f0;
+          font-weight: 600;
+        }
+
+        /* Horizontal rule */
+        hr {
+          border: none;
+          border-top: 1px solid #ccc;
+          margin: 2rem 0;
+        }
+      </style>
+    </div>
+    <h1>Navi Tours</h1>
+    <blockquote>Navi is an Auckland, New Zealand-based tour company which focuses mainly on outdoor throughout New Zealand. We offer Hobbiton tours, adventure tours, family tours, romantic tours, and nature tours, as well as full custom, bespoke tours, and multi-day tours. Our tours are personal, small-group tours to ensure the highest quality experience. We operate as tour guides with the permission of the New Zealand Environmental Protection Agency (EPA).<br /></blockquote>
+    <div>
+      <h2>Custom, Bespoke Tours</h2>
+      <div class="w-richtext">
+        <p>Customers can design their own unique tour experience, with our help &amp; recommendations. Choose your own dates of travel including <em>half-day</em>, <em>whole day</em>, or <em>multi-day</em> tours. Choose the locations you want to visit, anywhere in New Zealand. Choose the number of people you want to accommodate.</p>
+        <p>Our custom tours are best suited for groups from 2 to 30+. We can accommodate all ages and situations. We can also support special needs regarding transportation or diet.</p>
+        <p><a href="https://www.tournewzealand.com/custom-tours">Design your own custom New Zealand tour here</a> </p>
+      </div>
+    </div>
+    <div>
+      <h2>Hobbiton &amp; Lord of the Rings Tours</h2>
+      <ul>
+        <div class="w-dyn-list">
+          <div role="list" class="w-dyn-items">
+            <div role="listitem" class="w-dyn-item">
+              <li><a href="/tour/hobbiton-movie-set-tour-1-day">Hobbiton Movie Set Tour</a><span>: </span><span>Discover the real Middle-earth on the most picturesque private farmland near Matamata in the North Island of New Zealand.</span></li>
+            </div>
+            <div role="listitem" class="w-dyn-item">
+              <li><a href="/tour/hobbiton-waitomo-caves-tour-1-day">Waitomo &amp; Hobbiton 1-Day Tour</a><span>: </span><span class="w-dyn-bind-empty"></span></li>
+            </div>
+            <div role="listitem" class="w-dyn-item">
+              <li><a href="/tour/hobbiton-waitomo-rotorua-sub-gs-tour">Welcome to Hobbiton , Waitomo and Rotorua 2 days Tour </a><span>: </span><span> Welcome Back! NZ Traveler. Happy to take you Hobbiton,Waitomo and Rotorua ! </span></li>
+            </div>
+          </div>
+        </div>
+      </ul>
+    </div>
+    <div>
+      <h2>New Zealand Nature Tours</h2>
+      <ul>
+        <div class="w-dyn-list">
+          <div role="list" class="w-dyn-items">
+            <div role="listitem" class="w-dyn-item">
+              <li><a href="/tour/abel-tasman-guided-walk">Abel Tasman Guided Walk</a><span>: </span><span>The perfect way to explore beauty of Abel Tasman.</span></li>
+            </div>
+            <div role="listitem" class="w-dyn-item">
+              <li><a href="/tour/black-water-rafting-tour-1-day">Black Water Rafting Tour </a><span>: </span><span>This is the original waitomo subterranean adventure that will have you climbing and black water tubing, leaping and floating through Ruakuri Cave.</span></li>
+            </div>
+            <div role="listitem" class="w-dyn-item">
+              <li><a href="/tour/christchurch-mt-cook-queenstown-2day-tour">Christchurch - Mt Cook - Queenstown Tour* This tour is not operated now*</a><span>: </span><span>The best way to travel South Island&#x27;s &quot;must go&quot; places! Comfortable coach trip from Christchurch to Queenstown via Mt Cook. This tour runs from 1 person so do not worry if you travel yourself!</span></li>
+            </div>
+            <div role="listitem" class="w-dyn-item">
+              <li><a href="/tour/franz-josef-glacier-heli-hike">Franz Josef Glacier Heli Hike</a><span>: </span><span>Our world-renowned Glacier Heli Hike is the NZ Must Do not to be missed.</span></li>
+            </div>
+            <div role="listitem" class="w-dyn-item">
+              <li><a href="/tour/franz-josef-glacier-valley-walk">Franz Josef Glacier Valley Walk</a><span>: </span><span>Discover the legend of Kā Roimata o Hine Hukatere.</span></li>
+            </div>
+            <div role="listitem" class="w-dyn-item">
+              <li><a href="/tour/hollyford-valley-wilderness-experience">Hollyford Valley Wilderness Experience </a><span>: </span><span>A mesmirising experience with Fiordland&#x27;s finest features</span></li>
+            </div>
+            <div role="listitem" class="w-dyn-item">
+              <li><a href="/tour/kupes-path-hokianga-waipoua-forest-3-days">Kupe&#x27;s Path Hokianga Waipoua Forest 3 Days </a><span>: </span><span>Let us take you back to the begining of Aotearoa New Zealand </span></li>
+            </div>
+            <div role="listitem" class="w-dyn-item">
+              <li><a href="/tour/lake-waikaremoana-guided-walk">Lake Waikaremoana Guided Walk</a><span>: </span><span>Immerse yourself into the world of &#x27;the sea of rippling waters&#x27;. </span></li>
+            </div>
+            <div role="listitem" class="w-dyn-item">
+              <li><a href="/tour/puhoi-river-kayaking">Puhoi River Kayaking</a><span>: </span><span>Enjoy a fantastic kayaking adventure at Puhoi river!</span></li>
+            </div>
+            <div role="listitem" class="w-dyn-item">
+              <li><a href="/tour/queenstown-frans-josef-christchurch-bus-train-4-day-tour-copy">Queenstown - Franz Josef - Christchurch, Bus &amp; Train multi-day tour</a><span>: </span><span>An unparalleled travel experience in the South Island. </span></li>
+            </div>
+            <div role="listitem" class="w-dyn-item">
+              <li><a href="/tour/queenstown-to-fox-glacier-day-tour">Queenstown to Fox Glacier Day Tour</a><span>: </span><span>Travel across the South Island on a full-day coach tour through amazing natural scenery.</span></li>
+            </div>
+            <div role="listitem" class="w-dyn-item">
+              <li><a href="/tour/rotorua-one-day-tour">Rotorua One-Day Tour: Glowworm Cave &amp; Geyser</a><span>: </span><span>Enjoy a full-day Rotorua adventure where breathtaking nature meets deep Māori culture. Visit glowworm caves, stroll through the Redwoods, and explore Te Puia to see kiwi birds, traditional crafts, and the impressive Pohutu Geyser.</span></li>
+            </div>
+            <div role="listitem" class="w-dyn-item">
+              <li><a href="/tour/the-classic-track">The Classic Track</a><span>: </span><span>Want to do it all? The Classic combines the Milford &amp; Routeburn walks together with an overnight stay in Te Anau.</span></li>
+            </div>
+            <div role="listitem" class="w-dyn-item">
+              <li><a href="/tour/waipoua-forest-kauri-tour">Waipoua Kauri Forest Tour</a><span>: </span><span>Explore Parry Kauri Park and Waipoua Forest, and encounter the ancient kauri giant Tāne Mahuta. Enjoy a guided walk through sacred forests, rich stories, and the unforgettable New Zealand wilderness</span></li>
+            </div>
+            <div role="listitem" class="w-dyn-item">
+              <li><a href="/tour/waitomo-and-rotorua-1-day-tour">Waitomo and Rotorua 1 day tour</a><span>: </span><span>Enjoy 2 spectacular places on one trip! We will take you to both the Waitomo Glowworm Caves, and Te puia in Rotorua .</span></li>
+            </div>
+            <div role="listitem" class="w-dyn-item">
+              <li><a href="/tour/waitomo-cave-spellbound-adventure-1-day">Waitomo Cave Spellbound Adventure</a><span>: </span><span>The chosen cave for the BBC&#x27;s &#x27;Planet Earth&#x27; series, taking its place as a top cave of the world.</span></li>
+            </div>
+            <div role="listitem" class="w-dyn-item">
+              <li><a href="/tour/walter-peak-gourmet-bbq-lunch">Walter Peak Gourmet BBQ Lunch</a><span>: </span><span>A delicious gourmet BBQ buffet lunch and a farm demonstration in a stunning lakeside setting.</span></li>
+            </div>
+            <div role="listitem" class="w-dyn-item">
+              <li><a href="/tour/walter-peak-horse-treks">Walter Peak Horse Treks </a><span>: </span><span>Unwind on a scenic horse trek through Queenstown’s stunning scenery at Walter Peak High Country Farm.</span></li>
+            </div>
+          </div>
+        </div>
+      </ul>
+    </div>
+    <div>
+      <h2>School &amp; Educational Tours</h2>
+      <ul>
+        <div class="w-dyn-list">
+          <div role="list" class="w-dyn-items">
+            <div role="listitem" class="w-dyn-item">
+              <li><a href="/tour/waipoua-forest-kauri-tour">Waipoua Kauri Forest Tour</a><span>: </span><span>Explore Parry Kauri Park and Waipoua Forest, and encounter the ancient kauri giant Tāne Mahuta. Enjoy a guided walk through sacred forests, rich stories, and the unforgettable New Zealand wilderness</span></li>
+            </div>
+            <div role="listitem" class="w-dyn-item">
+              <li><a href="/tour/waitomo-cave-spellbound-adventure-1-day">Waitomo Cave Spellbound Adventure</a><span>: </span><span>The chosen cave for the BBC&#x27;s &#x27;Planet Earth&#x27; series, taking its place as a top cave of the world.</span></li>
+            </div>
+          </div>
+        </div>
+      </ul>
+    </div>
+    <div>
+      <h2>North Island Tours in New Zealand</h2>
+      <ul>
+        <div class="w-dyn-list">
+          <div role="list" class="w-dyn-items">
+            <div role="listitem" class="w-dyn-item">
+              <li><a href="/tour/black-water-rafting-tour-1-day">Black Water Rafting Tour </a><span>: </span><span>This is the original waitomo subterranean adventure that will have you climbing and black water tubing, leaping and floating through Ruakuri Cave.</span></li>
+            </div>
+            <div role="listitem" class="w-dyn-item">
+              <li><a href="/tour/hobbiton-movie-set-tour-1-day">Hobbiton Movie Set Tour</a><span>: </span><span>Discover the real Middle-earth on the most picturesque private farmland near Matamata in the North Island of New Zealand.</span></li>
+            </div>
+            <div role="listitem" class="w-dyn-item">
+              <li><a href="/tour/matakana-saturday">Matakana 1Day Tour (Saturday)</a><span>: </span><span>Escape the city for a day and discover Matakana — a charming village filled with fresh local flavours, artisan culture, and beautiful countryside. Enjoy the famous Saturday Market, stunning Omaha Beach, sweet gelato, and a peaceful kauri forest walk for the perfect North Auckland getaway.</span></li>
+            </div>
+            <div role="listitem" class="w-dyn-item">
+              <li><a href="/tour/matakana-wd">Matakana 1Day Tour (Weekday) </a><span>: </span><span>Discover the charm of Matakana on a relaxed day trip just an hour from Auckland. Enjoy boutique shops, local flavours, and coastal views at Omaha Beach, followed by handmade gelato and a visit to native kauri trees. A perfect mix of nature, food, and Kiwi countryside beauty in a single day.</span></li>
+            </div>
+            <div role="listitem" class="w-dyn-item">
+              <li><a href="/tour/rotorua-express-tour">Rotorua Express Tour</a><span>: </span><span>Daily Tour from Auckland Airport to Rotorua. Departs Auckland around noon and it is includes sightseeing in Rotorua. </span></li>
+            </div>
+            <div role="listitem" class="w-dyn-item">
+              <li><a href="/tour/rotorua-one-day-tour">Rotorua One-Day Tour: Glowworm Cave &amp; Geyser</a><span>: </span><span>Enjoy a full-day Rotorua adventure where breathtaking nature meets deep Māori culture. Visit glowworm caves, stroll through the Redwoods, and explore Te Puia to see kiwi birds, traditional crafts, and the impressive Pohutu Geyser.</span></li>
+            </div>
+            <div role="listitem" class="w-dyn-item">
+              <li><a href="/tour/waipoua-forest-kauri-tour">Waipoua Kauri Forest Tour</a><span>: </span><span>Explore Parry Kauri Park and Waipoua Forest, and encounter the ancient kauri giant Tāne Mahuta. Enjoy a guided walk through sacred forests, rich stories, and the unforgettable New Zealand wilderness</span></li>
+            </div>
+            <div role="listitem" class="w-dyn-item">
+              <li><a href="/tour/waitomo-and-rotorua-1-day-tour">Waitomo and Rotorua 1 day tour</a><span>: </span><span>Enjoy 2 spectacular places on one trip! We will take you to both the Waitomo Glowworm Caves, and Te puia in Rotorua .</span></li>
+            </div>
+            <div role="listitem" class="w-dyn-item">
+              <li><a href="/tour/waitomo-cave-spellbound-adventure-1-day">Waitomo Cave Spellbound Adventure</a><span>: </span><span>The chosen cave for the BBC&#x27;s &#x27;Planet Earth&#x27; series, taking its place as a top cave of the world.</span></li>
+            </div>
+            <div role="listitem" class="w-dyn-item">
+              <li><a href="/tour/hobbiton-waitomo-caves-tour-1-day">Waitomo &amp; Hobbiton 1-Day Tour</a><span>: </span><span class="w-dyn-bind-empty"></span></li>
+            </div>
+            <div role="listitem" class="w-dyn-item">
+              <li><a href="/tour/hobbiton-waitomo-rotorua-sub-gs-tour">Welcome to Hobbiton , Waitomo and Rotorua 2 days Tour </a><span>: </span><span> Welcome Back! NZ Traveler. Happy to take you Hobbiton,Waitomo and Rotorua ! </span></li>
+            </div>
+            <div role="listitem" class="w-dyn-item">
+              <li><a href="/tour/west-auckland-winery-tour">West Auckland Winery Tour </a><span>: </span><span>Half-day wine tour to Kumeu with tastings, lunch, and a scenic visit to Muriwai Beach, offering great value and local charm.</span></li>
+            </div>
+          </div>
+        </div>
+      </ul>
+    </div>
+    <div>
+      <h2>South Island Tours in New Zealand</h2>
+      <ul>
+        <div class="w-dyn-list">
+          <div role="list" class="w-dyn-items">
+            <div role="listitem" class="w-dyn-item">
+              <li><a href="/tour/abel-tasman-guided-walk">Abel Tasman Guided Walk</a><span>: </span><span>The perfect way to explore beauty of Abel Tasman.</span></li>
+            </div>
+            <div role="listitem" class="w-dyn-item">
+              <li><a href="/tour/christchurch-mt-cook-queenstown-2day-tour">Christchurch - Mt Cook - Queenstown Tour* This tour is not operated now*</a><span>: </span><span>The best way to travel South Island&#x27;s &quot;must go&quot; places! Comfortable coach trip from Christchurch to Queenstown via Mt Cook. This tour runs from 1 person so do not worry if you travel yourself!</span></li>
+            </div>
+            <div role="listitem" class="w-dyn-item">
+              <li><a href="/tour/doubtful-sound-overnight-cruise">Doubtful Sound Overnight Cruise</a><span>: </span><span>Escape to the peace and tranquillity of Doubtful Sound on a magical overnight cruise.</span></li>
+            </div>
+            <div role="listitem" class="w-dyn-item">
+              <li><a href="/tour/franz-josef-glacier-heli-hike">Franz Josef Glacier Heli Hike</a><span>: </span><span>Our world-renowned Glacier Heli Hike is the NZ Must Do not to be missed.</span></li>
+            </div>
+            <div role="listitem" class="w-dyn-item">
+              <li><a href="/tour/franz-josef-glacier-valley-walk">Franz Josef Glacier Valley Walk</a><span>: </span><span>Discover the legend of Kā Roimata o Hine Hukatere.</span></li>
+            </div>
+            <div role="listitem" class="w-dyn-item">
+              <li><a href="/tour/hollyford-valley-wilderness-experience">Hollyford Valley Wilderness Experience </a><span>: </span><span>A mesmirising experience with Fiordland&#x27;s finest features</span></li>
+            </div>
+            <div role="listitem" class="w-dyn-item">
+              <li><a href="/tour/pure-wilderness-jetboat-tour">Pure Wilderness - Jetboat Tour - Te Anau</a><span>: </span><span>Enjoy the thrill of jet boating down the majestic trout filled Waiau River.</span></li>
+            </div>
+            <div role="listitem" class="w-dyn-item">
+              <li><a href="/tour/queenstown-cruise-and-farm-experience">Queenstown Cruise &amp; Farm Experience</a><span>: </span><span>A two-in-one Queenstown experience.</span></li>
+            </div>
+            <div role="listitem" class="w-dyn-item">
+              <li><a href="/tour/queenstown-frans-josef-christchurch-bus-train-4-day-tour-copy">Queenstown - Franz Josef - Christchurch, Bus &amp; Train multi-day tour</a><span>: </span><span>An unparalleled travel experience in the South Island. </span></li>
+            </div>
+            <div role="listitem" class="w-dyn-item">
+              <li><a href="/tour/queenstown-to-fox-glacier-day-tour">Queenstown to Fox Glacier Day Tour</a><span>: </span><span>Travel across the South Island on a full-day coach tour through amazing natural scenery.</span></li>
+            </div>
+            <div role="listitem" class="w-dyn-item">
+              <li><a href="/tour/routeburn-track-day-walk">Routeburn Track Guided Walk</a><span>: </span><span>The Routeburn Track is another hiking gem of Aotearoa. Take the most popular one-day hiking option.</span></li>
+            </div>
+            <div role="listitem" class="w-dyn-item">
+              <li><a href="/tour/southern-secret-doubtful-sounds-best-overnight-cruise">Southern Secret Overnight Cruise</a><span>: </span><span>Cruise, Sightsee and Explore the most beautiful Fiord in New Zealand.</span></li>
+            </div>
+            <div role="listitem" class="w-dyn-item">
+              <li><a href="/tour/the-classic-track">The Classic Track</a><span>: </span><span>Want to do it all? The Classic combines the Milford &amp; Routeburn walks together with an overnight stay in Te Anau.</span></li>
+            </div>
+            <div role="listitem" class="w-dyn-item">
+              <li><a href="/tour/walter-peak-gourmet-bbq-lunch">Walter Peak Gourmet BBQ Lunch</a><span>: </span><span>A delicious gourmet BBQ buffet lunch and a farm demonstration in a stunning lakeside setting.</span></li>
+            </div>
+            <div role="listitem" class="w-dyn-item">
+              <li><a href="/tour/walter-peak-horse-treks">Walter Peak Horse Treks </a><span>: </span><span>Unwind on a scenic horse trek through Queenstown’s stunning scenery at Walter Peak High Country Farm.</span></li>
+            </div>
+          </div>
+        </div>
+      </ul>
+    </div>
+    <div>
+      <h2>All New Zealand Tours</h2>
+      <ul>
+        <div class="w-dyn-list">
+          <div role="list" class="w-dyn-items">
+            <div role="listitem" class="w-dyn-item">
+              <li><a href="/tour/abel-tasman-guided-walk">Abel Tasman Guided Walk</a><span>: </span><span>The perfect way to explore beauty of Abel Tasman.</span></li>
+            </div>
+            <div role="listitem" class="w-dyn-item">
+              <li><a href="/tour/black-water-rafting-tour-1-day">Black Water Rafting Tour </a><span>: </span><span>This is the original waitomo subterranean adventure that will have you climbing and black water tubing, leaping and floating through Ruakuri Cave.</span></li>
+            </div>
+            <div role="listitem" class="w-dyn-item">
+              <li><a href="/tour/christchurch-mt-cook-queenstown-2day-tour">Christchurch - Mt Cook - Queenstown Tour* This tour is not operated now*</a><span>: </span><span>The best way to travel South Island&#x27;s &quot;must go&quot; places! Comfortable coach trip from Christchurch to Queenstown via Mt Cook. This tour runs from 1 person so do not worry if you travel yourself!</span></li>
+            </div>
+            <div role="listitem" class="w-dyn-item">
+              <li><a href="/tour/doubtful-sound-overnight-cruise">Doubtful Sound Overnight Cruise</a><span>: </span><span>Escape to the peace and tranquillity of Doubtful Sound on a magical overnight cruise.</span></li>
+            </div>
+            <div role="listitem" class="w-dyn-item">
+              <li><a href="/tour/franz-josef-glacier-heli-hike">Franz Josef Glacier Heli Hike</a><span>: </span><span>Our world-renowned Glacier Heli Hike is the NZ Must Do not to be missed.</span></li>
+            </div>
+            <div role="listitem" class="w-dyn-item">
+              <li><a href="/tour/franz-josef-glacier-valley-walk">Franz Josef Glacier Valley Walk</a><span>: </span><span>Discover the legend of Kā Roimata o Hine Hukatere.</span></li>
+            </div>
+            <div role="listitem" class="w-dyn-item">
+              <li><a href="/tour/hobbiton-movie-set-tour-1-day">Hobbiton Movie Set Tour</a><span>: </span><span>Discover the real Middle-earth on the most picturesque private farmland near Matamata in the North Island of New Zealand.</span></li>
+            </div>
+            <div role="listitem" class="w-dyn-item">
+              <li><a href="/tour/hollyford-valley-wilderness-experience">Hollyford Valley Wilderness Experience </a><span>: </span><span>A mesmirising experience with Fiordland&#x27;s finest features</span></li>
+            </div>
+            <div role="listitem" class="w-dyn-item">
+              <li><a href="/tour/kupes-path-hokianga-waipoua-forest-3-days">Kupe&#x27;s Path Hokianga Waipoua Forest 3 Days </a><span>: </span><span>Let us take you back to the begining of Aotearoa New Zealand </span></li>
+            </div>
+            <div role="listitem" class="w-dyn-item">
+              <li><a href="/tour/lake-waikaremoana-guided-walk">Lake Waikaremoana Guided Walk</a><span>: </span><span>Immerse yourself into the world of &#x27;the sea of rippling waters&#x27;. </span></li>
+            </div>
+            <div role="listitem" class="w-dyn-item">
+              <li><a href="/tour/matakana-saturday">Matakana 1Day Tour (Saturday)</a><span>: </span><span>Escape the city for a day and discover Matakana — a charming village filled with fresh local flavours, artisan culture, and beautiful countryside. Enjoy the famous Saturday Market, stunning Omaha Beach, sweet gelato, and a peaceful kauri forest walk for the perfect North Auckland getaway.</span></li>
+            </div>
+            <div role="listitem" class="w-dyn-item">
+              <li><a href="/tour/matakana-wd">Matakana 1Day Tour (Weekday) </a><span>: </span><span>Discover the charm of Matakana on a relaxed day trip just an hour from Auckland. Enjoy boutique shops, local flavours, and coastal views at Omaha Beach, followed by handmade gelato and a visit to native kauri trees. A perfect mix of nature, food, and Kiwi countryside beauty in a single day.</span></li>
+            </div>
+            <div role="listitem" class="w-dyn-item">
+              <li><a href="/tour/puhoi-river-kayaking">Puhoi River Kayaking</a><span>: </span><span>Enjoy a fantastic kayaking adventure at Puhoi river!</span></li>
+            </div>
+            <div role="listitem" class="w-dyn-item">
+              <li><a href="/tour/pure-wilderness-jetboat-tour">Pure Wilderness - Jetboat Tour - Te Anau</a><span>: </span><span>Enjoy the thrill of jet boating down the majestic trout filled Waiau River.</span></li>
+            </div>
+            <div role="listitem" class="w-dyn-item">
+              <li><a href="/tour/queenstown-cruise-and-farm-experience">Queenstown Cruise &amp; Farm Experience</a><span>: </span><span>A two-in-one Queenstown experience.</span></li>
+            </div>
+            <div role="listitem" class="w-dyn-item">
+              <li><a href="/tour/queenstown-frans-josef-christchurch-bus-train-4-day-tour-copy">Queenstown - Franz Josef - Christchurch, Bus &amp; Train multi-day tour</a><span>: </span><span>An unparalleled travel experience in the South Island. </span></li>
+            </div>
+            <div role="listitem" class="w-dyn-item">
+              <li><a href="/tour/queenstown-to-fox-glacier-day-tour">Queenstown to Fox Glacier Day Tour</a><span>: </span><span>Travel across the South Island on a full-day coach tour through amazing natural scenery.</span></li>
+            </div>
+            <div role="listitem" class="w-dyn-item">
+              <li><a href="/tour/rotorua-express-tour">Rotorua Express Tour</a><span>: </span><span>Daily Tour from Auckland Airport to Rotorua. Departs Auckland around noon and it is includes sightseeing in Rotorua. </span></li>
+            </div>
+            <div role="listitem" class="w-dyn-item">
+              <li><a href="/tour/rotorua-one-day-tour">Rotorua One-Day Tour: Glowworm Cave &amp; Geyser</a><span>: </span><span>Enjoy a full-day Rotorua adventure where breathtaking nature meets deep Māori culture. Visit glowworm caves, stroll through the Redwoods, and explore Te Puia to see kiwi birds, traditional crafts, and the impressive Pohutu Geyser.</span></li>
+            </div>
+            <div role="listitem" class="w-dyn-item">
+              <li><a href="/tour/routeburn-track-day-walk">Routeburn Track Guided Walk</a><span>: </span><span>The Routeburn Track is another hiking gem of Aotearoa. Take the most popular one-day hiking option.</span></li>
+            </div>
+            <div role="listitem" class="w-dyn-item">
+              <li><a href="/tour/southern-secret-doubtful-sounds-best-overnight-cruise">Southern Secret Overnight Cruise</a><span>: </span><span>Cruise, Sightsee and Explore the most beautiful Fiord in New Zealand.</span></li>
+            </div>
+            <div role="listitem" class="w-dyn-item">
+              <li><a href="/tour/the-classic-track">The Classic Track</a><span>: </span><span>Want to do it all? The Classic combines the Milford &amp; Routeburn walks together with an overnight stay in Te Anau.</span></li>
+            </div>
+            <div role="listitem" class="w-dyn-item">
+              <li><a href="/tour/waipoua-forest-kauri-tour">Waipoua Kauri Forest Tour</a><span>: </span><span>Explore Parry Kauri Park and Waipoua Forest, and encounter the ancient kauri giant Tāne Mahuta. Enjoy a guided walk through sacred forests, rich stories, and the unforgettable New Zealand wilderness</span></li>
+            </div>
+            <div role="listitem" class="w-dyn-item">
+              <li><a href="/tour/waitomo-and-rotorua-1-day-tour">Waitomo and Rotorua 1 day tour</a><span>: </span><span>Enjoy 2 spectacular places on one trip! We will take you to both the Waitomo Glowworm Caves, and Te puia in Rotorua .</span></li>
+            </div>
+            <div role="listitem" class="w-dyn-item">
+              <li><a href="/tour/waitomo-cave-spellbound-adventure-1-day">Waitomo Cave Spellbound Adventure</a><span>: </span><span>The chosen cave for the BBC&#x27;s &#x27;Planet Earth&#x27; series, taking its place as a top cave of the world.</span></li>
+            </div>
+            <div role="listitem" class="w-dyn-item">
+              <li><a href="/tour/hobbiton-waitomo-caves-tour-1-day">Waitomo &amp; Hobbiton 1-Day Tour</a><span>: </span><span class="w-dyn-bind-empty"></span></li>
+            </div>
+            <div role="listitem" class="w-dyn-item">
+              <li><a href="/tour/walter-peak-gourmet-bbq-lunch">Walter Peak Gourmet BBQ Lunch</a><span>: </span><span>A delicious gourmet BBQ buffet lunch and a farm demonstration in a stunning lakeside setting.</span></li>
+            </div>
+            <div role="listitem" class="w-dyn-item">
+              <li><a href="/tour/walter-peak-horse-treks">Walter Peak Horse Treks </a><span>: </span><span>Unwind on a scenic horse trek through Queenstown’s stunning scenery at Walter Peak High Country Farm.</span></li>
+            </div>
+            <div role="listitem" class="w-dyn-item">
+              <li><a href="/tour/hobbiton-waitomo-rotorua-sub-gs-tour">Welcome to Hobbiton , Waitomo and Rotorua 2 days Tour </a><span>: </span><span> Welcome Back! NZ Traveler. Happy to take you Hobbiton,Waitomo and Rotorua ! </span></li>
+            </div>
+            <div role="listitem" class="w-dyn-item">
+              <li><a href="/tour/west-auckland-winery-tour">West Auckland Winery Tour </a><span>: </span><span>Half-day wine tour to Kumeu with tastings, lunch, and a scenic visit to Muriwai Beach, offering great value and local charm.</span></li>
+            </div>
+          </div>
+        </div>
+      </ul>
+    </div>
+    <script src="/wf/js/jquery-3.5.1.min.dc5e7f18c8.js" type="text/javascript"></script>
+    <script src="/wf/js/navi-tours.schunk.45a0a6650236d163.js" type="text/javascript"></script>
+    <script src="/wf/js/navi-tours.970275a3.d42d78cb1921a92d.js" type="text/javascript"></script><!-- Google Tag Manager (noscript) TOURAUCKLAND.NZ -->
+    <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-TLJZF8C" height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+    <!-- End Google Tag Manager (noscript) -->
+
+    <script src="https://cdn.jsdelivr.net/gh/patrickkunka/mixitup@3.3.1/dist/mixitup.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/sygnaltech/webflow-mixitup/dist/webflow-mixitup.js"></script>
+
+    <!-- Commerce -->
+    <script type="module" src="https://codepen.io/memetican/pen/JjZPPwM/03eb6ca9df324548174fcc15895bb20e.js"></script>
+
+    <!--Start of Tawk.to Script-->
+    <script type="text/javascript">
+      var Tawk_API = Tawk_API || {},
+        Tawk_LoadStart = new Date();
+      (function() {
+        var s1 = document.createElement("script"),
+          s0 = document.getElementsByTagName("script")[0];
+        s1.async = true;
+        s1.src = 'https://embed.tawk.to/5c6634eca6c3590a404d4dac/default';
+        s1.charset = 'UTF-8';
+        s1.setAttribute('crossorigin', '*');
+        s0.parentNode.insertBefore(s1, s0);
+      })();
+    </script>
+    <!--End of Tawk.to Script-->
+
+    <!-- Sygnal Attributes | Form Handlers -->
+    <script type="module" src="https://cdn.jsdelivr.net/gh/sygnaltech/webflow-util@4.10/src/nocode/webflow-form.js"></script>
+
+    <!-- Site code -->
+    <script src="https://cdn.jsdelivr.net/gh/sygnaltech/navi@0.1.10/dist/index.js" dev-src="http://localhost:3000/dist/index.js" dev-src2="http://127.0.0.1:3000/dist/index.js"></script>
+  

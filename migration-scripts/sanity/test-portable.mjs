@@ -98,7 +98,13 @@ const outAll = Object.values(rendered).join('\n');
 if (/<li[^>]*>[\s\S]*?<(ul|ol)\b/i.test(sourceAll)) {
   check(
     'emits a nested list inside an <li>',
-    /<li>[^<]*<(ul|ol)\b/.test(outAll),
+    // The nested list must open before its parent <li> closes. The previous
+    // form of this assertion was `/<li>[^<]*<(ul|ol)\b/`, which additionally
+    // demanded NO MARKUP between the two — so a correctly nested list failed
+    // the moment its parent item contained a `<strong>`, which real content
+    // always does. It reported "nesting was flattened" against output that was
+    // nested exactly right.
+    /<li>(?:(?!<\/li>)[\s\S])*?<(ul|ol)\b/.test(outAll),
     'nesting was flattened',
   );
 }

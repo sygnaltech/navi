@@ -52,6 +52,36 @@ export const check = (name, ok, detail = '') => {
  * losing a word; anything stricter fails on every field forever because the
  * converter legitimately normalises Webflow's spacing.
  */
+/**
+ * Decode entities and drop whitespace, WITHOUT stripping tags.
+ *
+ * For the SANITY side of a comparison, which is already plain text.
+ *
+ * WHY THIS IS SEPARATE FROM `sig`. `sig` strips `<[^>]+>` before decoding
+ * entities, which is right for HTML and destructive for text. This site's
+ * content contains `&lt; Option 1 : Halfday Rotorua sightseeing Tour &gt;` —
+ * angle brackets as literal copy. On the HTML side they survive tag-stripping
+ * (still encoded at that point) and decode to `<Option 1…>`; on the converted
+ * side they arrive already decoded and get deleted as if they were a tag. The
+ * comparison then reports a divergence in a field the converter handled
+ * perfectly, and the "fix" would have been to break the converter.
+ */
+export const sigText = (s) =>
+  (s ?? '')
+    .replace(/‌/g, '')
+    .replace(/&nbsp;|&#160;/g, ' ')
+    .replace(/&zwnj;/g, '')
+    .replace(/&amp;/g, '&')
+    .replace(/&lt;/g, '<')
+    .replace(/&gt;/g, '>')
+    .replace(/&quot;/g, '"')
+    .replace(/&#x27;|&#39;/g, "'")
+    .replace(/&lsquo;/g, '‘')
+    .replace(/&rsquo;/g, '’')
+    .replace(/\s+/g, '')
+    .trim();
+
+/** Visible characters of an HTML source field: tags removed, entities decoded. */
 export const sig = (s) =>
   (s ?? '')
     .replace(/<[^>]+>/g, '')
@@ -75,8 +105,10 @@ export const sig = (s) =>
  * Push into a `problems` array so the caller can report them as one check.
  */
 export function compareBody(problems, label, sourceHtml, blocks) {
+  // Two different signatures, deliberately: the source is HTML and the
+  // converted side is plain text. See the note on `sigText`.
   const want = sig(sourceHtml);
-  const got = sig(portableTextToPlain(blocks));
+  const got = sigText(portableTextToPlain(blocks));
   if (want === got) return;
   let i = 0;
   while (i < want.length && want[i] === got[i]) i++;
