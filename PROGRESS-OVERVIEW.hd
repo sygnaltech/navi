@@ -1,8 +1,8 @@
 ---
 id: 5MTeo1MRbS3ZGx9UEtjAQ5
-title: "Progress overview"
+title: Progress overview
 format-version: 2
-date: 2026-11-15
+date: '2026-11-15T00:00:00.000Z'
 ---
 
 # Progress overview
@@ -103,9 +103,31 @@ Checkboxes only. Detail lives in [PROGRESS.hd](PROGRESS.hd).
 ## Decisions I need from you eventually
 
 - [ ] Webflow site search is gone — replace it, or drop `/search`?
+
+> Drop
+
 - [ ] 8 of Webflow's 19 redirects point at URLs that now 404 — re-point or drop?
+
+> Drop
+
 - [ ] Sitemap lists `/tour/hobbiton-rotorua-tour-kuirau-park-footbath-experience`, which 404s — drop it?
+
+> Drop
+
 - [ ] The two CodePen-hosted scripts — confirm they are ours to internalise
+
+> Confirmed
+
 - [ ] An n8n `webhook-test` URL is live on all 29 tour pages — intended?
+
+> Unsure, keep it, and document under REVIEW.hd
+
 - [ ] `navi.sanity.studio` is already claimed by another org — confirm it is ours
+
+> Unlikely, change ours to `navitours`
+
 - [ ] Is `wrangler` authenticated here for the Sygnal account?
+
+> Yes but you are not permitted to deploy anything.
+
+<p></p>
