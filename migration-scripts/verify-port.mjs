@@ -35,6 +35,12 @@ import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 import { CMS_PAGES } from './pages.config.mjs';
+import {
+  tagAllowanceFor,
+  textAllowanceFor,
+  textPatternsFor,
+  resolveTextFrom,
+} from './divergences.config.mjs';
 import { userAgent } from './lib/ua.mjs';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
@@ -62,7 +68,17 @@ const args = process.argv.slice(2);
  * line. `--cms` includes them anyway, for eyeballing a diff on purpose.
  */
 const includeCms = args.includes('--cms');
-const only = args.filter((a) => !a.startsWith('--'));
+/**
+ * Page slugs are the bare arguments — minus any flag VALUE.
+ *
+ * `--base <url>` takes a value, and without excluding it the URL is read as a
+ * page slug: `npm run verify -- --base http://localhost:4322` reported
+ * "No pages matched: http://localhost:4322" rather than verifying anything.
+ */
+const FLAGS_WITH_VALUES = new Set(['--base', '--env-dir']);
+const only = args.filter(
+  (a, i) => !a.startsWith('--') && !FLAGS_WITH_VALUES.has(args[i - 1]),
+);
 
 /** Visible text lines, with <script>/<style> contents removed first. */
 /**
@@ -122,6 +138,57 @@ const targets = Object.entries(manifest.pages).filter(([slug, page]) => {
   return true;
 });
 
+/**
+ * COLLECTION PAGES, fetched from the dataset.
+ *
+ * `--routes` adds every document's page to the run: 71 of this site's 94 pages
+ * are collection routes and the verifier never looked at a single one of them,
+ * because the manifest only knows about the one sample item per template. A
+ * check that covers 23% of the site and reports "22/22" is the kind of green
+ * that hides things.
+ *
+ * Each page is compared to its own live equivalent, so a difference is a
+ * binding bug rather than a difference in content.
+ */
+const includeRoutes = args.includes('--routes');
+
+if (includeRoutes) {
+  const {query} = await import('./sanity/verify-lib.mjs');
+  const ROUTED = [
+    ['tour', '/tour', 'tpl-tour'],
+    ['tourCategory', '/tours', 'tpl-tourCategory'],
+    ['area', '/area', 'tpl-area'],
+    ['tag', '/tag', 'tpl-tag'],
+    ['review', '/reviews', 'tpl-review'],
+    ['news', '/news', 'tpl-news'],
+  ];
+
+  for (const [type, base, template] of ROUTED) {
+    const slugs = await query(`*[_type == "${type}" && defined(slug.current)].slug.current`);
+    for (const slug of slugs.sort()) {
+      if (only.length > 0 && !only.includes(`${base}/${slug}`)) continue;
+      targets.push([
+        `${base}/${slug}`,
+        {...manifest.pages[template], path: `${base}/${slug}`, template: false},
+      ]);
+    }
+  }
+}
+
+/**
+ * Dataset-derived text allowances, resolved once.
+ *
+ * Only reaches the network when a divergence actually declares a query, so a
+ * site with none stays offline.
+ */
+let derivedText = new Set();
+try {
+  const {query} = await import('./sanity/verify-lib.mjs');
+  derivedText = await resolveTextFrom(query);
+} catch {
+  // No dataset reachable — the declared allowances simply do not apply.
+}
+
 if (targets.length === 0) {
   console.error(`\nNo pages matched: ${only.join(' ')}\n`);
   process.exit(1);
@@ -130,10 +197,48 @@ if (targets.length === 0) {
 let failed = 0;
 const rows = [];
 
+/**
+ * Where OUR copy of a page comes from.
+ *
+ * Reading `dist` only works for a PRERENDERED site. Once routes render on
+ * demand there are no built HTML files at all, and this check reported
+ * "run npm run build first" for all 22 pages against a build that had just
+ * succeeded — which reads as a missing step rather than an architectural one.
+ *
+ *   npm run verify                        read ./dist (prerendered sites)
+ *   npm run verify -- --base http://…     fetch from a running server
+ *
+ * The base form is also what makes this usable as the Phase 3 audit tool: point
+ * it at the dev server or the *.workers.dev URL and it diffs the real responses
+ * against the live site.
+ */
+const baseIndex = process.argv.indexOf('--base');
+const BASE = baseIndex === -1 ? null : process.argv[baseIndex + 1]?.replace(/\/+$/, '');
+if (baseIndex !== -1 && !BASE) {
+  console.error('\n--base needs a URL, e.g. --base http://localhost:4321\n');
+  process.exit(1);
+}
+
+const ourCopy = async (page) => {
+  if (!BASE) return readFile(join(DIST, distFileFor(page.path)), 'utf8').catch(() => null);
+  const res = await fetch(`${BASE}${page.path === '/' ? '' : page.path}`, {
+    headers: {'user-agent': userAgent('verify')},
+  });
+  return res.ok ? res.text() : null;
+};
+
 for (const [slug, page] of targets) {
-  const built = await readFile(join(DIST, distFileFor(page.path)), 'utf8').catch(() => null);
+  const built = await ourCopy(page);
   if (built === null) {
-    rows.push({ slug, verdict: 'NOT BUILT', notes: ['run npm run build first'] });
+    rows.push({
+      slug,
+      verdict: BASE ? 'NO RESPONSE' : 'NOT BUILT',
+      notes: [
+        BASE
+          ? `${BASE}${page.path} did not answer`
+          : 'no built file — this site renders on demand, so use: npm run verify -- --base <url>',
+      ],
+    });
     failed++;
     continue;
   }
@@ -148,18 +253,50 @@ for (const [slug, page] of targets) {
   const live = await res.text();
 
   const ours = new Set(textLines(built));
-  const missing = textLines(live).filter((l) => !ours.has(l));
+
+  /**
+   * DECLARED divergences are subtracted before comparing.
+   *
+   * A handful of differences from the live site are deliberate — the live nav
+   * lists a tour that is archived in Webflow, and one dead `<script>` tag was
+   * removed. Each is declared in `divergences.config.mjs` with the number of
+   * `<body>` tags it accounts for and the reason. Anything left over still
+   * fails, so this cannot hide a regression; it only stops the check being
+   * permanently red for reasons someone already decided.
+   */
+  const allowedText = textAllowanceFor(slug);
+  const allowedPatterns = textPatternsFor(slug);
+  const allowedTags = tagAllowanceFor(slug);
+
+  const missing = textLines(live).filter(
+    (l) =>
+      !ours.has(l) &&
+      !allowedText.has(l) &&
+      !derivedText.has(l) &&
+      !allowedPatterns.some((re) => re.test(l)),
+  );
   const tagsOurs = bodyTags(built).length;
   const tagsLive = bodyTags(live).length;
+  const tagGap = tagsLive - tagsOurs - allowedTags;
 
   const notes = [];
   for (const m of missing.slice(0, 5)) notes.push(`missing text: ${m.slice(0, 90)}`);
   if (missing.length > 5) notes.push(`…and ${missing.length - 5} more missing lines`);
-  if (tagsOurs !== tagsLive) notes.push(`body tags ${tagsOurs} vs ${tagsLive} live`);
+  if (tagGap !== 0) {
+    notes.push(
+      `body tags ${tagsOurs} vs ${tagsLive} live` +
+        (allowedTags ? ` (${allowedTags} declared, ${tagGap} unexplained)` : ''),
+    );
+  }
 
-  const ok = missing.length === 0 && tagsOurs === tagsLive;
+  const ok = missing.length === 0 && tagGap === 0;
   if (!ok) failed++;
-  rows.push({ slug, verdict: ok ? 'ok' : 'DIFF', tags: `${tagsOurs}/${tagsLive}`, notes });
+  rows.push({
+    slug,
+    verdict: ok ? 'ok' : 'DIFF',
+    tags: `${tagsOurs}/${tagsLive}`,
+    notes,
+  });
 }
 
 console.log();

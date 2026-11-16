@@ -4,20 +4,30 @@ import cloudflare from '@astrojs/cloudflare';
 
 import project from '../config/read-project.mjs';
 
-// `output: 'static'` is the DEFAULT for every route — the ported Webflow pages
-// are prerendered and written to ./dist as HTML.
+// `output: 'server'` — EVERY page renders on demand, deliberately.
 //
-// The adapter is what lets individual routes opt OUT of that with
-// `export const prerender = false`, which is how Sanity-driven routes can be
-// rendered per request so publishing in the Studio is live immediately rather
-// than waiting for the next build. Whether any route here does that decides
-// the `not_found_handling` setting in wrangler.prod.jsonc — see the note there.
+// The requirement is that a publish in the Studio is live immediately. That
+// rules out prerendering, and it rules it out for the WHOLE site rather than
+// just the collection routes: the shared nav and footer contain nine Sanity
+// collection lists, so a prerendered "static" page would still carry a frozen
+// menu of tours. There is no page on this site whose content is entirely
+// independent of the dataset.
 //
-// Requests hit Cloudflare's static assets first and only reach the Worker when
-// no built file matches, so a prerendered page never pays for the Worker.
+// The ported page bodies are still frozen Webflow HTML — rendering one is a
+// string splice, not a template evaluation — so the per-request cost is the
+// Sanity query, which is why the read client caches rather than the page.
+//
+// `/wf/*`, `/_astro/*` and the other files in `public/` stay ordinary static
+// assets and never reach the Worker.
+//
+// THIS DECIDES `not_found_handling` IN BOTH WRANGLER CONFIGS. With routes
+// rendering on demand, the setting must be ABSENT: it is answered by the asset
+// layer before the Worker runs, and an on-demand route is by definition a path
+// with no matching file, so it would intercept exactly the routes the Worker
+// exists to render.
 export default defineConfig({
   site: project.webflow.source,
-  output: 'static',
+  output: 'server',
   adapter: cloudflare(),
   build: {
     // Webflow serves extensionless URLs (/contact, not /contact/). Match that

@@ -1,0 +1,58 @@
+---
+id: 6QkngnCTGygMAeGiRUjlYr
+title: Needs review
+format-version: 2
+date: '2026-11-15T00:00:00.000Z'
+---
+
+# Needs review
+
+Things carried across the migration deliberately, that somebody should look at once the site is live. Nothing here is broken; all of it is inherited from the Webflow site as it stands.
+
+## An n8n **test** webhook is live on every tour page
+
+All 29 `/tour/*` pages post to:
+
+```
+https://sygnal-n8n-u1282.vm.elestio.app/webhook-test/5be21ed5-f753-4492-89d3-4d7e1206b9ca
+```
+
+**Carried across unchanged**, on instruction, because changing it would alter live behaviour during a migration whose whole point is that nothing changes.
+
+Two things make it worth a look:
+
+-   `/webhook-test/` is n8n's **test** path, not `/webhook/`. In n8n a test URL only responds while the workflow is open in the editor with "Listen for test event" active — a production workflow answers on `/webhook/<id>`. So either this has been silently failing on the live site, or the workflow is being left in test mode on purpose.
+
+-   It is a Sygnal-hosted endpoint on an Elestio VM, so it is ours to check.
+
+Worth confirming what the workflow is for before the Webflow account is cancelled, since that is the point at which there is no original left to compare against.
+
+## `/search` is gone, by decision
+
+Webflow's built-in site search backed `/search`, and it has no equivalent after cut-over. The page is not ported and the URL is not redirected, so it now answers 404.
+
+The search FORM is still in the shared nav on every page — it is part of the frozen Webflow markup — and it posts to `/search`. Decide whether to remove the field from the nav or point it somewhere, because as it stands the box is visible and submitting it lands on a 404.
+
+## Eight of Webflow's redirects pointed at 404s
+
+Webflow's `manifest.json` declared 19 redirects. Eight of them targeted tour URLs that no longer resolve — `/cosplay`, `/gallery/cosplay`, `/matakana`, `/waipoua`, `/tour/gs16anr-gs48s` and three `/tours/tour?id=…` entries. They were **dropped** rather than carried, on instruction.
+
+If any of those old URLs still attract traffic, they are now 404s rather than redirects to a 404. Worth a look at the server logs after cut-over; re-pointing one at a live tour is a one-line change.
+
+> Redirect these all to /tours
+
+## The sitemap had an entry that 404s
+
+`/tour/hobbiton-rotorua-tour-kuirau-park-footbath-experience` was listed in the live sitemap and answers 404 on the live site. **Dropped** from the new sitemap, on instruction.
+
+> Redirect to /tours
+
+## Google Fonts stays external
+
+Type is loaded from `fonts.googleapis.com` and `fonts.gstatic.com` via `webfont.js` on `ajax.googleapis.com`. Not Webflow, so it survives the cut-over untouched — but it is a third-party dependency on the critical render path and a privacy consideration. Self-hosting is a separate, deliberate job.
+
+> Stays external
+
+## The Webflow JS runtime ships as-is
+
+jQuery plus Webflow's webpack chunks, now served locally from `/wf/js/`. It drives the nav dropdowns and every IX2 scroll animation, including `opacity: 0` elements that IX2 animates to 1 — so the runtime is load-bearing, not decorative. Dropping it would make those elements invisible rather than merely unanimated. Replacing it is a redesign, not a migration.

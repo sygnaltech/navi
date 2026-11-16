@@ -40,6 +40,21 @@ declare global {
 // `__PROJECT_CONFIG__` and not `globalThis.__PROJECT_CONFIG__`, which is a
 // member expression it never matches — and which would therefore be `undefined`
 // at render time with no build error at all.
-const project: Project = __PROJECT_CONFIG__;
+//
+// The `typeof` guard is what lets this module load under PLAIN NODE too, where
+// there is no Vite and no define: the offline template tests import the real
+// binding code and set `globalThis.__PROJECT_CONFIG__` first. Vite replaces the
+// identifier inside `typeof` as well, so the guard costs nothing in the build.
+const project: Project =
+  typeof __PROJECT_CONFIG__ !== 'undefined'
+    ? __PROJECT_CONFIG__
+    : (globalThis as {__PROJECT_CONFIG__?: Project}).__PROJECT_CONFIG__!;
+
+if (!project?.sanity?.projectId) {
+  throw new Error(
+    'project.jsonc was not injected. In the build that means `define` is missing from ' +
+      'astro.config.mjs; under plain Node, set globalThis.__PROJECT_CONFIG__ before importing.',
+  );
+}
 
 export default project;

@@ -1,0 +1,40 @@
+---
+/**
+ * `/area/<slug>` — 15 region pages.
+ *
+ * The page heading is the area's `title` ("Tours in Queenstown"), not its
+ * `name` ("Queenstown & Wanaka"); they differ on every one of the 15.
+ */
+import Shell from '../../layouts/Shell.astro';
+import {bodyFor, headFor, pages} from '../../lib/ported';
+import {getArea, getShell, imageUrl} from '../../lib/cms';
+import {makeCards} from '../../lib/cards';
+import {seamFromBundle} from '../../lib/seam-store';
+import {bindArea} from '../../lib/templates/listings';
+
+export const prerender = false;
+
+const {slug} = Astro.params;
+if (!slug) return new Response(null, {status: 404});
+
+const [area, shell] = await Promise.all([getArea(slug), getShell()]);
+if (!area) return new Response(null, {status: 404});
+
+const TEMPLATE = 'tpl-area';
+const page = pages[TEMPLATE];
+const body = bindArea(bodyFor(TEMPLATE), area, shell, makeCards(seamFromBundle));
+---
+
+<Shell
+  lang={page.lang}
+  wfPage={page.wfPage}
+  bodyAttrs={page.bodyAttrs}
+  title={`${area.name} | Navi Tours`}
+  description={area.brief}
+  ogTitle={area.title}
+  ogDescription={area.brief}
+  ogImage={imageUrl(area.hero, 1200, 630)}
+  head={headFor(TEMPLATE)}
+  body={body}
+  shell={shell}
+/>

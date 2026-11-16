@@ -1,0 +1,46 @@
+---
+/**
+ * `/tour/<slug>` — 29 pages, the site's primary content type.
+ *
+ * Thin on purpose: fetch, then delegate. All the binding lives in
+ * `src/lib/templates/tour.ts`, which is a pure function and therefore testable
+ * offline against the real fragments — the only way to prove that each page
+ * gets its OWN images without running a server.
+ *
+ * Rendered ON DEMAND so a publish in the Studio is live immediately.
+ */
+import Shell from '../../layouts/Shell.astro';
+import {bodyFor, headFor, pages} from '../../lib/ported';
+import {getTour, getShell, imageUrl} from '../../lib/cms';
+import {makeCards} from '../../lib/cards';
+import {seamFromBundle} from '../../lib/seam-store';
+import {bindTour} from '../../lib/templates/tour';
+
+export const prerender = false;
+
+const {slug} = Astro.params;
+if (!slug) return new Response(null, {status: 404});
+
+const [tour, shell] = await Promise.all([getTour(slug), getShell()]);
+if (!tour) return new Response(null, {status: 404});
+
+const TEMPLATE = 'tpl-tour';
+const page = pages[TEMPLATE];
+
+const body = bindTour(bodyFor(TEMPLATE), tour, shell, makeCards(seamFromBundle));
+const description = tour.brief ?? page.description;
+---
+
+<Shell
+  lang={page.lang}
+  wfPage={page.wfPage}
+  bodyAttrs={page.bodyAttrs}
+  title={`${tour.title} | Navi Tours`}
+  description={description}
+  ogTitle={tour.title}
+  ogDescription={description}
+  ogImage={imageUrl(tour.hero, 1200, 630)}
+  head={headFor(TEMPLATE)}
+  body={body}
+  shell={shell}
+/>

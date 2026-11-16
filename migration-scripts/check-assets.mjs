@@ -74,17 +74,48 @@ if (!(await exists(DIST))) {
   process.exit(1);
 }
 
-const files = await walk(DIST);
-const rel = (f) => f.slice(DIST.length + 1).replace(/\\/g, '/');
+/**
+ * Both the BUILD OUTPUT and the SOURCE FRAGMENTS are scanned.
+ *
+ * Scanning `dist` alone was enough while every page was prerendered into it.
+ * Once routes render on demand there is no HTML in `dist` at all, and this
+ * check quietly narrowed to "1 built file" — the stylesheet — and passed. A
+ * check that silently stops looking at the pages is worse than one that fails.
+ *
+ * `src/html/` holds the frozen fragments every rendered page is assembled from,
+ * so it is the authoritative place to catch a Webflow URL, and catching it
+ * there is earlier and more specific than catching it in a rendered page.
+ */
+const SRC_HTML = join(WEB, 'src/html');
+
+const files = [...(await walk(DIST)), ...((await exists(SRC_HTML)) ? await walk(SRC_HTML) : [])];
+const rel = (f) =>
+  f.startsWith(DIST)
+    ? f.slice(DIST.length + 1).replace(/\\/g, '/')
+    : `src/html/${f.slice(SRC_HTML.length + 1).replace(/\\/g, '/')}`;
 
 // --- 1. no Webflow hosts ---------------------------------------------------
 
 const WEBFLOW_HOSTS = /https?:\/\/[^"'\s)]*(?:website-files\.com|webflow\.io|assets\.website-files)/g;
 
+/**
+ * The same hosts, PERCENT-ENCODED.
+ *
+ * Webflow's client-side repeater template ships as
+ * `<script type="text/x-wf-template">` with `encodeURIComponent`-ed markup
+ * inside, so its asset URLs read `https%3A%2F%2Fcdn.prod.website-files.com%2F…`
+ * and the pattern above never sees them. Without this the check passes while a
+ * live dependency on the CDN being cancelled sits in the page — which is
+ * exactly the failure this whole script exists to prevent.
+ */
+const WEBFLOW_ENCODED = /https?%3A%2F%2F[^"'\s]*?website-files(?:\.|%2E)com/gi;
+
 const offenders = [];
 for (const file of files) {
   const text = await readFile(file, 'utf8');
-  const hits = [...new Set(text.match(WEBFLOW_HOSTS) ?? [])];
+  const hits = [
+    ...new Set([...(text.match(WEBFLOW_HOSTS) ?? []), ...(text.match(WEBFLOW_ENCODED) ?? [])]),
+  ];
   for (const hit of hits) offenders.push(`      ${rel(file)}\n        ${hit.slice(0, 110)}`);
 }
 check(

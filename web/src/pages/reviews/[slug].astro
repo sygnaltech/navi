@@ -1,0 +1,44 @@
+---
+/**
+ * `/reviews/<slug>` — 11 TripAdvisor review pages.
+ *
+ * Note the route sits under `reviews/`, which is ALSO a ported static page at
+ * `/reviews`. Astro resolves `/reviews` to the rest route's manifest lookup and
+ * `/reviews/<slug>` here, so both survive — but the two must not be collapsed
+ * into one file, which is why the extraction manifest prefixes templates with
+ * `tpl-`.
+ */
+import Shell from '../../layouts/Shell.astro';
+import {bodyFor, headFor, pages} from '../../lib/ported';
+import {getReview, getShell} from '../../lib/cms';
+import {bindReview} from '../../lib/templates/listings';
+
+export const prerender = false;
+
+const {slug} = Astro.params;
+if (!slug) return new Response(null, {status: 404});
+
+const [review, shell] = await Promise.all([getReview(slug), getShell()]);
+if (!review) return new Response(null, {status: 404});
+
+const TEMPLATE = 'tpl-review';
+const page = pages[TEMPLATE];
+const body = bindReview(bodyFor(TEMPLATE), review);
+// The live review pages all carry the template title "Navi" — Webflow's
+// default was never customised. Matched rather than improved, so the port
+// stays exact; flagged in REVIEW.hd as worth fixing afterwards.
+const title = page.title;
+---
+
+<Shell
+  lang={page.lang}
+  wfPage={page.wfPage}
+  bodyAttrs={page.bodyAttrs}
+  title={title}
+  description={review.generalBrief}
+  ogTitle={title}
+  ogDescription={review.generalBrief}
+  head={headFor(TEMPLATE)}
+  body={body}
+  shell={shell}
+/>

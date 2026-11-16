@@ -1,0 +1,40 @@
+---
+/**
+ * `/tours/<slug>` — 11 tour-category pages.
+ *
+ * Thin: fetch, then delegate to the pure binder in `lib/templates/listings.ts`.
+ * Rendered on demand so a publish is live immediately.
+ */
+import Shell from '../../layouts/Shell.astro';
+import {bodyFor, headFor, pages} from '../../lib/ported';
+import {getCategory, getShell, imageUrl} from '../../lib/cms';
+import {makeCards} from '../../lib/cards';
+import {seamFromBundle} from '../../lib/seam-store';
+import {bindCategory} from '../../lib/templates/listings';
+
+export const prerender = false;
+
+const {slug} = Astro.params;
+if (!slug) return new Response(null, {status: 404});
+
+const [category, shell] = await Promise.all([getCategory(slug), getShell()]);
+if (!category) return new Response(null, {status: 404});
+
+const TEMPLATE = 'tpl-tourCategory';
+const page = pages[TEMPLATE];
+const body = bindCategory(bodyFor(TEMPLATE), category, shell, makeCards(seamFromBundle));
+---
+
+<Shell
+  lang={page.lang}
+  wfPage={page.wfPage}
+  bodyAttrs={page.bodyAttrs}
+  title={`${category.name} | Navi Tours`}
+  description={category.brief}
+  ogTitle={category.name}
+  ogDescription={category.brief}
+  ogImage={imageUrl(category.hero, 1200, 630)}
+  head={headFor(TEMPLATE)}
+  body={body}
+  shell={shell}
+/>

@@ -1,0 +1,36 @@
+---
+/** `/tag/<slug>` — 4 duration pages. */
+import Shell from '../../layouts/Shell.astro';
+import {bodyFor, headFor, pages} from '../../lib/ported';
+import {getTag, getShell, imageUrl} from '../../lib/cms';
+import {makeCards} from '../../lib/cards';
+import {seamFromBundle} from '../../lib/seam-store';
+import {bindTag} from '../../lib/templates/listings';
+
+export const prerender = false;
+
+const {slug} = Astro.params;
+if (!slug) return new Response(null, {status: 404});
+
+const [tag, shell] = await Promise.all([getTag(slug), getShell()]);
+if (!tag) return new Response(null, {status: 404});
+
+const TEMPLATE = 'tpl-tag';
+const page = pages[TEMPLATE];
+const body = bindTag(bodyFor(TEMPLATE), tag, shell, makeCards(seamFromBundle));
+const description = `${tag.tours.length} ${tag.name.toLowerCase()} tours of New Zealand.`;
+---
+
+<Shell
+  lang={page.lang}
+  wfPage={page.wfPage}
+  bodyAttrs={page.bodyAttrs}
+  title={`${tag.name} | Navi Tours`}
+  description={description}
+  ogTitle={tag.title}
+  ogDescription={description}
+  ogImage={imageUrl(tag.hero, 1200, 630)}
+  head={headFor(TEMPLATE)}
+  body={body}
+  shell={shell}
+/>

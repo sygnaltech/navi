@@ -1,29 +1,56 @@
 ---
 /**
- * Every ported static page, including the home page.
+ * Every ported static page, including the home page, rendered on demand.
  *
  * One rest route rather than a file per page: the inventory lives in
  * `migration-scripts/pages.config.mjs` and is already in the manifest, so
- * hand-written route files would be a second copy of it that can drift.
- *
- * The rest parameter is what makes `/data/llms` work — it has a slash in its
+ * hand-written route files would be a second copy of it that can drift. The
+ * rest parameter is also what makes `/data/llms` work — it has a slash in its
  * path, which a single `[slug]` route cannot express.
  *
- * Home is `slug: undefined`, which Astro renders to the site root. With
- * `build.format: 'file'` every other page is written as `<slug>.html` and
- * served extensionless, so the URLs stay byte-identical to Webflow's.
+ * ON DEMAND, not prerendered: ten of these pages carry collection lists of
+ * their own and all of them carry the nav's nine, so a publish has to show up
+ * without a rebuild.
+ *
+ * An unknown path must 404 here. In server mode this route matches ANY path, so
+ * without the lookup below a request for `/nonsense` would render the home page
+ * at 200 — every mistyped URL on the internet becoming a soft 200.
  */
-import Ported from '../layouts/Ported.astro';
-import {routablePages} from '../lib/ported';
+import Shell from '../layouts/Shell.astro';
+import {bodyFor, headFor, pages} from '../lib/ported';
+import {getShell} from '../lib/cms';
+import {makeCards} from '../lib/cards';
+import {seamFromBundle} from '../lib/seam-store';
+import {bindStaticLists} from '../lib/templates/static-lists';
 
-export function getStaticPaths() {
-  return routablePages.map(([slug, page]) => ({
-    params: {slug: page.path === '/' ? undefined : slug},
-    props: {slug},
-  }));
+export const prerender = false;
+
+const path = `/${Astro.params.slug ?? ''}`.replace(/\/+$/, '') || '/';
+
+const slug = Object.keys(pages).find((key) => !pages[key].template && pages[key].path === path);
+
+if (!slug) {
+  return new Response(null, {status: 404});
 }
 
-const {slug} = Astro.props;
+const shell = await getShell();
+const page = pages[slug];
+const body = bindStaticLists(slug, bodyFor(slug), {
+  shell,
+  cards: makeCards(seamFromBundle),
+  seam: seamFromBundle,
+});
 ---
 
-<Ported slug={slug} />
+<Shell
+  lang={page.lang}
+  wfPage={page.wfPage}
+  bodyAttrs={page.bodyAttrs}
+  title={page.title}
+  description={page.description}
+  ogTitle={page.ogTitle}
+  ogDescription={page.ogDescription}
+  head={headFor(slug)}
+  body={body}
+  shell={shell}
+/>

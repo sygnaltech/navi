@@ -156,11 +156,37 @@ const sources = [
 const urls = new Map(); // url -> local filename
 const perFile = new Map(); // label -> count
 
+/**
+ * Webflow URLs also appear PERCENT-ENCODED, and must be collected here too.
+ *
+ * Webflow emits a client-side repeater template as
+ * `<script type="text/x-wf-template">` whose whole body is
+ * `encodeURIComponent`-ed markup, so the asset URL inside reads
+ * `https%3A%2F%2Fcdn.prod.website-files.com%2F…`. The scanners above look for
+ * `https://` and never match it.
+ *
+ * Collecting them HERE rather than only rewriting them later matters: once
+ * every plain-text reference is localised the map is empty, this script reports
+ * "nothing left on Webflow" and exits before any rewrite runs — so an encoded
+ * reference would survive every subsequent pass and never be mentioned again.
+ */
+const WF_ENCODED = new RegExp(
+  'https?%3A%2F%2F[^"\'\\s]*?website-files%2Ecom%2F[^"\'\\s]*?|' +
+    'https?%3A%2F%2F[^"\'\\s]*?website-files\\.com%2F[^"\'\\s]*?(?=%22|%27|\\s|")',
+  'gi',
+);
+
 for (const source of sources) {
   const text = await readFile(source.path, 'utf8');
   const found = text.match(source.re) ?? [];
   if (found.length) perFile.set(source.label, found.length);
   for (const url of found) urls.set(url, localName(url));
+
+  for (const encoded of text.match(WF_ENCODED) ?? []) {
+    const url = decodeURIComponent(encoded);
+    urls.set(url, localName(url));
+    perFile.set(source.label, (perFile.get(source.label) ?? 0) + 1);
+  }
 }
 
 if (urls.size === 0) {
@@ -234,10 +260,39 @@ if (failures.length) {
 
 // --- rewrite -----------------------------------------------------------------
 
+/**
+ * Webflow URLs also appear PERCENT-ENCODED, and nothing else finds them.
+ *
+ * Webflow emits a client-side repeater template as
+ * `<script type="text/x-wf-template">` whose entire contents are
+ * `encodeURIComponent`-ed markup — so the asset URL inside it reads
+ * `https%3A%2F%2Fcdn.prod.website-files.com%2F…`. The scanners above look for
+ * `https://` and never match it, `assets:check` greps for the same literal and
+ * passes, and the reference survives the migration completely invisibly: a live
+ * dependency on the CDN we are leaving, inside a template the Webflow runtime
+ * may render from.
+ *
+ * Found on this site in `main.tpl-tour.html` — two URLs in the lightbox
+ * gallery's repeater template.
+ *
+ * Rewritten by encoding each known URL the same way and substituting the
+ * encoded local path, so the encoded payload stays valid.
+ */
+const ENCODED = [...urls.keys()].map((url) => ({
+  from: encodeURIComponent(url),
+  to: encodeURIComponent(`/wf/assets/${urls.get(url)}`),
+}));
+
 let rewritten = 0;
+let encodedHits = 0;
 for (const source of sources) {
   const text = await readFile(source.path, 'utf8');
-  const next = text.replace(source.re, (url) => `/wf/assets/${urls.get(url) ?? localName(url)}`);
+  let next = text.replace(source.re, (url) => `/wf/assets/${urls.get(url) ?? localName(url)}`);
+  for (const {from, to} of ENCODED) {
+    if (!next.includes(from)) continue;
+    encodedHits += next.split(from).length - 1;
+    next = next.split(from).join(to);
+  }
   if (next !== text) {
     await writeFile(source.path, next, 'utf8');
     rewritten++;
@@ -245,5 +300,6 @@ for (const source of sources) {
 }
 
 console.log(`rewrote ${rewritten} file(s)`);
+if (encodedHits) console.log(`      including ${encodedHits} percent-encoded reference(s)`);
 console.log(`\nok    nothing in src/html or the ported CSS points at Webflow any more`);
 console.log(`      re-run \`npm run build\` and \`npm run assets:check\`\n`);

@@ -1,54 +1,39 @@
 ---
 /**
- * The document shell for a ported Webflow page.
+ * A ported Webflow page: frozen body, dataset-bound shell.
  *
- * Emits the head nodes Webflow emitted, in Webflow's order, and the body
- * verbatim. The only things decided here are the ones that cannot come from a
- * fragment: the `<html>` and `<body>` attributes Webflow's runtime reads, the
- * `<title>`, and the social/description metas.
+ * A thin wrapper over `Shell.astro` that pulls this page's metadata out of the
+ * extraction manifest. The collection routes call `Shell` directly with a body
+ * they bound themselves; both paths emit the identical head and `<body>`
+ * treatment, so the two kinds of page cannot drift apart.
  *
  * TITLES ARE ESCAPED EXACTLY ONCE. The manifest holds DECODED text, so Astro's
- * own escaping on `{page.title}` is the only escaping that happens. Storing the
- * raw `<title>` instead — which is already HTML-escaped — yields `&amp;amp;`
- * and a literal `&amp;` in the browser tab.
- *
- * BODY ATTRIBUTES COME FROM THE MANIFEST, per page. They are not constant:
- * `data-ix="full-opacity-on-load"` drives an IX2 animation that fades the page
- * in FROM opacity 0, and `/payment` additionally carries `order="payment"`,
- * which the site's own JS dispatches on.
+ * own escaping is the only escaping that happens. Storing the raw `<title>`
+ * instead — already HTML-escaped — yields `&amp;amp;` and a literal `&amp;` in
+ * the browser tab.
  */
+import Shell from './Shell.astro';
 import {bodyFor, headFor, pages} from '../lib/ported';
-import project from '../lib/project';
+import type {Shell as ShellData} from '../lib/cms';
 
 interface Props {
   slug: string;
+  shell: ShellData;
 }
 
-const {slug} = Astro.props;
+const {slug, shell} = Astro.props;
 const page = pages[slug];
-const head = headFor(slug);
-const body = bodyFor(slug);
 ---
 
-<html
+<Shell
   lang={page.lang}
-  data-wf-page={page.wfPage}
-  data-wf-site={project.webflow.siteId}
->
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>{page.title}</title>
-    {page.description && <meta name="description" content={page.description} />}
-    {page.ogTitle && <meta property="og:title" content={page.ogTitle} />}
-    {page.ogDescription && <meta property="og:description" content={page.ogDescription} />}
-    {page.ogTitle && <meta property="twitter:title" content={page.ogTitle} />}
-    {page.ogDescription && <meta property="twitter:description" content={page.ogDescription} />}
-    <meta property="og:type" content="website" />
-    <meta name="twitter:card" content="summary_large_image" />
-    <Fragment set:html={head} />
-  </head>
-  <body {...page.bodyAttrs}>
-    <Fragment set:html={body} />
-  </body>
-</html>
+  wfPage={page.wfPage}
+  bodyAttrs={page.bodyAttrs}
+  title={page.title}
+  description={page.description}
+  ogTitle={page.ogTitle}
+  ogDescription={page.ogDescription}
+  head={headFor(slug)}
+  body={bodyFor(slug)}
+  shell={shell}
+/>

@@ -23,8 +23,6 @@ const headExtras = import.meta.glob<string>('../html/head-extra.*.html', {
   eager: true,
 });
 
-import navHtml from '../html/nav.html?raw';
-import footerHtml from '../html/footer.html?raw';
 import headCustomHtml from '../html/head-custom.html?raw';
 
 export type PortedPage = {
@@ -54,13 +52,12 @@ const pick = (bag: Record<string, string>, suffix: string) => {
 };
 
 /**
- * The page body, with the shared shell spliced back in.
+ * The page body, WITH the `<!--wf:nav-->` / `<!--wf:footer-->` markers intact.
  *
- * `__WF_PAGE_ID__` is substituted here rather than at extract time because the
- * nav and footer are SHARED: Webflow stamps the current page's id onto every
- * form on the page, including the forms inside the furniture, so the marker is
- * what lets one nav serve every page while the rendered output stays identical
- * to Webflow's.
+ * The shell is spliced in by `Shell.astro`, not here, because the nav has to be
+ * bound to the dataset first — and doing that once in the layout means a route
+ * cannot forget. Returning the markers also lets the collection routes bind
+ * their template body before the shell is added.
  */
 export function bodyFor(slug: string): string {
   const page = pages[slug];
@@ -69,12 +66,7 @@ export function bodyFor(slug: string): string {
   const main = pick(mains, `main.${fileFor(slug)}.html`);
   if (main === undefined) throw new Error(`Missing src/html/main.${fileFor(slug)}.html`);
 
-  const wfPage = page.wfPage ?? '';
-  const stamp = (html: string) => html.replaceAll('__WF_PAGE_ID__', wfPage);
-
-  return main
-    .replace('<!--wf:nav-->', () => stamp(navHtml))
-    .replace('<!--wf:footer-->', () => stamp(footerHtml));
+  return main;
 }
 
 /** Head nodes shared by every page, plus this page's own, in that order. */

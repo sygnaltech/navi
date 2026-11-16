@@ -1,9 +1,19 @@
 {
   "extends": "astro/tsconfigs/strict",
   "include": [".astro/types.d.ts", "**/*", "../config/**/*.mjs"],
-  "exclude": ["dist"],
+  // `public/` holds VENDORED third-party JavaScript — jQuery, the Webflow
+  // runtime, the internalised engine. With `allowJs` on it would all be
+  // type-checked, which produced 350KB of warnings about minified code nobody
+  // is going to fix. It is copied to the build verbatim and never imported.
+  "exclude": ["dist", "public"],
   "compilerOptions": {
     "allowJs": true,
-    "strictNullChecks": true
+    "strictNullChecks": true,
+    // Internal imports carry an explicit `.ts` extension so the binding layer
+    // also loads under PLAIN NODE, whose ESM resolver does no extension
+    // guessing. That is what lets `npm run test:templates` render every CMS
+    // page offline — the only way to prove each page gets its own images
+    // without standing up a server.
+    "allowImportingTsExtensions": true
   }
 }

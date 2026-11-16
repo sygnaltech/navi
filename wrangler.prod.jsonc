@@ -2,29 +2,21 @@
 	"$schema": "node_modules/wrangler/config-schema.json",
 	"name": "site-navi",
 	"account_id": "9095ee3415dc7ee4e497da2a3c8d1992",
-	"compatibility_date": "2026-11-14",
+	"compatibility_date": "2026-11-10",
 	"compatibility_flags": ["nodejs_compat"],
 
 	// PRODUCTION — what answers on the live domain, and the only config anything
 	// ever deploys from:
 	//   npm run deploy
-	// wrangler.jsonc is the same thing minus the route, and exists purely so
+	// wrangler.jsonc is the same Worker minus the route, and exists purely so
 	// `wrangler dev` has a local config. Deploy always means production.
 
-	// NO `main`, DELIBERATELY. Every route prerenders today, so
-	// @astrojs/cloudflare v14 writes the whole site to `web/dist/client` and
-	// leaves `web/dist/server` EMPTY — there is no Worker to point at, and this
-	// is an assets-only deployment.
-	//
-	// THE MOMENT A ROUTE OPTS OUT with `export const prerender = false`:
-	//   1. add `"main"` pointing at the adapter's generated server entry under
-	//      web/dist/server (read what it actually emits — do not guess the
-	//      filename, and never use `@astrojs/cloudflare/entrypoints/server`,
-	//      which exports `createExports(manifest)` and has no fetch handler);
-	//   2. REMOVE `not_found_handling` below — see the note on it;
-	//   3. carry over whatever bindings the adapter declares in
-	//      `web/dist/client/wrangler.json` (currently a SESSION KV namespace and
-	//      an IMAGES binding), which an assets-only deploy does not need.
+	// The adapter's GENERATED server entry. Not
+	// `@astrojs/cloudflare/entrypoints/server` — that module exports
+	// `createExports(manifest)` and has no fetch handler, so deploying it yields
+	// a Worker that answers nothing. Keep this in step with what
+	// `web/dist/server/wrangler.json` reports after a build.
+	"main": "./web/dist/server/entry.mjs",
 
 	// BOTH ROUTES ARE COMMENTED OUT, DELIBERATELY.
 	//
@@ -32,9 +24,6 @@
 	// today, so uncommenting the second line IS the cut-over from Webflow — the
 	// public site moves the moment the deploy succeeds. Neither line goes live
 	// without the PM saying so for that specific deploy.
-	//
-	// Review on the *.workers.dev URL first (workers_dev below), then the
-	// staging host, then production.
 	"routes": [],
 	// "routes": [{ "pattern": "navi.sygnal.cloud", "custom_domain": true }],
 	// "routes": [{ "pattern": "www.tournewzealand.com", "custom_domain": true }],
@@ -44,24 +33,31 @@
 	// indexable copy of every page.
 	"workers_dev": true,
 
-	// "404-page" = when no static file matches, serve 404.html.
+	// NO `not_found_handling`, DELIBERATELY — and this is the setting that is
+	// silently wrong either way, so the reasoning is written down.
 	//
-	// CORRECT ONLY WHILE EVERY ROUTE PRERENDERS, which is the case today. An
-	// unmatched path never reaches a Worker, so WITHOUT this line Cloudflare
-	// answers with its own bare 404 and the ported 404 page can never be served.
+	// Every route on this site renders ON DEMAND, because a publish in the
+	// Studio has to be live immediately and even the shared nav carries Sanity
+	// collection lists. `"404-page"` is answered by the ASSET LAYER BEFORE the
+	// Worker runs, and an on-demand route is by definition a path with no
+	// matching file — so setting it would intercept every page the Worker exists
+	// to render and serve the 404 instead.
 	//
-	// WRONG the moment anything renders on demand: "404-page" is answered by the
-	// asset layer BEFORE the Worker runs, and an on-demand route is by definition
-	// a path with no matching file — so it would intercept exactly the routes the
-	// Worker exists to render.
+	// The 404 for an unknown path is returned by the Worker itself, from
+	// `src/pages/[...slug].astro`.
 	//
-	// Re-check before cut-over with:
-	//   grep -rn "prerender = false" web/src/
-	//   cat web/dist/client/wrangler.json
+	// If this site ever goes back to prerendering, `"404-page"` becomes REQUIRED
+	// rather than merely allowed: an unmatched path would then never reach the
+	// Worker, and Cloudflare would answer with its own bare 404.
 	"assets": {
 		"directory": "./web/dist/client",
-		"not_found_handling": "404-page"
+		"binding": "ASSETS"
 	},
+
+	// Declared by the adapter in web/dist/server/wrangler.json. An assets-only
+	// deploy did not need these; a Worker does.
+	"kv_namespaces": [{"binding": "SESSION"}],
+	"images": {"binding": "IMAGES"},
 
 	"observability": {
 		"enabled": true

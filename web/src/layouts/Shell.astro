@@ -1,0 +1,85 @@
+---
+/**
+ * The document shell, for a page whose body is assembled by its route.
+ *
+ * `Ported.astro` wraps this for the 22 frozen static pages; the collection
+ * routes call it directly with a body they have bound themselves. Both paths
+ * emit the identical head and `<body>` treatment, so the two kinds of page
+ * cannot drift apart.
+ *
+ * The nav is bound to the dataset here rather than in each route, because all
+ * nine of its collection lists are the same on every page — and doing it once
+ * means a route cannot forget.
+ */
+import {bindNav, markCurrent} from '../lib/shell';
+import project from '../lib/project';
+import navHtml from '../html/nav.html?raw';
+import footerHtml from '../html/footer.html?raw';
+import type {Shell} from '../lib/cms';
+
+interface Props {
+  lang: string;
+  wfPage?: string;
+  bodyAttrs: Record<string, string>;
+  title?: string;
+  description?: string;
+  ogTitle?: string;
+  ogDescription?: string;
+  ogImage?: string;
+  head: string;
+  /** The page body, with `<!--wf:nav-->` / `<!--wf:footer-->` markers intact. */
+  body: string;
+  shell: Shell;
+}
+
+const {
+  lang,
+  wfPage,
+  bodyAttrs,
+  title,
+  description,
+  ogTitle,
+  ogDescription,
+  ogImage,
+  head,
+  body,
+  shell,
+} = Astro.props;
+
+/**
+ * `__WF_PAGE_ID__` is substituted here, not at extract time.
+ *
+ * Webflow stamps the current page's id onto every `<form>` on the page,
+ * including the forms inside the shared nav and footer. Replacing it with a
+ * marker at extraction is what lets ONE nav fragment serve all 94 pages while
+ * the rendered output stays identical to Webflow's.
+ */
+const stamp = (html: string) => html.replaceAll('__WF_PAGE_ID__', wfPage ?? '');
+
+const nav = markCurrent(stamp(bindNav(navHtml, shell)), new URL(Astro.request.url).pathname);
+const footer = stamp(footerHtml);
+
+const document = body
+  .replace('<!--wf:nav-->', () => nav)
+  .replace('<!--wf:footer-->', () => footer);
+---
+
+<html lang={lang} data-wf-page={wfPage} data-wf-site={project.webflow.siteId}>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+    {description && <meta name="description" content={description} />}
+    {ogTitle && <meta property="og:title" content={ogTitle} />}
+    {ogDescription && <meta property="og:description" content={ogDescription} />}
+    {ogImage && <meta property="og:image" content={ogImage} />}
+    {ogTitle && <meta property="twitter:title" content={ogTitle} />}
+    {ogDescription && <meta property="twitter:description" content={ogDescription} />}
+    <meta property="og:type" content="website" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <Fragment set:html={head} />
+  </head>
+  <body {...bodyAttrs}>
+    <Fragment set:html={document} />
+  </body>
+</html>
