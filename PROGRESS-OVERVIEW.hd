@@ -7,8 +7,7 @@ date: '2026-11-15T00:00:00.000Z'
 
 # Progress overview
 
-Checkboxes only. Detail lives in [PROGRESS.hd](PROGRESS.hd); things to look at after launch are in
-[REVIEW.hd](REVIEW.hd).
+Checkboxes only. Detail lives in [PROGRESS.hd](PROGRESS.hd); things to look at after launch are in [REVIEW.hd](REVIEW.hd).
 
 ## Nothing is blocked on you
 
@@ -86,18 +85,17 @@ Checkboxes only. Detail lives in [PROGRESS.hd](PROGRESS.hd); things to look at a
 
 ### The one remaining defect: conditional regions
 
-- [ ] `tpl-tour` is missing the **highlights**, **pricing notes** and **cancellation policy**
-      regions, so those three fields have nowhere to render on any tour page
+- [ ] `tpl-tour` is missing the **highlights**, **pricing notes** and **cancellation policy** regions, so those three fields have nowhere to render on any tour page
+
 - [ ] Same class of gap on the area, tag and category templates
 
-Webflow omits a conditional region **entirely** when its condition is off, so a region absent
-from the sample item is absent from the frozen template for every page. And no single tour has
-all three: `rotorua-one-day-tour` has the pricing section, `black-water-rafting-tour-1-day` has
-the cancellation policy, neither has both.
+Webflow omits a conditional region **entirely** when its condition is off, so a region absent from the sample item is absent from the frozen template for every page. And no single tour has all three: `rotorua-one-day-tour` has the pricing section, `black-water-rafting-tour-1-day` has the cancellation policy, neither has both.
 
-So "pick the sample that renders the most" is not sufficient here — the template has to be
-assembled from more than one sample, or the regions driven per item. That is the next piece of
-work and it is well understood.
+So "pick the sample that renders the most" is not sufficient here — the template has to be assembled from more than one sample, or the regions driven per item. That is the next piece of work and it is well understood.
+
+### Homepage
+
+- [ ] Critical hero image missing
 
 ### Code integration
 
