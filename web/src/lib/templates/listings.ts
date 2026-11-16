@@ -15,6 +15,7 @@ import {
   setHtml,
   setAttr,
   setBackground,
+  setImageSrc,
   setListItems,
   removeEl,
   countLists,
@@ -42,7 +43,7 @@ export const CATEGORY_LISTS = 2;
 /**
  * `/tours/<slug>` — 11 pages.
  *
- *   0  the filter chips across the top   every category
+ *   0  the filter chips across the top   every TAG — see `filterButtons`
  *   1  the tour cards                    the tours in THIS category
  */
 export function bindCategory(
@@ -61,14 +62,37 @@ export function bindCategory(
   // `brief` is the one-liner that also appears in the nav, `briefText` is the
   // page's own intro. Emptying rather than leaving them shows the sample's.
   body = setText(body, 'subtitle', category.brief);
-  if (hasSeam(body, 'paragraph-5')) {
-    body = setText(body, 'paragraph-5', category.briefText ?? '');
-  }
-  if (hasSeam(body, 'rich-text-block')) {
-    body = setHtml(body, 'rich-text-block', toHtml(category.body));
+
+  /**
+   * The intro paragraph and the "See the Tours" button are ONE conditional
+   * region, and Webflow drops the whole `.content-section.tight` when
+   * `briefText` is empty — which it is on `half-day`, `multi-day-tours` and
+   * `transfers`. Emptying just the paragraph leaves those three pages with a
+   * stray button floating in a blank band.
+   */
+  if (category.briefText) {
+    body = setText(body, 'paragraph-5', category.briefText);
+  } else if (hasSeam(body, 'tight')) {
+    body = removeEl(body, 'tight');
   }
 
-  body = setListItems(body, 0, cards.filterButtons(shell.categories));
+  /**
+   * The long description, which binds into `.body-content` — NOT the
+   * `.rich-text-block` the area and tag templates use. Nothing on this page
+   * carries that class, so the guarded call below it silently did nothing and
+   * all eleven category pages published the sample category's three
+   * paragraphs: a blurb about Hobbiton, Waitomo and Waipoua forest sitting on
+   * `/tours/transfers`.
+   *
+   * Empty is a real state here, and Webflow marks it rather than dropping the
+   * region — `class="body-content w-dyn-bind-empty w-richtext"` on the two
+   * categories with no description. `setHtml` maintains that marker.
+   */
+  if (hasSeam(body, 'body-content')) {
+    body = setHtml(body, 'body-content', toHtml(category.body));
+  }
+
+  body = setListItems(body, 0, cards.filterButtons(shell.tags));
   body = setListItems(body, 1, cards.tourCardServices(category.tours));
   return body;
 }
@@ -98,8 +122,18 @@ export function bindArea(template: string, area: AreaPage, _shell: Shell, cards:
   // ("Queenstown & Wanaka") — they are different fields with different content
   // on every one of the 15 areas.
   body = setText(body, 'heading-1', area.title);
-  body = setText(body, 'subtitle', area.brief ?? '');
+
+  // The hero subtitle is a conditional region, and `hawkes-bay` is the one
+  // area with no `brief` — Webflow omits the whole `.hero-subtitle` there
+  // rather than rendering an empty band under the heading.
+  if (area.brief) body = setText(body, 'subtitle', area.brief);
+  else body = removeEl(body, 'hero-subtitle');
   body = setHtml(body, 'rich-text-block', toHtml(area.body));
+  // The region map beside the description. Webflow put no class on the `<img>`,
+  // so it is addressed through its column — see `setImageSrc`. Unbound, all 15
+  // areas showed the sample page's map, which looks like a map and is the
+  // wrong one on fourteen of them.
+  if (area.map) body = setImageSrc(body, 'w-col-2', imageUrl(area.map, 400));
   body = setListItems(body, 0, cards.tourCardVertical(area.tours, 'tpl-area.0'));
   return body;
 }
@@ -180,7 +214,9 @@ export function bindNews(template: string, news: NewsPage): string {
   let body = template;
   body = setBackground(body, 'tour-hero-section', imageUrl(news.mainImage, 1920));
   body = setText(body, 'heading-8', news.title);
-  body = setText(body, 'subtitle', news.summary ?? '');
+  // `.subtitle.white-and-small` under the heading is the STATIC label "News",
+  // not a field — the same shape as `.selection-item-title` on the home page.
+  // `summary` renders nowhere on the live post; it is a list-card field.
   body = setHtml(body, 'body-content', toHtml(news.body));
   return body;
 }

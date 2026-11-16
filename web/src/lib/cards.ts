@@ -70,7 +70,15 @@ export function makeCards(seam: SeamResolver) {
     return setText(out, 'tag-item', tour.tag.title);
   }
 
-  /** `.tour-card.services` — the card on a category page. */
+  /**
+   * `.tour-card.services` — the card on a category page.
+   *
+   * It carries the SAME name badge as the vertical card: a second, link-less
+   * `.tag-button` after the tag chip. It was never bound here, so all eleven
+   * category pages published the sample tour's badge on every card — a
+   * sentence about small-group tours, stamped on tours it was not written for.
+   * See `tourCardVertical` for why the badge is bound before the chip.
+   */
   const tourCardServices = (tours: TourCard[]) =>
     join(
       tours.map((tour) => {
@@ -84,6 +92,16 @@ export function makeCards(seam: SeamResolver) {
         html = setText(html, 'paragraph-medium', tour.brief ?? '');
         html = setAttr(html, 'underline-block', 'href', `/tour/${tour.slug}`);
         html = setAttr(html, 'rounded-button', 'href', `/tour/${tour.slug}`);
+        // THE BADGE IS BOUND BEFORE THE CHIP, and the order is load-bearing
+        // for the same reason it is on the vertical card below. Here the badge
+        // is the SECOND bare `.tag-button` — it has no `display-only` class to
+        // name it — so it is addressed by index, and that index only holds
+        // while `bindTag` has not yet removed the chip.
+        if (seamCount(html, 'tag-button') > 1) {
+          html = tour.nameDetail
+            ? setText(html, 'tag-item', tour.nameDetail, 1)
+            : removeEl(html, 'tag-button', 1);
+        }
         return bindTag(html, tour);
       }),
     );
@@ -218,13 +236,33 @@ export function makeCards(seam: SeamResolver) {
       }),
     );
 
-  /** `.filter-button` — the category filter chips on a category page. */
-  const filterButtons = (categories: Array<{slug: string; name: string}>) =>
+  /**
+   * `.filter-button` — the chips across the top of a category page.
+   *
+   * They are the TAGS — "Half-day Tours", "1 Day Tours", "2 Day Tours",
+   * "Multi-Day Tours" — not the categories. The sample seam gives it away: its
+   * label is "Half-day Tours" and its colour is `hsla(41 …)`, which is the
+   * `half-day` tag's own `color`. Bound to the eleven categories instead, as an
+   * earlier version was, the row rendered eleven identically-coloured chips
+   * naming the thing the page is already filtered to.
+   *
+   * The label is `groupTitle` ("Half-day Tours"), which is a third field
+   * distinct from both `name` ("Half-day") and `title` ("Half-day Tour").
+   *
+   * `data-filter` stays at the seam's literal "all" because that is what every
+   * chip carries on the live site — Webflow emits the same static value on all
+   * four, so the MixItUp filter shows everything whichever chip is clicked.
+   * Writing the tag slug here would be a behaviour change, not a port: the
+   * cards carry no tag to match it against, so it would filter every card out.
+   * The live defect is recorded in REVIEW.hd rather than silently fixed.
+   */
+  const filterButtons = (tags: Array<{slug: string; groupTitle?: string; color?: string}>) =>
     join(
-      categories.map((category) => {
+      tags.map((tag) => {
         let html = seam('tpl-tourCategory.0');
-        html = setText(html, 'filter-button', category.name);
-        return setAttr(html, 'filter-button', 'data-filter', category.slug);
+        html = setText(html, 'filter-button', tag.groupTitle ?? '');
+        if (tag.color) html = setAttr(html, 'filter-button', 'style', `background-color:${tag.color}`);
+        return html;
       }),
     );
 

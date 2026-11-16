@@ -108,13 +108,50 @@ const splice = (html: string, [from, to]: [number, number], value: string) =>
 const escape = (s: string) =>
   s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 
+/**
+ * `w-dyn-bind-empty` — Webflow's marker for "this bound field has no value".
+ *
+ * IT IS NOT DECORATIVE. The site's stylesheet carries
+ * `.w-dyn-hide, .w-dyn-bind-empty, .w-condition-invisible { display: none
+ * !important }`, so an element that keeps the class is INVISIBLE no matter what
+ * is written into it.
+ *
+ * That makes it a trap for a port that freezes one sample item per template:
+ * whether the class is present depends on whether the SAMPLE's field happened
+ * to be empty. The tour card on three templates was extracted from a tour with
+ * no `brief`, so every card on `/tours`, `/tours/<category>` and `/tag/<slug>`
+ * had the right text written into an element the browser never drew — a bug
+ * with no symptom in the HTML and no symptom in a text diff of the HTML.
+ *
+ * So the class is maintained here rather than at the call sites: writing a
+ * value removes it, writing nothing adds it. That is exactly what Webflow does,
+ * and doing it centrally means a seam cannot acquire the bug by being
+ * re-extracted from a different sample.
+ */
+const EMPTY_MARKER = 'w-dyn-bind-empty';
+
+function markEmpty(html: string, cls: string, nth: number, isEmpty: boolean): string {
+  const span = find(html, cls, nth);
+  const classes = (/class="([^"]*)"/.exec(span.open)?.[1] ?? '').split(/\s+/).filter(Boolean);
+  if (classes.includes(EMPTY_MARKER) === isEmpty) return html;
+  const next = isEmpty
+    ? [...classes, EMPTY_MARKER]
+    : classes.filter((c) => c !== EMPTY_MARKER);
+  const open = span.open.replace(/class="[^"]*"/, `class="${next.join(' ')}"`);
+  return html.slice(0, span.start) + open + html.slice(span.start + span.open.length);
+}
+
 /** Replace an element's text content. Escaped — content is data, not markup. */
-export const setText = (html: string, cls: string, value: string, nth = 0): string =>
-  splice(html, find(html, cls, nth).inner, escape(value ?? ''));
+export const setText = (html: string, cls: string, value: string, nth = 0): string => {
+  const out = splice(html, find(html, cls, nth).inner, escape(value ?? ''));
+  return markEmpty(out, cls, nth, (value ?? '').trim() === '');
+};
 
 /** Replace an element's inner HTML. For already-serialised Portable Text only. */
-export const setHtml = (html: string, cls: string, value: string, nth = 0): string =>
-  splice(html, find(html, cls, nth).inner, value ?? '');
+export const setHtml = (html: string, cls: string, value: string, nth = 0): string => {
+  const out = splice(html, find(html, cls, nth).inner, value ?? '');
+  return markEmpty(out, cls, nth, (value ?? '').trim() === '');
+};
 
 /** Replace an attribute on the element carrying `cls`. */
 export function setAttr(html: string, cls: string, attr: string, value: string, nth = 0): string {
@@ -143,10 +180,92 @@ export function setBackground(html: string, cls: string, url: string, nth = 0): 
     );
 }
 
+/**
+ * Replace the `src` of the first `<img>` INSIDE the element carrying `cls`.
+ *
+ * For the images Webflow left unclassed. The area template's region map is one:
+ *
+ *     <div class="w-col w-col-2"><img width="161" alt="" src="…"></div>
+ *
+ * The class is on the column, not on the image, so `setAttr` has nothing to aim
+ * at — and an unbindable image is not an image that stays blank, it is the
+ * sample page's image frozen onto all 15 areas. Addressing the wrapper and
+ * rewriting only the `src` leaves the rest of the tag — `width`, `alt` — as
+ * Webflow emitted it.
+ */
+const srcRe = (tag: string) => new RegExp(`(<${tag}\\b[^>]*?\\ssrc=")([^"]*)(")`, 'i');
+
+function childSrc(html: string, cls: string, tag: string, nth: number): [Span, string, string] {
+  const span = find(html, cls, nth);
+  const inner = html.slice(span.inner[0], span.inner[1]);
+  const m = srcRe(tag).exec(inner);
+  if (!m) {
+    throw new Error(
+      `seam "${cls}" has no <${tag} src> inside it. The frozen Webflow markup ` +
+        'changed — fix the seam rather than letting the sample page publish ' +
+        'on every page.',
+    );
+  }
+  return [span, inner, m[2]];
+}
+
+export function setImageSrc(html: string, cls: string, url: string, nth = 0): string {
+  const [span, inner] = childSrc(html, cls, 'img', nth);
+  return splice(html, span.inner, inner.replace(srcRe('img'), `$1${escape(url)}$3`));
+}
+
+/**
+ * The same, for an `<iframe>` inside an embed wrapper — plus a reader, because
+ * the only embed on this site is a third-party booking calendar whose base URL
+ * belongs in the frozen markup rather than in a string literal here. Read it,
+ * swap the one query parameter that varies, write it back.
+ */
+export const getEmbedSrc = (html: string, cls: string, nth = 0): string =>
+  childSrc(html, cls, 'iframe', nth)[2];
+
+export function setEmbedSrc(html: string, cls: string, url: string, nth = 0): string {
+  const [span, inner] = childSrc(html, cls, 'iframe', nth);
+  return splice(html, span.inner, inner.replace(srcRe('iframe'), `$1${escape(url)}$3`));
+}
+
 /** Remove the element carrying `cls` entirely — for sections a document omits. */
 export function removeEl(html: string, cls: string, nth = 0): string {
   const span = find(html, cls, nth);
   return html.slice(0, span.start) + html.slice(span.end);
+}
+
+/**
+ * Remove the element that ENCLOSES the one carrying `cls`.
+ *
+ * For a conditional region whose own wrapper Webflow left unclassed, or gave a
+ * class that repeats elsewhere in the template. Both happen on the tour page:
+ *
+ *   - the booking calendar is an anonymous `<div>` holding a label and an
+ *     embed. Nothing names it, so it is named by its contents:
+ *     `removeEnclosing(body, 'code-embed')`.
+ *   - the related-tours section is `.content-section.less-top-padding
+ *     .less-bottom-padding`, and BOTH of those modifiers also sit on the
+ *     booking-form section above it. The list inside it is unique, so the
+ *     section is reached from there: `removeEnclosing(body, 'justify-start',
+ *     'content-section')`.
+ *
+ * `upTo` picks the innermost ancestor carrying that class rather than the
+ * immediate parent, so the nesting depth between the two can change without
+ * this silently removing the wrong element — it throws instead.
+ */
+export function removeEnclosing(html: string, cls: string, upTo?: string, nth = 0): string {
+  const child = find(html, cls, nth);
+  const ancestors = scan(html).filter((s) => s.start < child.start && s.end > child.end);
+  const target = upTo
+    ? ancestors.filter((s) => hasClass(s.attrs, upTo)).pop()
+    : ancestors[ancestors.length - 1];
+  if (!target) {
+    throw new Error(
+      `seam "${cls}" has no enclosing ${upTo ? `"${upTo}"` : 'element'} — ` +
+        'the frozen Webflow markup changed.',
+    );
+  }
+  return html.slice(0, target.start) + html.slice(target.end);
 }
 
 /** Is there an element with this class? For optional seams only. */

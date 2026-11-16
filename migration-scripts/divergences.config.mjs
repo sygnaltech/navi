@@ -28,6 +28,7 @@ export const DIVERGENCES = [
      * it is exactly the class of staleness that on-demand rendering removes.
      */
     text: ['Queenstown - Franz Josef - Christchurch, Bus & Train multi-day tour'],
+    links: ['/tour/queenstown-frans-josef-christchurch-bus-train-4-day-tour-copy'],
     tags: 3,
     // Every page EXCEPT the ones with no nav. `/data/llms` is a bare data page
     // with no shell at all, so the allowance would be subtracted from a page
@@ -48,9 +49,77 @@ export const DIVERGENCES = [
       '☆Runs 7days a week!( from Oct 2024) ☆',
       'An unparalleled travel experience in the South Island.',
     ],
+    links: ['/tag/multi-day'],
+    images: ['tranz-alpine-winter-cass-bank6'],
     tags: 15,
     pages: ['tours'],
     why: 'the live /tours index lists a tour that is archived in Webflow',
+  },
+  {
+    /**
+     * The same stale tour, carded on the AREA and TAG pages it belongs to.
+     *
+     * Those pages use the vertical card, so the allowance is the same 15 tags
+     * as the `/tours` index. "Multi-Day Tour" joins the allowed text here and
+     * not there: on these four pages the stale tour is the ONLY one carrying
+     * that tag, so its absence takes the page's only Multi-Day badge with it.
+     */
+    text: [
+      'Multi-Day Tour',
+      '☆Runs 7days a week!( from Oct 2024) ☆',
+      'An unparalleled travel experience in the South Island.',
+    ],
+    // Its card links to the tour and to the tag, over its own hero image.
+    links: ['/tour/queenstown-frans-josef-christchurch-bus-train-4-day-tour-copy', '/tag/multi-day'],
+    images: ['tranz-alpine-winter-cass-bank6'],
+    tags: 15,
+    pages: [
+      '/area/christchurch',
+      '/area/greymouth-west-coast',
+      '/area/queenstown',
+      '/tag/multi-day',
+    ],
+    why: 'the live area and tag pages card a tour that is a draft in Webflow',
+  },
+  {
+    /**
+     * The same stale tour again, on the CATEGORY pages.
+     *
+     * One tag more than the vertical card — 16 — because `.tour-card.services`
+     * carries an extra `.item-category` div that the MixItUp filter reads.
+     */
+    text: [
+      'Multi-Day Tour',
+      '☆Runs 7days a week!( from Oct 2024) ☆',
+      'An unparalleled travel experience in the South Island.',
+    ],
+    // Its card links to the tour and to the tag, over its own hero image.
+    links: ['/tour/queenstown-frans-josef-christchurch-bus-train-4-day-tour-copy', '/tag/multi-day'],
+    images: ['tranz-alpine-winter-cass-bank6'],
+    tags: 16,
+    pages: ['/tours/family-tours', '/tours/multi-day-tours', '/tours/nature'],
+    why: 'the live category pages card a tour that is a draft in Webflow',
+  },
+  {
+    /**
+     * An area with no tours shows nothing where Webflow shows "No items found."
+     *
+     * Webflow's empty state for a collection list is an unstyled grey box with
+     * that sentence in it, and three areas — `coromandel`, `dunedin` and
+     * `tongariro-ruapehu-taranaki` — have no tours, so it is what the live
+     * site puts under the "Click a Tour" heading. Ours renders the heading and
+     * nothing else.
+     *
+     * One tag: the `<p class="paragraph-mini">` inside it. The box itself
+     * replaces our empty `role="list"` div, so the `<div>` count is unchanged.
+     *
+     * DECISION PENDING — reproducing Webflow's placeholder is a content call,
+     * not a migration one. See AUDIT.hd.
+     */
+    text: [],
+    tags: 1,
+    pages: ['/area/coromandel', '/area/dunedin', '/area/tongariro-ruapehu-taranaki'],
+    why: "an area with no tours omits Webflow's \"No items found.\" placeholder",
   },
   {
     /**
@@ -107,9 +176,30 @@ export const DIVERGENCES = [
       // The date line on a testimonial card.
       /^(January|February|March|April|May|June|July|August|September|October|November|December) \d{1,2}, \d{4}$/,
     ],
+    // A different selection means different `/reviews/<slug>` links, on BOTH
+    // sides: live has ones we do not and we have ones live does not.
+    linkPattern: [/^\/reviews\/[a-z0-9-]+$/],
     tags: 0,
     pages: '*',
     why: 'the live testimonial order is randomised at publish time and cannot be reproduced',
+  },
+  {
+    /**
+     * Cloudflare's email obfuscation token on `/contact` differs.
+     *
+     * The address is written into the page as `/cdn-cgi/l/email-protection#<hex>`,
+     * where the first byte is a RANDOM key Cloudflare picks per response. Ours
+     * is whatever was frozen at extraction time. Both decode to the same
+     * address — checked, not assumed — and the decoder Cloudflare serves from
+     * `/cdn-cgi/scripts/.../email-decode.min.js` does not care which key it is.
+     *
+     * No tag or text difference: it is one `href` whose value cannot match.
+     */
+    text: [],
+    linkPattern: [/^\/cdn-cgi\/l\/email-protection#[0-9a-f]+$/],
+    tags: 0,
+    pages: ['contact'],
+    why: "Cloudflare picks a random key per response for the obfuscated email address",
   },
 ];
 
@@ -127,6 +217,27 @@ export const tagAllowanceFor = (slug) =>
 /** Text lines present on live that this page deliberately does not render. */
 export const textAllowanceFor = (slug) =>
   new Set(divergencesFor(slug).flatMap((d) => d.text ?? []));
+
+/**
+ * Links and images `verify-assets.mjs` may ignore on this page.
+ *
+ * Separate from the text and tag allowances because they measure something
+ * else: an `href` or a background image can differ with no text and no tag
+ * difference at all, which is how the home page hero shipped wrong. Same
+ * discipline though — a difference is declared here or it is a failure.
+ *
+ * Images are matched on the NORMALISED filename `verify-assets` produces, not
+ * on a URL: lower case, no extension, no fileId prefix, punctuation collapsed
+ * to hyphens.
+ */
+export const linkAllowanceFor = (slug) =>
+  new Set(divergencesFor(slug).flatMap((d) => d.links ?? []));
+
+export const linkPatternsFor = (slug) =>
+  divergencesFor(slug).flatMap((d) => d.linkPattern ?? []);
+
+export const imageAllowanceFor = (slug) =>
+  new Set(divergencesFor(slug).flatMap((d) => d.images ?? []));
 
 /**
  * Patterns for text whose CONTENT varies but whose presence is expected.

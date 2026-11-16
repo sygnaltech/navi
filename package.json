@@ -1,7 +1,7 @@
 {
   "name": "tournewzealand-com",
   "type": "module",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "private": true,
   "description": "www.tournewzealand.com — repo root. The site is web/, the Studio is studio/; schema/, config/, project.jsonc and migration-scripts/ are shared by both.",
   "scripts": {
@@ -21,6 +21,7 @@
     "localise:assets": "node migration-scripts/localise-webflow-assets.mjs",
     "assets:check": "node migration-scripts/check-assets.mjs",
     "verify": "node migration-scripts/verify-port.mjs",
+    "verify:assets": "node migration-scripts/verify-assets.mjs",
     "sitemap": "node migration-scripts/check-sitemap.mjs",
     "redirects": "node migration-scripts/gen-redirects.mjs",
     "seams": "node migration-scripts/cms-seams.mjs",

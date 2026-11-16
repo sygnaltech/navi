@@ -1,0 +1,246 @@
+---
+id: 1qU63C311y0LnDU43eM96h
+title: Phase 3 audit
+format-version: 2
+date: '2026-11-16T00:00:00.000Z'
+---
+
+# Phase 3 audit
+
+Every page of the ported site compared to its live equivalent on
+[www.tournewzealand.com](https://www.tournewzealand.com), with the dev server running on
+`http://localhost:4322`.
+
+Ten defects found, nine fixed. What is left is in [What remains](#what-remains) and needs either
+a converter change plus a re-import, or a decision.
+
+## How it was audited
+
+Three passes, because the first one alone was green on pages that were visibly wrong.
+
+**1. The structural verifier — `npm run verify -- --base http://localhost:4322 --cms --routes`.**
+It compares visible TEXT and the `<body>` TAG COUNT, and says so in its own header. That is what
+caught the missing conditional regions and the stale sample text.
+
+**2. A link-and-image pass, which the verifier could not do —
+`npm run verify:assets -- --base http://localhost:4322`.** It compares attribute VALUES: every
+`href`, every `<img src>`, every `background-image`. Images are not comparable by URL, because
+ours are Sanity CDN hashes, but they are comparable by original filename, which the import
+preserved on each asset; the pass resolves every Sanity URL back through the asset list to the
+Webflow filename it came from.
+
+**This is the pass that found the home page hero, and the toolchain did not have it.**
+`verify-port.mjs` compares text and tag counts, so a hero bound to the wrong collection keeps the
+sample's heading, matches on text, matches on tag count, and passes. `sanity:verify` compares rich
+text "character for character" — but only its plain TEXT, so a node carrying no characters is
+invisible to it too.
+
+It is now `migration-scripts/verify-assets.mjs`, reading the same
+`divergences.config.mjs` as the structural verifier, so a declared difference is subtracted rather
+than tolerated. It needs a running server, which is why it is not in `npm run preflight`. It
+currently reports **86 of 93 pages with identical links and images**, and the seven failures are
+exactly the two open defects below — no noise.
+
+**3. An element-sequence diff** on pages still failing after the first two, to name the exact
+region that differs rather than a tag count.
+
+## Where it got to
+
+|                                  | Before | After |
+| -------------------------------- | ------ | ----- |
+| Pages structurally identical      | 44/93  | 64/93 |
+| Of which the 22 ported pages      | 22/22  | 22/22 |
+| Category, area, tag, review, news | 15/44  | 44/44 |
+| Tour pages                        | 0/29   | 0/29  |
+
+The 29 tour pages all fail for the two reasons in [What remains](#what-remains), and nothing else.
+
+## The home page hero — what that image was
+
+The hero was bound to the `special` collection, filtered on `homepageBanner`. Exactly one special
+sets that flag: a 2020 affiliate promotion whose "homepage hero image" is a **728×90 banner ad**,
+stretched across the full width of the page, with the heading sitting on top of it. The link under
+the heading went to the affiliate's site, not to the tour.
+
+The hero is driven by the `featured` collection — a separate collection with `title`, `subtitle`,
+`heroImage`, `link`, `pos`, `enabled` and a date window, which is exactly the shape of the hero
+markup. Nothing in the site queried it; all four of its documents were imported and rendered
+nowhere.
+
+The live rule is the one Webflow's collection list uses: enabled, inside its date window, ordered
+by `pos`. Today that resolves to one item — "Tour Hobbiton", linking to
+`/tour/hobbiton-waitomo-caves-tour-1-day`, over `hobbiton_summer-150.webp`. Our page now renders
+that, image for image and link for link.
+
+The heading was a second, quieter half of the same bug: `h1` and `h2` were never bound at all, so
+the hero kept saying "Tour Hobbiton" over whatever image the wrong collection supplied. It reads
+as correct and is the hardest kind of wrong to see.
+
+## Fixed
+
+### 1. The home page hero — wrong collection
+
+Above. `web/src/lib/cms.ts`, `web/src/lib/templates/static-lists.ts`.
+
+### 2. All 15 area pages showed the Queenstown map
+
+The small region map beside each area's description is an `<img>` Webflow left unclassed — the
+class is on the column around it. It was never bound, so all fifteen areas published the sample
+page's map. Fourteen of them were the wrong map, and a map is not a thing a reader checks.
+
+Added `setImageSrc` to the seam helpers, which addresses the wrapper and rewrites only the `src`.
+
+### 3. Category pages: the filter chips were the wrong collection
+
+`/tours/<category>` carries a row of chips across the top. They are the four TAGS — "Half-day
+Tours", "1 Day Tours", "2 Day Tours", "Multi-Day Tours" — each in its own colour. They were bound
+to the eleven CATEGORIES, so the row rendered eleven identically-coloured chips naming the thing
+the page is already filtered to.
+
+The label is `groupTitle`, a third field distinct from both `name` and `title`. `data-filter`
+stays at the literal `"all"` the live site emits on every chip — see
+[Decisions needed](#decisions-needed).
+
+### 4. Category pages: every tour card showed the sample tour's badge
+
+The card on a category page carries a second, link-less `.tag-button` holding the tour's own badge
+— "☆New Tour☆", "5 Days". It was never bound, so all eleven category pages stamped the sample
+tour's badge on every card: a sentence about small-group tours, on tours it was not written for.
+
+### 5. Every tour card's description was invisible
+
+Webflow writes `w-dyn-bind-empty` on a bound field with no value, and the site's stylesheet carries
+
+```css
+.w-dyn-hide, .w-dyn-bind-empty, .w-condition-invisible { display: none !important }
+```
+
+The tour card on three templates was extracted from a sample tour with no `brief`, so the class was
+frozen into the seam. Every card on `/tours`, `/tours/<category>` and `/tag/<slug>` had the right
+text written into an element the browser never drew — **no symptom in the HTML, and none in a text
+diff of the HTML**, because the text was there.
+
+Fixed centrally rather than at the call sites: `setText` and `setHtml` now maintain the class the
+way Webflow does — writing a value removes it, writing nothing adds it. A seam cannot acquire this
+bug by being re-extracted from a different sample.
+
+### 6. The booking form submitted the wrong tour name
+
+`#tour.tour-info` is the "Tour Requested" row of the form that posts to navi.co.nz. Unbound, it
+carried the sample tour's name — so **an enquiry sent from any of the 29 tour pages said "Hobbiton
+Movie Set Tour"**. The form survived the port untouched and still submitted; what it submitted was
+wrong.
+
+The booking-calendar embed beside it had the same problem and one more: its iframe pointed at
+`tour-calendar?tour=RINGS-EN`, the sample's code, on every page. It is conditional on
+`tourAidCode`, which 16 of the 29 tours set, and Webflow drops the label and the embed together on
+the other 13. The URL is now read back out of the markup and only its `tour=` parameter swapped, so
+the third-party endpoint stays owned by the frozen page.
+
+### 7. Category pages: the description rendered nowhere, and the sample's did
+
+The long description binds into `.body-content`, not the `.rich-text-block` the area and tag
+templates use. Nothing on the category page carries that class, so the guarded call silently did
+nothing and all eleven pages published the sample category's three paragraphs — a blurb about
+Hobbiton, Waitomo and the Waipoua forest, sitting on `/tours/transfers`.
+
+The intro paragraph above it is one conditional region with the "See the Tours" button, and
+Webflow drops both when `briefText` is empty. `half-day`, `multi-day-tours` and `transfers` had a
+stray button floating in a blank band.
+
+### 8. Tour pages: the same testimonial twice, and testimonials where there should be none
+
+There are two testimonial regions on a tour page and they ask different questions. The upper one is
+the reviews that REFERENCE this tour, at most two, and Webflow empties the whole region when none
+do — which is the case on 20 of the 29 tours. The lower strip is three reviews site-wide, unrelated
+to the tour.
+
+Both were bound to the site-wide list, so the newest review appeared twice on every tour page, and
+the 20 pages Webflow leaves blank got a testimonial they should not have. The strip now also skips
+whatever the region above it used; no live page repeats a review and neither does ours.
+
+### 9. Three smaller mis-bindings
+
+-   `/portfolio` showed `thumb` where the live page shows `hero`. They differ on
+    `school-educational-tours`, and `transfers` and `adventure-activities` have no `thumb` at all —
+    one wrong picture and two empty squares. The page is also ordered by `seq` DESCENDING, ties by
+    name, which is the reverse of the nav's order on the same eleven documents.
+-   `/area/hawkes-bay` rendered an empty hero subtitle band. It is the one area with no `brief`,
+    and Webflow omits the region rather than emptying it.
+-   `/news/<slug>` wrote the post's `summary` into `.subtitle`, which is the static label "News".
+    `summary` is a list-card field and renders nowhere on the live post.
+-   "Related Tours" is a conditional section, heading and all. `routeburn-track-day-walk` makes it
+    obvious: it HAS a related tour, that tour is archived, and the live page carries no section.
+-   "Pick-Up Location" — the CBD hotel select in the booking form — is on NORTH ISLAND tours only.
+    Checked against all 29 live pages, not inferred: `island === 'north'` predicts its presence on
+    every one of them, including the three tours whose island is unset, where it is absent.
+
+## What remains
+
+All 29 tour pages fail, for two reasons and no others.
+
+### A. Rich text drops everything that is not a character
+
+`html-to-portable-text.mjs` converts text, marks, headings and lists. It drops three kinds of node,
+and `npm run sanity:verify` cannot see it, because that check compares the plain TEXT of each
+field and a node with no characters in it leaves no trace there.
+
+| Dropped         | How many                 | Where                              |
+| --------------- | ------------------------ | ---------------------------------- |
+| `<br>`          | 131, in 26 fields        | 24 tour descriptions, 3 highlights |
+| `<figure>` video | 10 embeds                | 10 tour descriptions               |
+| `<figure>` image | 6 images                 | 5 tour descriptions                |
+
+The images are real, visible content — `/tour/hobbiton-waitomo-caves-tour-1-day` has a photograph
+captioned "Best Hobbiton cosplay costume" floated into the body text, and ours does not. The
+videos are the same. The 131 line breaks are address blocks and itinerary lines run together into
+paragraphs.
+
+**This needs a converter change AND a re-import**, and the import uploads six new image assets into
+the production dataset — so it is yours to run, not mine. The schema already permits images in rich
+text (`schema/richText.mjs` declares an `image` member), so the schema does not change.
+
+### B. Three tour fields still have nowhere to render
+
+Unchanged from `PROGRESS-OVERVIEW.hd`: `highlights`, `pricingNotes` and
+`specialCancellationPolicy` have no region in the frozen `tpl-tour` template, because Webflow omits
+a conditional region entirely when its condition is off and no single tour has all three.
+
+This audit adds one fact to that: the regions to assemble are `.highlights-frame` (from a tour with
+highlights, e.g. `matakana-wd`) and `.pricing-area` (from `rotorua-one-day-tour`), and the missing
+`#book-now` anchor on two tour pages belongs to the pricing block.
+
+## Decisions needed
+
+**The MixItUp filter on category pages does nothing on the live site.** Every chip carries
+`data-filter="all"`, so clicking any of the four shows everything. The cards carry no tag to filter
+on either — `.item-category` holds the tour's title. Reproduced exactly as found; making the
+filter work is a behaviour change, not a port.
+
+**An area with no tours shows nothing where Webflow shows "No items found."** Three areas —
+`coromandel`, `dunedin`, `tongariro-ruapehu-taranaki` — have no tours, and the live page puts
+Webflow's unstyled grey placeholder under the "Click a Tour" heading. Ours shows the heading and
+nothing. Ours is better; the live site is the spec. Declared as a divergence either way.
+
+**`/contact` obfuscates the email with a Cloudflare token frozen at extraction time.** Both the
+live token and ours decode to `info@navi.co.nz` — checked, not assumed — and the decoder script is
+served by Cloudflare from `/cdn-cgi/scripts/…/email-decode.min.js`, which 404s on the dev server
+and will resolve behind the real zone. Worth one look on `*.workers.dev` that the address renders
+as text and not as a mangled string.
+
+## Two notes on the verification itself
+
+**Run the final pass against a production build, not the dev server.** Astro injects
+`<script type="module" src="/@vite/client">` in dev, which is one extra `<body>` tag on every page.
+The numbers in this document all carry it.
+
+**`migration-scripts/divergences.config.mjs` grew five entries and two new fields.** `links`,
+`linkPattern` and `images` declare what `verify:assets` may ignore, on the same terms as `text` and
+`tags`: declared here, or it is a failure.
+
+The stale Webflow tour —
+`queenstown-frans-josef-christchurch-bus-train-4-day-tour-copy`, a DRAFT in Webflow whose card is
+frozen into the published pages — was declared for `/tours` only. It is also carded on four
+area/tag pages (15 tags) and three category pages (16 tags, one more because the services card
+carries an extra `.item-category`). The existing entry's comment calls it "ARCHIVED"; the dump says
+`isDraft: true, isArchived: false`. Same consequence, wrong word.

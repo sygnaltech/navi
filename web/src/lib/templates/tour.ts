@@ -12,8 +12,9 @@
  * reorder would bind reviews into the photo gallery:
  *
  *   0  sidebar photo gallery      this tour's photos
- *   1  testimonials (single)      the most recent review of this tour
- *   2  testimonials (strip)       up to three reviews of this tour
+ *   1  testimonials (this tour)   up to two reviews that reference this tour,
+ *                                and the whole region is removed when none do
+ *   2  testimonials (strip)       three reviews, site-wide, unrelated to it
  *   3  pick-up points             options for the booking form's select
  *   4  related tours              this tour's related tours
  */
@@ -24,7 +25,10 @@ import {
   setBackground,
   setListItems,
   setRepeaterTemplate,
+  getEmbedSrc,
+  setEmbedSrc,
   removeEl,
+  removeEnclosing,
   countLists,
   hasSeam,
   seamCount,
@@ -129,6 +133,59 @@ export function bindTour(template: string, tour: Tour, shell: Shell, cards: Card
    * one sample. Tracked in PROGRESS-OVERVIEW.hd.
    */
 
+  // ── the booking form ─────────────────────────────────────────────────────
+  /**
+   * `#tour.tour-info` IS THE VALUE THE ENQUIRY ARRIVES WITH.
+   *
+   * It is the "Tour Requested" row of the form that posts to navi.co.nz, and
+   * unbound it carried the SAMPLE tour's name — so an enquiry sent from any of
+   * the 29 tour pages said "Hobbiton Movie Set Tour". The form survived the
+   * port untouched and still submitted; what it submitted was wrong.
+   */
+  body = setText(body, 'tour-info', tour.title);
+
+  /**
+   * The booking-calendar embed, and the region around it.
+   *
+   * It is conditional on `tourAidCode` — 16 of the 29 tours set one, and
+   * Webflow drops the label and the embed together on the other 13, so the
+   * whole anonymous `<div>` goes rather than just the iframe.
+   *
+   * The URL is read back out of the markup and only its `tour=` parameter
+   * swapped, so the third-party endpoint stays owned by the frozen page rather
+   * than being rebuilt from a string literal here.
+   */
+  if (hasSeam(body, 'code-embed')) {
+    if (tour.tourAidCode) {
+      const src = getEmbedSrc(body, 'code-embed');
+      body = setEmbedSrc(
+        body,
+        'code-embed',
+        src.replace(/([?&]tour=)[^&]*/, `$1${encodeURIComponent(tour.tourAidCode)}`),
+      );
+    } else {
+      body = removeEnclosing(body, 'code-embed');
+    }
+  }
+
+  /**
+   * "Pick-Up Location" — the CBD hotel select — is on NORTH ISLAND tours only.
+   *
+   * Checked against all 29 live pages, not inferred: `island === 'north'`
+   * predicts its presence on every one of them, including the three tours whose
+   * island is unset, where it is absent. The label says "these hotels in the
+   * Auckland CBD", so the condition also makes sense — a Queenstown tour has
+   * no Auckland pick-up to offer.
+   *
+   * There are exactly two `<select>`s in the form, and the pick-up one is the
+   * second; its wrapping `<div>` carries no class, so it is reached through the
+   * select. The hidden collection list that Finsweet populates the select FROM
+   * is elsewhere in the page and stays either way, as it does on the live site.
+   */
+  if (tour.island !== 'north' && seamCount(body, 'w-select') === 2) {
+    body = removeEnclosing(body, 'w-select', undefined, 1);
+  }
+
   // ── the five lists ───────────────────────────────────────────────────────
   const photoItems = cards.tourPhotos(tour.photos ?? []);
   body = setListItems(body, 0, photoItems);
@@ -137,10 +194,47 @@ export function bindTour(template: string, tour: Tour, shell: Shell, cards: Card
   // the sample tour's photograph and a client-side render shows it everywhere.
   body = setRepeaterTemplate(body, 0, photoItems.split('\n')[0] || undefined);
 
-  body = setListItems(body, 1, cards.reviewCards((tour.reviews ?? []).slice(0, 1), 'tpl-tour.1'));
-  body = setListItems(body, 2, cards.reviewCards((tour.reviews ?? []).slice(0, 3), 'tpl-tour.2'));
+  const ownReviews = tour.tourReviews ?? [];
+  body = setListItems(body, 1, cards.reviewCards(ownReviews, 'tpl-tour.1'));
+
+  // The site-wide strip skips whatever the region above it already used. Both
+  // regions draw from the same eleven reviews, so without this the same quote
+  // can appear twice on one page — which it did, and which no live page does:
+  // on all five tour pages checked, the strip and the region above it are
+  // disjoint.
+  const shown = new Set(ownReviews.map((r) => r.slug));
+  const strip = (tour.reviews ?? []).filter((r) => !shown.has(r.slug)).slice(0, 3);
+  body = setListItems(body, 2, cards.reviewCards(strip, 'tpl-tour.2'));
   body = setListItems(body, 3, cards.pickUpOptions(shell.pickUps, 'tpl-tour.3'));
   body = setListItems(body, 4, cards.tourCardSquare(tour.related ?? []));
+
+  /**
+   * No reviews reference this tour — 20 of the 29 tour pages. Webflow keeps
+   * the OUTER `.testimonials_list-wrapper` and empties it completely:
+   *
+   *     <div class="testimonials_list-wrapper w-dyn-list"></div>
+   *
+   * so the `role="list"` goes and the wrapper stays. Removing the wrapper too
+   * is one `<div>` short on two thirds of the tour pages; leaving the empty
+   * `role="list"` in place is one too many.
+   *
+   * Last, after every `setListItems`, because removing a list renumbers the
+   * ones after it.
+   */
+  if (ownReviews.length === 0) body = removeEl(body, 'testimonials_list', 0);
+
+  /**
+   * "Related Tours" is a conditional section, heading and all.
+   *
+   * `routeburn-track-day-walk` is the case that makes it obvious: it HAS a
+   * related tour in Webflow, that tour is archived, and the live page carries
+   * no section at all. So the condition is "at least one related tour that
+   * still exists", which is exactly what an empty `related` means here — the
+   * archived one is not in the dataset to dereference.
+   */
+  if ((tour.related ?? []).length === 0 && hasSeam(body, 'justify-start')) {
+    body = removeEnclosing(body, 'justify-start', 'content-section');
+  }
 
   return body;
 }

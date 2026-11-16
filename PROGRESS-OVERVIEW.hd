@@ -14,7 +14,8 @@ Checkboxes only. Detail lives in [PROGRESS.hd](PROGRESS.hd); things to look at a
 - [x] Webflow token — working
 - [x] Sanity token — working
 - [x] All seven decisions answered and applied
-- [ ] You start a dev server, for the Phase 3 audit
+- [x] You start a dev server, for the Phase 3 audit
+- [ ] Re-import after the rich-text converter fix — see [AUDIT.hd](AUDIT.hd)
 
 ## Phase 1 — Prepare
 
@@ -80,22 +81,31 @@ Checkboxes only. Detail lives in [PROGRESS.hd](PROGRESS.hd); things to look at a
 - [x] All 22 static pages structurally identical — `npm run verify -- --base <url> --cms`
 - [x] Verifier extended to the 71 collection routes — `--routes`
 - [x] Deliberate differences declared, not tolerated — `migration-scripts/divergences.config.mjs`
-- [x] 44 of 93 pages structurally identical
-- [ ] The other 49 — all tour, area, tag and category pages, one root cause below
+- [x] 64 of 93 pages structurally identical
+- [x] Every category, area, tag, review and news page — 44 of 44
+- [ ] The other 29 — all tour pages, two root causes below
 
-### The one remaining defect: conditional regions
+### Remaining defect 1: conditional regions
 
 - [ ] `tpl-tour` is missing the **highlights**, **pricing notes** and **cancellation policy** regions, so those three fields have nowhere to render on any tour page
 
-- [ ] Same class of gap on the area, tag and category templates
-
 Webflow omits a conditional region **entirely** when its condition is off, so a region absent from the sample item is absent from the frozen template for every page. And no single tour has all three: `rotorua-one-day-tour` has the pricing section, `black-water-rafting-tour-1-day` has the cancellation policy, neither has both.
 
-So "pick the sample that renders the most" is not sufficient here — the template has to be assembled from more than one sample, or the regions driven per item. That is the next piece of work and it is well understood.
+So "pick the sample that renders the most" is not sufficient here — the template has to be assembled from more than one sample, or the regions driven per item. The regions to lift are `.highlights-frame` (from `matakana-wd`) and `.pricing-area` (from `rotorua-one-day-tour`).
+
+The same class of gap on the **area, tag and category templates is now closed** — see [AUDIT.hd](AUDIT.hd).
+
+### Remaining defect 2: rich text drops non-text nodes
+
+- [ ] 131 `<br>`, 10 embedded videos and 6 embedded images are dropped by `html-to-portable-text.mjs`
+
+- [ ] Needs a converter change **and a re-import** — the import uploads six new image assets, so it is yours to run
+
+`npm run sanity:verify` reports these fields "identical character for character" because it compares plain TEXT, and a node with no characters in it leaves no trace there.
 
 ### Homepage
 
-- [ ] Critical hero image missing
+- [x] Hero was bound to the wrong collection — a 2020 affiliate banner ad, not the `featured` item. Fixed; see [AUDIT.hd](AUDIT.hd)
 
 ### Code integration
 
@@ -120,13 +130,16 @@ So "pick the sample that renders the most" is not sufficient here — the templa
 - [x] Contact form — posts to usebasin, survives untouched
 - [x] Booking form — posts to navi.co.nz, survives untouched
 - [x] Subscribe form — posts to Mailchimp, survives untouched
+- [x] Booking form's "Tour Requested" now carries THIS tour — it carried the sample tour's name on all 29 pages
 
 ## Phase 3 — Audit
 
-- [ ] Dev server run by you
-- [ ] `npm run verify -- --base <url>` against the running site
-- [ ] Page-by-page audit against live
-- [ ] `AUDIT.hd` written
+- [x] Dev server run by you
+- [x] `npm run verify -- --base <url> --cms --routes` against the running site
+- [x] Link-and-image pass against live — the one the verifier cannot do
+- [x] Page-by-page audit against live
+- [x] [AUDIT.hd](AUDIT.hd) written — ten defects found, nine fixed
+- [ ] Re-run the audit against a production build rather than the dev server
 
 ## Cut-over
 

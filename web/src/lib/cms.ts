@@ -106,12 +106,25 @@ export type ReviewCard = {
 /**
  * One tour, with everything its page renders.
  *
- * THE TESTIMONIAL STRIPS ARE SITE-WIDE, not this tour's own reviews — checked
- * against the live site rather than assumed. `/tour/matakana-saturday` shows
- * three reviews, none of which references that tour, and only 9 of the 11
- * reviews reference any tour at all. Filtering on the review's `tours` field,
- * which is the obvious reading of it, left 20 of the 29 tour pages with no
- * testimonials.
+ * THERE ARE TWO TESTIMONIAL REGIONS AND THEY ASK DIFFERENT QUESTIONS.
+ *
+ *   `tourReviews`  the reviews that REFERENCE this tour, at most two. Webflow
+ *                  omits the whole region when there are none, which is why it
+ *                  is absent on 20 of the 29 tour pages — that absence is the
+ *                  correct rendering, not a gap. Counted on the live pages:
+ *                  `hobbiton-waitomo-caves-tour-1-day` has four referencing
+ *                  reviews and shows two, `west-auckland-winery-tour` has two
+ *                  and shows both, `matakana-saturday` has none and the region
+ *                  is not in its markup at all.
+ *
+ *   `reviews`      the site-wide strip below it, three of the eleven, with no
+ *                  relation to this tour. `/tour/matakana-saturday` shows three
+ *                  reviews, none of which references it.
+ *
+ * An earlier version read the first region as site-wide too and bound it to the
+ * newest review — so the same quote appeared twice on every tour page, once in
+ * each region, and the pages Webflow leaves blank got a testimonial they should
+ * not have.
  *
  * Ordered newest-first. The live order matches none of date, name or slug:
  * Webflow randomises the list at PUBLISH time and bakes the result in, so it is
@@ -126,7 +139,7 @@ export type ReviewCard = {
  */
 export const TOUR_QUERY = `*[_type == "tour" && slug.current == $slug][0]{
   "slug": slug.current,
-  title, nameDetail, brief, naviCode, island,
+  title, nameDetail, brief, naviCode, tourAidCode, island,
   "hero": heroImage${IMAGE},
   "photos": photos[]${IMAGE},
   highlights, body,
@@ -137,6 +150,7 @@ export const TOUR_QUERY = `*[_type == "tour" && slug.current == $slug][0]{
   "areas": areas[]->{"slug": slug.current, "name": name, "title": title},
   "special": special->{"slug": slug.current, title, details},
   "related": relatedTours[]->{${TOUR_CARD}},
+  "tourReviews": *[_type == "review" && references(^._id)]|order(date desc)[0...2]{${REVIEW_CARD}},
   "reviews": *[_type == "review"]|order(date desc){${REVIEW_CARD}}
 }`;
 
@@ -148,6 +162,8 @@ export type Tour = {
   nameDetail?: string;
   brief?: string;
   naviCode: string;
+  /** The booking system's code for this tour. 16 of the 29 set it. */
+  tourAidCode?: string;
   island?: string;
   hero: ImageRef;
   photos?: ImageRef[];
@@ -166,6 +182,8 @@ export type Tour = {
   areas?: Array<{slug: string; name: string; title: string}>;
   special?: {slug: string; title: string; details: string} | null;
   related?: TourCard[];
+  /** Reviews that reference this tour, at most two. Often empty — see above. */
+  tourReviews?: ReviewCard[];
   reviews?: ReviewCard[];
 };
 
@@ -178,38 +196,61 @@ export const getTour = (slug: string) => client.fetch<Tour | null>(TOUR_QUERY, {
  *
  * Fetched for EVERY page, including the ported static ones, because the shell's
  * nine collection lists are part of why the whole site renders on demand.
+ *
+ * `homepageHeroes` is the homepage hero, and it comes from `featured` — NOT
+ * from `special`. Both collections carry a homepage image and a homepage link,
+ * which is how an earlier version of this query came to drive the hero from
+ * `special.homepageBanner`: the only special with that flag set is a 2020
+ * affiliate ad whose "hero image" is a 728x90 banner, so the homepage rendered
+ * a stretched advert behind the heading and linked it off-site.
+ *
+ * The live rule is the one Webflow's collection list uses: enabled, inside its
+ * date window, ordered by `pos`. Today that resolves to exactly one of the four
+ * `featured` items; the other three are either drafts or expired. The template
+ * repeats per item, so a second live one is a second hero, as on Webflow.
  */
 export const SHELL_QUERY = `{
-  "categories": *[_type == "tourCategory"]|order(seq asc){"slug": slug.current, name, brief, featured, "thumb": thumb${IMAGE}},
+  "categories": *[_type == "tourCategory"]|order(seq asc){"slug": slug.current, name, brief, featured, seq, "thumb": thumb${IMAGE}, "hero": hero${IMAGE}},
   "areas": *[_type == "area"]|order(name asc){"slug": slug.current, name, title, "island": island->slug.current},
   "tags": *[_type == "tag"]|order(seq asc){"slug": slug.current, name, title, groupTitle, color},
   "tours": *[_type == "tour"]|order(seq asc, title asc){${TOUR_CARD}},
   "pickUps": *[_type == "pickUp"]|order(title asc){"slug": slug.current, title, address, latitude, longitude},
   "reviews": *[_type == "review"]|order(date desc){${REVIEW_CARD}},
   "news": *[_type == "news"]|order(date desc){"slug": slug.current, title, summary, "mainImage": mainImage${IMAGE}},
-  "homepageSpecials": *[_type == "special" && homepageBanner == true]{
-    "slug": slug.current, title, details,
-    "heroImage": homepageHeroImage${IMAGE},
-    "link": homepageLink
+  "homepageHeroes": *[_type == "featured" && enabled == true
+    && (!defined(startDate) || startDate <= now())
+    && (!defined(endDate) || endDate >= now())]|order(pos asc){
+    "slug": slug.current, title, subtitle,
+    "heroImage": heroImage${IMAGE},
+    link
   }
 }`;
 
 export type AreaLink = {slug: string; name: string; title: string; island?: string | null};
 
 export type Shell = {
-  categories: Array<{slug: string; name: string; brief: string; featured?: boolean; thumb: ImageRef}>;
+  categories: Array<{
+    slug: string;
+    name: string;
+    brief: string;
+    featured?: boolean;
+    seq?: number;
+    /** The small card image. Two of the eleven categories have only a `hero`. */
+    thumb: ImageRef;
+    hero: ImageRef;
+  }>;
   areas: AreaLink[];
   tags: Array<{slug: string; name: string; title: string; groupTitle?: string; color?: string}>;
   tours: TourCard[];
   pickUps: Array<{slug: string; title: string; address: string; latitude: string; longitude: string}>;
   reviews: ReviewCard[];
   news: Array<{slug: string; title: string; summary?: string; mainImage: ImageRef}>;
-  homepageSpecials: Array<{
+  homepageHeroes: Array<{
     slug: string;
     title: string;
-    details: string;
+    subtitle?: string | null;
     heroImage: ImageRef;
-    link?: string;
+    link: string;
   }>;
 };
 

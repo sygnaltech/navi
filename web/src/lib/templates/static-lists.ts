@@ -34,26 +34,38 @@ type Ctx = {shell: Shell; cards: Cards; seam: SeamResolver};
 const BINDERS: Record<string, (body: string, ctx: Ctx) => string> = {
   /**
    * Home — three lists:
-   *   0  the hero carousel      the special flagged as the homepage banner
+   *   0  the hero              the live `featured` item
    *   1  the category selector  every tour category
    *   2  the news strip         news posts
    */
   home(body, {shell, seam}) {
     let out = body;
 
-    // The hero is driven by a `special`, not a tour. Only one of the five
-    // specials sets `homepageBanner`, so an empty result must empty the list
-    // rather than leave the sample's hero in place.
-    const banner = shell.homepageSpecials ?? [];
+    /**
+     * The hero is a `featured`, not a `special` and not a tour — see the note
+     * on SHELL_QUERY for how those two were confused and what it rendered.
+     *
+     * All four of the item's regions bind. Binding only the image and the link,
+     * as an earlier version did, leaves the sample's headline frozen on the
+     * page: the hero went on saying "Tour Hobbiton" over a different item's
+     * image, which reads as correct and is the hardest kind of wrong to spot.
+     *
+     * An empty result must empty the list rather than leave the sample in
+     * place, which is what `setListItems` with no items does.
+     */
     out = setListItems(
       out,
       0,
-      banner
-        .map((special) => {
+      (shell.homepageHeroes ?? [])
+        .map((hero) => {
           let html = seam('home.0');
-          html = setBackground(html, 'hero-section', imageUrl(special.heroImage, 1920));
-          if (hasSeam(html, 'w-inline-block')) {
-            html = setAttr(html, 'w-inline-block', 'href', special.link ?? '/tours');
+          html = setBackground(html, 'hero-section', imageUrl(hero.heroImage, 1920));
+          html = setAttr(html, 'hero-link-block', 'href', hero.link);
+          html = setText(html, 'heading-1', hero.title);
+          // `setText` maintains `w-dyn-bind-empty` on the subtitle for us —
+          // the sample had none, and the class is what hides it.
+          if (hasSeam(html, 'news-subheading')) {
+            html = setText(html, 'news-subheading', hero.subtitle ?? '');
           }
           return html;
         })
@@ -81,7 +93,11 @@ const BINDERS: Record<string, (body: string, ctx: Ctx) => string> = {
         .map((category) => {
           let html = seam('home.1');
           html = setAttr(html, 'selection-item-link', 'href', `/tours/${category.slug}`);
-          html = setBackground(html, 'selection-item-bgimage', imageUrl(category.thumb, 600));
+          // `thumb` here, `hero` on /portfolio — see the note there. All four
+          // categories on this strip set both fields to the same image, so the
+          // live page cannot tell them apart; `thumb` is the one this card's
+          // size asks for, with `hero` behind it for a category that has none.
+          html = setBackground(html, 'selection-item-bgimage', imageUrl(category.thumb ?? category.hero, 600));
           html = setText(html, 'title-small', category.name);
           if (hasSeam(html, 'subtitle')) html = setText(html, 'subtitle', category.brief ?? '');
           return html;
@@ -150,15 +166,29 @@ const BINDERS: Record<string, (body: string, ctx: Ctx) => string> = {
    * category. An earlier version bound tours here and produced 159 extra tags.
    *
    * `.title.yellow` is the static label "PORTFOLIO", not a field.
+   *
+   * TWO THINGS THIS PAGE DOES DIFFERENTLY FROM EVERY OTHER CATEGORY LIST, both
+   * read off the live page rather than assumed:
+   *
+   *   - The square shows `hero`, not `thumb`. The two differ on
+   *     `school-educational-tours`, and `transfers` and `adventure-activities`
+   *     have no `thumb` at all — so bound to `thumb` this page showed one wrong
+   *     picture and two empty squares.
+   *   - The order is `seq` DESCENDING, ties by name. That puts the four
+   *     unranked categories (seq 100) first and Hobbiton last, which is the
+   *     reverse of the nav's order on the same eleven documents.
    */
   portfolio(body, {shell, seam}) {
+    const ordered = [...shell.categories].sort(
+      (a, b) => (b.seq ?? 0) - (a.seq ?? 0) || a.name.localeCompare(b.name),
+    );
     return setListItems(
       body,
       0,
-      shell.categories
+      ordered
         .map((category) => {
           let html = seam('portfolio.0');
-          html = setBackground(html, 'big-square-container', imageUrl(category.thumb, 900));
+          html = setBackground(html, 'big-square-container', imageUrl(category.hero ?? category.thumb, 900));
           html = setText(html, 'title-big', category.name);
           html = setAttr(html, 'underline-block', 'href', `/tours/${category.slug}`);
           html = setAttr(html, 'button-round-hollow', 'href', `/tours/${category.slug}`);
