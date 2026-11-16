@@ -113,8 +113,9 @@ export const DIVERGENCES = [
      * One tag: the `<p class="paragraph-mini">` inside it. The box itself
      * replaces our empty `role="list"` div, so the `<div>` count is unchanged.
      *
-     * DECISION PENDING — reproducing Webflow's placeholder is a content call,
-     * not a migration one. See AUDIT.hd.
+     * DECIDED: the placeholder is NOT reproduced. It is Webflow's unstyled
+     * debug affordance leaking to the public, and telling a visitor "No items
+     * found." is worse than the empty section they get instead.
      */
     text: [],
     tags: 1,
@@ -134,6 +135,19 @@ export const DIVERGENCES = [
     tags: 1,
     pages: ['payment'],
     why: 'removed a <script> tag that was already 404 on the live site (see REVIEW.hd)',
+  },
+  {
+    /**
+     * The same, on every tour page: `…deployed.codepen.website/scripts/checkout.js`.
+     *
+     * Confirmed 404 at the source, so every one of the 29 live tour pages makes
+     * a failed request on every view. The tag was dropped rather than carried.
+     */
+    text: [],
+    tags: 1,
+    pages: [],
+    pagePattern: [/^\/tour\//],
+    why: 'removed checkout.js, which is already 404 on the live site (see REVIEW.hd)',
   },
   {
     /**
@@ -203,12 +217,21 @@ export const DIVERGENCES = [
   },
 ];
 
-/** Declared divergences applying to one page, by slug. */
+/**
+ * Declared divergences applying to one page, by slug.
+ *
+ * `pagePattern` is for a difference that applies to a whole ROUTE rather than
+ * to named pages — all 29 `/tour/<slug>` pages share a dead script tag, and
+ * listing their slugs here would be a copy of the dataset that goes stale the
+ * next time a tour is published.
+ */
 export const divergencesFor = (slug) =>
-  DIVERGENCES.filter(
-    (d) =>
-      !(d.exceptPages ?? []).includes(slug) && (d.pages === '*' || d.pages.includes(slug)),
-  );
+  DIVERGENCES.filter((d) => {
+    if ((d.exceptPages ?? []).includes(slug)) return false;
+    if (d.pages === '*') return true;
+    if ((d.pages ?? []).includes(slug)) return true;
+    return (d.pagePattern ?? []).some((re) => re.test(slug));
+  });
 
 /** Total `<body>` tag allowance for a page: live tags minus ours. */
 export const tagAllowanceFor = (slug) =>

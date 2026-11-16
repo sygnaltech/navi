@@ -103,9 +103,25 @@ export function bindTour(template: string, tour: Tour, shell: Shell, cards: Card
   // ── prose ────────────────────────────────────────────────────────────────
   // Serialised into Webflow's own `.w-richtext` wrapper, so the ported
   // stylesheet styles CMS prose with no new CSS.
-  // ONLY `.body-content` [0]. [1] is the static "Booking" conditions block —
-  // "A minimum of 2 adults must be attending…" — which is template copy, not a
-  // field. Writing highlights into it deleted that block from all 29 pages.
+  /**
+   * SIX `.body-content` ELEMENTS, and only three of them are fields. In order:
+   *
+   *   0  the tour description                      `body`
+   *   1  the pricing section's intro               DEAD — see below
+   *   2  the pricing section's notes               `pricingNotes`
+   *   3  "Special Note for this Tour" heading      static
+   *   4  the special cancellation policy           `specialCancellationPolicy`
+   *   5  the "Booking" terms and conditions        static
+   *
+   * Writing a field into 3 or 5 silently deletes template copy from all 29
+   * pages, which is what an earlier version did.
+   *
+   * [1] is bound in Webflow to `pricing-section-intro-text`, which the
+   * migration deliberately does NOT carry — it holds expired pricing notes on
+   * the four tours that set it (see `webflow/collections.mjs`). It is empty on
+   * both live pages that have this region, so leaving it empty IS the live
+   * rendering, not a gap.
+   */
   body = setHtml(body, 'body-content', toHtml(tour.body));
 
   /**
@@ -116,22 +132,59 @@ export function bindTour(template: string, tour: Tour, shell: Shell, cards: Card
    * An earlier version wrote `pricingNotes` into the first and the cancellation
    * policy into the second, which silently deleted that copy from all 29 tour
    * pages. The class name reads like a CMS field and is not one.
-   *
-   * KNOWN GAP — THREE FIELDS HAVE NOWHERE TO RENDER: `highlights`,
-   * `pricingNotes` and `specialCancellationPolicy`.
-   *
-   * Webflow omits a conditional region ENTIRELY when its condition is off, so
-   * a region missing from the sample item is missing from the frozen template
-   * for every page. The sample (`hobbiton-movie-set-tour-1-day`) has no
-   * highlights and `pricingSection` false, so neither region exists here.
-   *
-   * And no single tour can supply all of them: `rotorua-one-day-tour` has the
-   * pricing section, `black-water-rafting-tour-1-day` has the cancellation
-   * policy, and neither has both. So "pick the sample that renders the most"
-   * is NOT sufficient when a collection's conditional regions are mutually
-   * exclusive across items — the template has to be assembled from more than
-   * one sample. Tracked in PROGRESS-OVERVIEW.hd.
    */
+
+  // ── the three conditional regions ────────────────────────────────────────
+  /**
+   * `.highlights-frame`, `.pricing-area` and `.terms-special-note` are NOT in
+   * the sample tour's markup, because Webflow omits a conditional region
+   * entirely when its condition is off and the sample
+   * (`hobbiton-movie-set-tour-1-day`) has none of the three switched on.
+   *
+   * And no single tour supplies all of them, so the frozen template is
+   * ASSEMBLED FROM THREE SAMPLES — the regions were lifted verbatim from
+   * `/tour/matakana-wd`, `/tour/rotorua-one-day-tour` and
+   * `/tour/black-water-rafting-tour-1-day` into `main.tpl-tour.html`. Each one
+   * is then bound, or removed when this tour does not have it.
+   *
+   * BIND FIRST, REMOVE LAST. Every `.body-content`, `.pricing-amount` and
+   * `.pricing-for` here is addressed by index, and removing a region renumbers
+   * every seam after it.
+   */
+  if (tour.highlights?.length) {
+    body = setHtml(body, 'tour-highlights-text', toHtml(tour.highlights));
+  }
+
+  if (tour.pricingSection) {
+    /**
+     * `.pricing-amount` ×3 and `.pricing-for` ×4, and the two rows do NOT use
+     * the same classes for the same things: the adult row is
+     * `for($) amount(420.00) for(NZD / person)` and the child row is
+     * `amount($) amount(210.00) for(NZD / child) for(<note>)`. So the child's
+     * currency symbol is an `amount` and only indices 0 and 2 are prices.
+     *
+     * Two decimal places, always — the live pages render "420.00" and
+     * "695.00", and Webflow's number formatting is what produces the trailing
+     * zeros rather than the stored value, which is an integer.
+     */
+    if (tour.priceAdult != null) {
+      body = setText(body, 'pricing-amount', tour.priceAdult.toFixed(2), 0);
+    }
+    if (tour.priceChild != null) {
+      body = setText(body, 'pricing-amount', tour.priceChild.toFixed(2), 2);
+    }
+    body = setText(body, 'pricing-for', tour.priceNoteChild ?? '', 3);
+    body = setHtml(body, 'body-content', toHtml(tour.pricingNotes), 2);
+  }
+
+  if (tour.hasSpecialCancellationPolicy) {
+    body = setHtml(body, 'body-content', toHtml(tour.specialCancellationPolicy), 4);
+  }
+
+  // Removals, in reverse document order so the earlier indices stay valid.
+  if (!tour.hasSpecialCancellationPolicy) body = removeEl(body, 'terms-special-note');
+  if (!tour.pricingSection) body = removeEl(body, 'pricing-area');
+  if (!tour.highlights?.length) body = removeEl(body, 'highlights-frame');
 
   // ── the booking form ─────────────────────────────────────────────────────
   /**

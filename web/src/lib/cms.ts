@@ -43,7 +43,17 @@ export function imageUrl(image: ImageRef, width: number, height?: number): strin
   return builder.url();
 }
 
-export const html = (blocks?: Block[] | null) => renderPortableText(blocks);
+/**
+ * Serialise rich text, resolving any picture placed inside it.
+ *
+ * The serialiser takes the resolver rather than importing one, so it stays
+ * testable offline — this is the only place that knows about the CDN. 900px
+ * because an in-prose figure is at most the width of the prose column.
+ */
+export const html = (blocks?: Block[] | null) =>
+  renderPortableText(blocks, {
+    imageUrl: (block) => imageUrl({ref: block.asset?._ref, hotspot: undefined}, 900),
+  });
 
 // ── shared fragments ───────────────────────────────────────────────────────
 

@@ -44,6 +44,9 @@ const check = (name, ok, detail = '') => {
 const visible = (s) =>
   s
     .replace(/<[^>]+>/g, '')
+    // ZWSP, ZWNJ, ZWJ and the BOM — invisible spacers, dropped on both sides.
+    .replace(/[​-‍﻿]/g, '')
+    .replace(/&zwnj;|&zwj;/g, '')
     .replace(/&amp;/g, '&')
     .replace(/&lt;/g, '<')
     .replace(/&gt;/g, '>')
@@ -57,7 +60,8 @@ const sourceText = (html) =>
     .replace(/<[^>]+>/g, '')
     .replace(/‌/g, '')
     .replace(/&nbsp;/g, ' ')
-    .replace(/&zwnj;/g, '')
+    .replace(/&zwnj;|&zwj;/g, '')
+    .replace(/[​-‍﻿]/g, '')
     .replace(/&lsquo;/g, '‘')
     .replace(/&rsquo;/g, '’')
     .replace(/&amp;/g, '&')
@@ -95,6 +99,48 @@ const outAll = Object.values(rendered).join('\n');
 
 // --- structure, where the corpus exercises it ------------------------------
 
+/**
+ * A figure must come back as Webflow's OWN figure markup.
+ *
+ * `.w-richtext-figure-type-*` and `.w-richtext-align-*` are what the ported
+ * stylesheet targets — they are the whole difference between a photograph
+ * floated beside the text and one across the column, and nothing else sets it.
+ * An image renders only when a resolver is supplied, so this round-trip passes
+ * one; without it the block is skipped, which is the behaviour the routes had
+ * before figures were carried at all.
+ */
+const withImages = Object.fromEntries(
+  files.map((f) => [
+    f,
+    renderPortableText(toPortableText(readFileSync(join(FIXTURES, f), 'utf8')), {
+      imageUrl: (b) => `https://cdn.example/${b.asset?._ref ?? 'x'}`,
+    }),
+  ]),
+);
+const outWithImages = Object.values(withImages).join('\n');
+
+if (/data-rt-type="video"/i.test(sourceAll)) {
+  check(
+    'a video figure renders as a Webflow video figure',
+    /class="w-richtext-figure-type-video w-richtext-align-[a-z]+"/.test(outAll) &&
+      /<iframe src="http/.test(outAll),
+    'no video figure in the output',
+  );
+}
+
+if (/data-rt-type="image"/i.test(sourceAll)) {
+  check(
+    'an image figure renders as a Webflow image figure, keeping its alignment',
+    /class="w-richtext-figure-type-image w-richtext-align-[a-z]+"/.test(outWithImages),
+    'no image figure in the output',
+  );
+  check(
+    'an image block renders nothing when no resolver is supplied',
+    !/w-richtext-figure-type-image/.test(outAll),
+    'an unresolved image emitted markup with no src',
+  );
+}
+
 if (/<li[^>]*>[\s\S]*?<(ul|ol)\b/i.test(sourceAll)) {
   check(
     'emits a nested list inside an <li>',
@@ -118,10 +164,30 @@ if (/<h[1-6]\b/i.test(sourceAll)) {
 }
 
 if (/<br\b/i.test(sourceAll)) {
+  /**
+   * A line break comes back as a `<br />`, not as a newline leaning on
+   * `white-space: pre-line`.
+   *
+   * `pre-line` appears nowhere in the ported Webflow stylesheet, so an inline
+   * style was carrying it — and a newline is one `<body>` tag short of the
+   * live page on every break, which is invisible to a reader and visible to
+   * every structural check.
+   */
+  const brs = (outAll.match(/<br \/>/g) ?? []).length;
+  // A `<br>` inside a `<figcaption>` is editor noise — Webflow writes
+  // `<figcaption><br>&zwj;</figcaption>` for an empty caption — and the
+  // converter reduces such a caption to nothing. Count the prose only.
+  const sourceBrs = (sourceAll.replace(/<figcaption>[\s\S]*?<\/figcaption>/gi, '').match(/<br\b/gi) ?? [])
+    .length;
   check(
-    'paragraphs carry pre-line so <br> newlines render',
-    outAll.includes('white-space:pre-line'),
-    'without this a multi-line block collapses to one line',
+    'every <br> comes back as a <br>',
+    brs === sourceBrs,
+    `source has ${sourceBrs}, output has ${brs}`,
+  );
+  check(
+    'no newline survives into the output',
+    !/>[^<]*\n[^<]*</.test(outAll.replace(/\n(?=\s*<)/g, '')),
+    'a raw newline would collapse to a space in the browser',
   );
 }
 

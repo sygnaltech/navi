@@ -151,7 +151,10 @@ export function makeCards(seam: SeamResolver) {
         let html = seam('tpl-tour.4');
         html = setBackground(html, 'square-container', imageUrl(tour.hero, 600));
         html = setAttr(html, 'w-inline-block', 'href', `/tour/${tour.slug}`);
-        html = setText(html, 'title-link', tour.tag?.name ?? 'Tour');
+        // `.title-link.yellow` is the STATIC word "Tour", not the tour's tag —
+        // every live related card says "Tour" regardless of what the tour is
+        // tagged. Binding `tag.name` into it put "1 Day" where live says
+        // "Tour" on every related card on the site.
         html = setText(html, 'heading-3', tour.title);
         return html;
       }),

@@ -11,8 +11,9 @@ Every page of the ported site compared to its live equivalent on
 [www.tournewzealand.com](https://www.tournewzealand.com), with the dev server running on
 `http://localhost:4322`.
 
-Ten defects found, nine fixed. What is left is in [What remains](#what-remains) and needs either
-a converter change plus a re-import, or a decision.
+Thirteen defects found, all thirteen fixed. What is left needs one thing from you — a re-import,
+so the six pictures the old converter dropped reach the dataset. See
+[What remains](#what-remains).
 
 ## How it was audited
 
@@ -48,12 +49,14 @@ region that differs rather than a tag count.
 
 |                                  | Before | After |
 | -------------------------------- | ------ | ----- |
-| Pages structurally identical      | 44/93  | 64/93 |
+| Pages structurally identical      | 44/93  | 73/93 |
 | Of which the 22 ported pages      | 22/22  | 22/22 |
 | Category, area, tag, review, news | 15/44  | 44/44 |
-| Tour pages                        | 0/29   | 0/29  |
+| Tour pages                        | 0/29   | 10/29 |
 
-The 29 tour pages all fail for the two reasons in [What remains](#what-remains), and nothing else.
+Links and images: **88 of 93 pages identical**, and the five that are not are the five tours whose
+prose carries a picture that is not in the dataset yet. See
+[What remains](#what-remains).
 
 ## The home page hero — what that image was
 
@@ -174,53 +177,79 @@ whatever the region above it used; no live page repeats a review and neither doe
 -   "Pick-Up Location" — the CBD hotel select in the booking form — is on NORTH ISLAND tours only.
     Checked against all 29 live pages, not inferred: `island === 'north'` predicts its presence on
     every one of them, including the three tours whose island is unset, where it is absent.
+-   `.title-link.yellow` on a related-tour card is the static word "Tour", not the tour's tag.
+    Bound to `tag.name` it said "1 Day" where every live card says "Tour".
 
 ## What remains
 
-All 29 tour pages fail, for two reasons and no others.
+### Blocked on one thing: the re-import
 
-### A. Rich text drops everything that is not a character
+`html-to-portable-text.mjs` converted text, marks, headings and lists, and dropped every node that
+carries no characters. `npm run sanity:verify` could not see it: that check compares the plain TEXT
+of each field, and a figure leaves no trace there.
 
-`html-to-portable-text.mjs` converts text, marks, headings and lists. It drops three kinds of node,
-and `npm run sanity:verify` cannot see it, because that check compares the plain TEXT of each
-field and a node with no characters in it leaves no trace there.
+Sixteen figures across fourteen tour descriptions — **six photographs and ten videos** — were
+dropped. `/tour/hobbiton-waitomo-caves-tour-1-day` has a picture captioned "Best Hobbiton cosplay
+costume" floated into the body text on the live site and nothing there on ours.
 
-| Dropped         | How many                 | Where                              |
-| --------------- | ------------------------ | ---------------------------------- |
-| `<br>`          | 131, in 26 fields        | 24 tour descriptions, 3 highlights |
-| `<figure>` video | 10 embeds                | 10 tour descriptions               |
-| `<figure>` image | 6 images                 | 5 tour descriptions                |
+The converter, the schema and the serialiser now carry them: an `image` block with the alignment
+Webflow recorded, and a `videoEmbed` holding BOTH the share URL and the iframe URL, rendered back
+into Webflow's own `<figure class="w-richtext-figure-type-…">` markup so the ported stylesheet
+styles them with no new CSS. `npm run sanity:convert` is green and reports **252 images, up from
+246** — the six.
 
-The images are real, visible content — `/tour/hobbiton-waitomo-caves-tour-1-day` has a photograph
-captioned "Best Hobbiton cosplay costume" floated into the body text, and ours does not. The
-videos are the same. The 131 line breaks are address blocks and itinerary lines run together into
-paragraphs.
+**The import is yours to run.** It uploads six new image assets into the production dataset.
 
-**This needs a converter change AND a re-import**, and the import uploads six new image assets into
-the production dataset — so it is yours to run, not mine. The schema already permits images in rich
-text (`schema/richText.mjs` declares an `image` member), so the schema does not change.
+```
+npm run sanity:import
+```
 
-### B. Three tour fields still have nowhere to render
+Everything in [Still open](#still-open) below moves once it lands, so re-run the audit after.
 
-Unchanged from `PROGRESS-OVERVIEW.hd`: `highlights`, `pricingNotes` and
-`specialCancellationPolicy` have no region in the frozen `tpl-tour` template, because Webflow omits
-a conditional region entirely when its condition is off and no single tour has all three.
+### The `<br>` that was not a defect
 
-This audit adds one fact to that: the regions to assemble are `.highlights-frame` (from a tour with
-highlights, e.g. `matakana-wd`) and `.pricing-area` (from `rotorua-one-day-tour`), and the missing
-`#book-now` anchor on two tour pages belongs to the pricing block.
+An earlier draft of this document called 131 dropped line breaks content loss. That was wrong: the
+converter kept them as newlines and the serialiser set `white-space:pre-line` on any paragraph
+containing one, so they rendered.
 
-## Decisions needed
+They are now emitted as `<br />` instead, for two reasons. `pre-line` appears **nowhere** in the
+ported Webflow stylesheet, so the inline style was carrying the whole thing and a list item got
+none of it — the Matakana highlights ran together. And a newline is one `<body>` tag short of the
+live page on every break, which no reader can see and every structural check can.
 
-**The MixItUp filter on category pages does nothing on the live site.** Every chip carries
-`data-filter="all"`, so clicking any of the four shows everything. The cards carry no tag to filter
-on either — `.item-category` holds the tour's title. Reproduced exactly as found; making the
-filter work is a behaviour change, not a port.
+### Still open
 
-**An area with no tours shows nothing where Webflow shows "No items found."** Three areas —
-`coromandel`, `dunedin`, `tongariro-ruapehu-taranaki` — have no tours, and the live page puts
-Webflow's unstyled grey placeholder under the "Click a Tour" heading. Ours shows the heading and
-nothing. Ours is better; the live site is the spec. Declared as a divergence either way.
+Twenty tour pages are between 1 and 9 `<body>` tags short of live. Most of that is the figures
+above, which are not in the dataset yet. Three pages are the other way round — ours carries two
+tags MORE than live — and `/tour/hollyford-valley-wilderness-experience` is missing the words "No
+deposit" and "to hold your place!", which is one more conditional region of the same family as the
+three below.
+
+### Closed: the three conditional regions
+
+Webflow omits a conditional region entirely when its condition is off, so a region absent from the
+sample item was absent from the frozen template for every page — and no single tour has all three.
+
+The template is now **assembled from three samples**: `.highlights-frame` lifted from
+`/tour/matakana-wd`, `.pricing-area` from `/tour/rotorua-one-day-tour`, and `.terms-special-note`
+from `/tour/black-water-rafting-tour-1-day`. Each is bound per tour and removed when that tour does
+not have it, so `highlights`, `pricingNotes` and `specialCancellationPolicy` all render, and the
+`#book-now` anchor came back with the pricing block.
+
+One field inside that region stays deliberately empty: `pricing-section-intro-text` is the dead
+field the migration does not carry (expired pricing notes on four tours), and it is empty on both
+live pages that have the region — so empty IS the live rendering.
+
+## Decisions — answered
+
+**MixItUp stays exactly as the live site has it.** Every chip on a category page carries
+`data-filter="all"`, so clicking any of the four shows everything, and the cards carry no tag to
+filter on — `.item-category` holds the tour's title. Reproduced as found. Making the filter
+actually work is a behaviour change, not a port, and is not in this migration.
+
+**The "No items found." placeholder is NOT reproduced.** Three areas — `coromandel`, `dunedin`,
+`tongariro-ruapehu-taranaki` — have no tours, and the live page puts Webflow's unstyled grey debug
+box under the "Click a Tour" heading. Ours shows the heading and nothing. Declared as a divergence.
 
 **`/contact` obfuscates the email with a Cloudflare token frozen at extraction time.** Both the
 live token and ours decode to `info@navi.co.nz` — checked, not assumed — and the decoder script is

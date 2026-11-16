@@ -70,7 +70,10 @@ export const sigText = (s) =>
   (s ?? '')
     .replace(/‌/g, '')
     .replace(/&nbsp;|&#160;/g, ' ')
-    .replace(/&zwnj;/g, '')
+    .replace(/&zwnj;|&zwj;/g, '')
+    // ZWSP, ZWNJ, ZWJ and the BOM — invisible spacers the editor leaves behind,
+    // on both sides of the comparison.
+    .replace(/[​-‍﻿]/g, '')
     .replace(/&amp;/g, '&')
     .replace(/&lt;/g, '<')
     .replace(/&gt;/g, '>')
@@ -87,7 +90,10 @@ export const sig = (s) =>
     .replace(/<[^>]+>/g, '')
     .replace(/‌/g, '')
     .replace(/&nbsp;|&#160;/g, ' ')
-    .replace(/&zwnj;/g, '')
+    .replace(/&zwnj;|&zwj;/g, '')
+    // ZWSP, ZWNJ, ZWJ and the BOM — invisible spacers the editor leaves behind,
+    // on both sides of the comparison.
+    .replace(/[​-‍﻿]/g, '')
     .replace(/&amp;/g, '&')
     .replace(/&lt;/g, '<')
     .replace(/&gt;/g, '>')

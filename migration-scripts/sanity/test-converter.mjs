@@ -46,7 +46,10 @@ const signature = (s) =>
   s
     .replace(/‌/g, '')
     .replace(/&nbsp;|&#160;/g, ' ')
-    .replace(/&zwnj;/g, '')
+    .replace(/&zwnj;|&zwj;/g, '')
+    // ZWSP, ZWNJ, ZWJ and the BOM — invisible spacers the editor leaves behind,
+    // dropped on both sides so a comparison is about the author's characters.
+    .replace(/[​-‍﻿]/g, '')
     .replace(/&lsquo;/g, '‘')
     .replace(/&rsquo;/g, '’')
     .replace(/&amp;/g, '&')
@@ -120,6 +123,31 @@ if (/<li[^>]*>[\s\S]*?<(ul|ol)\b/i.test(sourceAll)) {
 
 if (/<blockquote/i.test(sourceAll)) {
   check('blockquote preserved', all.some((x) => x.style === 'blockquote'), 'no blockquote emitted');
+}
+
+/**
+ * FIGURES, which no other check in the suite can see.
+ *
+ * The text checks above compare the author's CHARACTERS, and a `<figure>`
+ * contributes none — so an earlier converter dropped sixteen of them, across
+ * fourteen tour descriptions, with every assertion green.
+ */
+if (/data-rt-type="image"/i.test(sourceAll)) {
+  const images = all.filter((x) => x._type === 'image');
+  check(
+    'an image figure becomes an image block the importer will upload',
+    images.length > 0 && images.every((x) => typeof x._sanityAsset === 'string'),
+    `${images.length} image block(s), ${images.filter((x) => x._sanityAsset).length} with an asset`,
+  );
+}
+
+if (/data-rt-type="video"/i.test(sourceAll)) {
+  const videos = all.filter((x) => x._type === 'videoEmbed');
+  check(
+    'a video figure becomes a videoEmbed carrying BOTH urls',
+    videos.length > 0 && videos.every((x) => x.url && x.embedUrl),
+    `${videos.length} video block(s)`,
+  );
 }
 
 if (/<br\b/i.test(sourceAll)) {

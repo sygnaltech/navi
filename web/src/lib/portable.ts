@@ -36,10 +36,28 @@ export type Block = {
   level?: number;
   markDefs?: MarkDef[];
   children?: Span[];
-  // image blocks
+  // `image` blocks — a picture placed in the prose
   asset?: {_ref?: string};
   alt?: string;
+  align?: string;
+  maxWidth?: number;
+  caption?: string;
+  // `videoEmbed` blocks
+  url?: string;
+  embedUrl?: string;
+  dimensions?: string;
+  ratio?: string;
 };
+
+/**
+ * How an in-prose image becomes a URL.
+ *
+ * Passed in rather than imported so this module stays free of Sanity: it is
+ * exercised offline by `test-portable.mjs`, which has no client and no network.
+ * With no resolver an image block renders nothing, which is what it did before
+ * figures were carried at all.
+ */
+export type Options = {imageUrl?: (block: Block) => string};
 
 const escape = (s: string) =>
   s
@@ -71,7 +89,19 @@ const DECORATORS: Record<string, [string, string]> = {
 };
 
 function renderSpan(span: Span, markDefs: MarkDef[]): string {
-  let out = escape(span.text ?? '');
+  /**
+   * A newline inside a span IS a `<br>`.
+   *
+   * The converter represents Webflow's `<br>` as a newline in the text,
+   * because Portable Text has no hard-break mark. Rendering it back as a `<br>`
+   * — rather than leaning on `white-space: pre-line` — matters twice over:
+   * `pre-line` appears NOWHERE in the ported Webflow stylesheet, so an earlier
+   * version's claim that it was already applied was wrong and the inline style
+   * was doing all the work; and it put the tag count one short per line break
+   * on 26 fields, which is a difference no reader can see and every structural
+   * check can.
+   */
+  let out = escape(span.text ?? '').split('\n').join('<br />');
   const marks = span.marks ?? [];
 
   for (const mark of marks) {
@@ -92,21 +122,54 @@ function renderSpan(span: Span, markDefs: MarkDef[]): string {
 const renderChildren = (block: Block) =>
   (block.children ?? []).map((c) => renderSpan(c, block.markDefs ?? [])).join('');
 
-/**
- * `white-space: pre-line` on every paragraph.
- *
- * The converter turns a `<br>` into a newline INSIDE one block rather than
- * splitting the block, which is right — a `<br>` is a line break, not a new
- * paragraph. But HTML collapses that newline to a space, so without this the
- * multi-line addresses and itineraries in this site's content render as one
- * run-on line and nobody can see why.
- */
-const PRE_LINE = ' style="white-space:pre-line"';
-
 const HEADINGS = new Set(['h1', 'h2', 'h3', 'h4', 'h5', 'h6']);
 
+/**
+ * A `<figure>`, in Webflow's own markup.
+ *
+ * Reproduced attribute for attribute because the stylesheet targets
+ * `.w-richtext-figure-type-*` and `.w-richtext-align-*` — those two classes are
+ * the entire difference between a photograph floated beside the text and one
+ * across the full column, and nothing else in the ported CSS sets it.
+ *
+ * The video's `padding-bottom` is what holds the aspect ratio before the iframe
+ * loads; without it the page reflows as every embed arrives.
+ */
+function renderFigure(type: 'image' | 'video', block: Block, inner: string): string {
+  const align = block.align ?? 'fullwidth';
+  const style = type === 'video' && block.ratio ? ` style="padding-bottom:${escape(block.ratio)}"` : '';
+  const data =
+    type === 'video'
+      ? ` data-rt-type="video" data-rt-align="${escape(align)}"` +
+        (block.dimensions ? ` data-rt-dimensions="${escape(block.dimensions)}"` : '') +
+        (block.url ? ` data-page-url="${escape(block.url)}"` : '')
+      : ` data-rt-type="image" data-rt-align="${escape(align)}"` +
+        (block.maxWidth ? ` data-rt-max-width="${block.maxWidth}"` : '');
+  const caption = `<figcaption>${block.caption ? escape(block.caption) : ''}</figcaption>`;
+  return (
+    `<figure class="w-richtext-figure-type-${type} w-richtext-align-${escape(align)}"` +
+    `${style}${data}><div>${inner}</div>${caption}</figure>`
+  );
+}
+
 /** One non-list block. */
-function renderBlock(block: Block): string {
+function renderBlock(block: Block, options: Options): string {
+  if (block._type === 'image') {
+    const src = options.imageUrl?.(block);
+    if (!src) return '';
+    const alt = escape(block.alt ?? '');
+    return renderFigure('image', block, `<img alt="${alt}" src="${escape(src)}" loading="lazy" />`);
+  }
+
+  if (block._type === 'videoEmbed') {
+    if (!block.embedUrl) return '';
+    return renderFigure(
+      'video',
+      block,
+      `<iframe src="${escape(block.embedUrl)}" scrolling="no" frameborder="0" allowfullscreen=""></iframe>`,
+    );
+  }
+
   if (block._type !== 'block') return '';
 
   const inner = renderChildren(block);
@@ -117,7 +180,7 @@ function renderBlock(block: Block): string {
   const style = block.style ?? 'normal';
   if (HEADINGS.has(style)) return `<${style}>${inner}</${style}>`;
   if (style === 'blockquote') return `<blockquote>${inner}</blockquote>`;
-  return `<p${inner.includes('\n') ? PRE_LINE : ''}>${inner}</p>`;
+  return `<p>${inner}</p>`;
 }
 
 /**
@@ -127,7 +190,7 @@ function renderBlock(block: Block): string {
  * `level`, because Portable Text models a list as a FLAT run of items carrying
  * a depth rather than as a tree.
  */
-export function renderPortableText(blocks?: Block[] | null): string {
+export function renderPortableText(blocks?: Block[] | null, options: Options = {}): string {
   if (!blocks || blocks.length === 0) return '';
 
   const out: string[] = [];
@@ -147,7 +210,7 @@ export function renderPortableText(blocks?: Block[] | null): string {
       continue;
     }
 
-    out.push(renderBlock(block));
+    out.push(renderBlock(block, options));
     i += 1;
   }
 

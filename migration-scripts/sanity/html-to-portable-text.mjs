@@ -36,10 +36,16 @@
  * what Portable Text models. Links are annotations: they get a generated `_key`
  * and live in the block's `markDefs`.
  *
- * NO IMAGES. In a typical Webflow site nothing in rich text is an inline image:
- * every picture is a separate Webflow Image field, which the converter never
- * sees. If an <img> does turn up here it is reported via onWarn rather than
- * silently dropped.
+ * FIGURES. Webflow places a picture or a video in the prose as a `<figure>`
+ * carrying `data-rt-type="image"` or `"video"`, and this corpus has 16 of them
+ * across 14 tour descriptions. They convert to an `image` block (with the
+ * `_sanityAsset` the importer uploads) and a `videoEmbed` block respectively —
+ * see `figureBlock`. An earlier version dropped both with a warning, which no
+ * check could see: `sanity:verify` compares the plain TEXT of a field, and a
+ * figure contributes none.
+ *
+ * A bare inline `<img>` outside a figure has not appeared here; if one does it
+ * is reported via onWarn rather than silently dropped.
  */
 import { JSDOM } from 'jsdom';
 
@@ -92,6 +98,9 @@ const clean = (text) =>
   text
     .replace(/‌/g, '')
     .replace(/ /g, ' ')
+    // ZWSP, ZWNJ, ZWJ and the BOM. Webflow's editor leaves all four as
+    // spacers; a lone ZWJ in a `<figcaption>` is the one in this corpus.
+    .replace(/[​-‍﻿]/g, '')
     .replace(/[ \t]+/g, ' ');
 
 /** Is this element one that starts a new Portable Text block? */
@@ -224,6 +233,77 @@ export function toPortableText(html, { onWarn = () => {} } = {}) {
     };
   }
 
+  /**
+   * A `<figure>` -> an image or a video block, or null if it is neither.
+   *
+   * Webflow's two figure shapes, as measured across this corpus's 16 of them:
+   *
+   *     <figure class="w-richtext-figure-type-image w-richtext-align-floatright"
+   *             data-rt-type="image" data-rt-align="floatright" data-rt-max-width="564">
+   *       <div><img alt="…" src="…"></div><figcaption>…</figcaption></figure>
+   *
+   *     <figure class="w-richtext-figure-type-video w-richtext-align-fullwidth"
+   *             style="padding-bottom:56.25%" data-rt-type="video"
+   *             data-rt-dimensions="854:480" data-page-url="https://youtu.be/…">
+   *       <div><iframe src="https://www.youtube.com/embed/…"></iframe></div>
+   *       <figcaption>…</figcaption></figure>
+   *
+   * BOTH video URLs are kept. `data-page-url` is the link the editor pasted and
+   * the iframe `src` is what the provider's oEmbed returned; deriving one from
+   * the other means guessing a provider's URL scheme, and a wrong guess renders
+   * a blank box rather than an error.
+   *
+   * The captions in this corpus are all editor noise — `&nbsp;`, `<br>` plus a
+   * zero-width joiner — so `clean` reduces them to nothing and the field is
+   * omitted. A real one survives.
+   */
+  function figureBlock(el) {
+    const type = el.getAttribute('data-rt-type');
+    const align = el.getAttribute('data-rt-align') || undefined;
+    const captionEl = el.querySelector('figcaption');
+    const caption = clean(captionEl?.textContent ?? '').trim() || undefined;
+
+    if (type === 'image') {
+      const img = el.querySelector('img');
+      const src = img?.getAttribute('src');
+      if (!src) return null;
+      const maxWidth = Number.parseInt(el.getAttribute('data-rt-max-width') ?? '', 10);
+      return {
+        _type: 'image',
+        _key: nextKey(),
+        // The same convention as every other image in the migration: the
+        // Sanity import resolves `_sanityAsset` wherever it appears in a
+        // document, nested blocks included, and uploads the file.
+        _sanityAsset: `image@${src}`,
+        ...(img.getAttribute('alt') ? { alt: img.getAttribute('alt') } : {}),
+        ...(align ? { align } : {}),
+        ...(Number.isFinite(maxWidth) ? { maxWidth } : {}),
+        ...(caption ? { caption } : {}),
+      };
+    }
+
+    if (type === 'video') {
+      const embedUrl = el.querySelector('iframe')?.getAttribute('src');
+      const url = el.getAttribute('data-page-url');
+      if (!embedUrl || !url) return null;
+      const ratio = /padding-bottom:\s*([^;]+)/.exec(el.getAttribute('style') ?? '')?.[1];
+      return {
+        _type: 'videoEmbed',
+        _key: nextKey(),
+        url,
+        embedUrl,
+        ...(align ? { align } : {}),
+        ...(el.getAttribute('data-rt-dimensions')
+          ? { dimensions: el.getAttribute('data-rt-dimensions') }
+          : {}),
+        ...(ratio ? { ratio: ratio.trim() } : {}),
+        ...(caption ? { caption } : {}),
+      };
+    }
+
+    return null;
+  }
+
   /** Lists: each <li> is its own block carrying listItem + level. */
   function walkList(el, listItem, level) {
     for (const li of el.children) {
@@ -288,9 +368,25 @@ export function toPortableText(html, { onWarn = () => {} } = {}) {
         continue;
       }
 
-      if (tag === 'figure' || tag === 'div') {
-        // Webflow wraps embeds and figures in divs. Descend and keep the text
-        // rather than inventing a rule for a case that has not happened.
+      if (tag === 'figure') {
+        const figure = figureBlock(node);
+        if (figure) {
+          blocks.push(figure);
+          continue;
+        }
+        // Not a shape we know. Fall through to keeping the text, and say so —
+        // a figure that silently vanishes is content loss with no symptom.
+        onWarn(
+          `<figure data-rt-type="${node.getAttribute('data-rt-type') ?? ''}"> ` +
+            'is not an image or a video — kept its text only',
+        );
+        walk(node);
+        continue;
+      }
+
+      if (tag === 'div') {
+        // Webflow wraps embeds in divs. Descend and keep the text rather than
+        // inventing a rule for a case that has not happened.
         if (node.getAttribute('data-rt-embed-type')) {
           onWarn(`rich-text embed (${node.getAttribute('data-rt-embed-type')}) — not converted`);
           continue;
