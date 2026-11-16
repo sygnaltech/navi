@@ -33,19 +33,41 @@ Webflow's built-in site search backed `/search`, and it has no equivalent after 
 
 The search FORM is still in the shared nav on every page — it is part of the frozen Webflow markup — and it posts to `/search`. Decide whether to remove the field from the nav or point it somewhere, because as it stands the box is visible and submitting it lands on a 404.
 
+## `/sitemap` links five specials at a URL that does not exist
+
+The human-readable `/sitemap` page lists the five specials and links each one at
+`/special/<slug>`. **That URL 404s on the live site today** — there is no `/special/` route and
+there never was one in the export. The rows are reproduced exactly as found, links included,
+because inventing a destination is not a migration decision.
+
+Two ways out, whenever you want one: point them at `/tours` the way the dead redirects now are, or
+drop the list. Neither is urgent — it is exactly as broken as it has been.
+
+## `/sitemap`'s area rows link nowhere
+
+The same page lists all fifteen areas with `href="#"`. The designer never bound a link to that row
+in Webflow, so clicking an area does nothing. Reproduced as found. `/map` lists the same fifteen
+areas with working `/area/<slug>` links, so the information is reachable — the sitemap's copy just
+is not clickable.
+
 ## Eight of Webflow's redirects pointed at 404s
 
-Webflow's `manifest.json` declared 19 redirects. Eight of them targeted tour URLs that no longer resolve — `/cosplay`, `/gallery/cosplay`, `/matakana`, `/waipoua`, `/tour/gs16anr-gs48s` and three `/tours/tour?id=…` entries. They were **dropped** rather than carried, on instruction.
-
-If any of those old URLs still attract traffic, they are now 404s rather than redirects to a 404. Worth a look at the server logs after cut-over; re-pointing one at a live tour is a one-line change.
+Webflow's `manifest.json` declared 19 redirects. Eight of them targeted tour URLs that no longer resolve — `/cosplay`, `/gallery/cosplay`, `/matakana`, `/waipoua`, `/tour/gs16anr-gs48s` and three `/tours/tour?id=…` entries. They were dropped rather than carried, on instruction.
 
 > Redirect these all to /tours
 
+**Done.** All of them now 301 to `/tours`. The three `/tours/tour?id=…` are covered by a single
+`/tours/tour` entry, because `_redirects` matches on path and the id cannot be matched — pointing
+the path at the index rather than guessing which tour the visitor wanted.
+
 ## The sitemap had an entry that 404s
 
-`/tour/hobbiton-rotorua-tour-kuirau-park-footbath-experience` was listed in the live sitemap and answers 404 on the live site. **Dropped** from the new sitemap, on instruction.
+`/tour/hobbiton-rotorua-tour-kuirau-park-footbath-experience` was listed in the live sitemap and answers 404 on the live site. Dropped from the new sitemap, on instruction.
 
 > Redirect to /tours
+
+**Done.** It 301s to `/tours`, and stays out of the sitemap — a 301'd URL must not be listed, or
+the canonical becomes ambiguous.
 
 ## Google Fonts stays external
 

@@ -151,6 +151,83 @@ export const DIVERGENCES = [
   },
   {
     /**
+     * The same stale tour, as an `<option>` in the booking forms' tour select.
+     *
+     * `/agents` and `/booking` build their select from a collection list of
+     * HTML embeds, one `<script>` per tour, so the archived-in-Webflow tour is
+     * an extra option on the live pages and absent from ours.
+     *
+     * FOUR tags, not the three a list row costs elsewhere: the generated
+     * script carries a commented-out `'<option value=""></option>'` in its
+     * source, and the tag counter reads the `<option` in that string.
+     */
+    text: [],
+    tags: 4,
+    pages: ['agents', 'booking'],
+    why: "the live booking selects offer a tour that is a draft in Webflow",
+  },
+  {
+    /**
+     * And again on `/sitemap`, where every tour gets a row: a link, a title and
+     * a one-line brief inside a list item — four tags.
+     */
+    text: ['An unparalleled travel experience in the South Island.'],
+    tags: 4,
+    pages: ['sitemap'],
+    why: 'the live sitemap lists a tour that is a draft in Webflow',
+  },
+  {
+    /**
+     * ADJACENT LISTS COLLAPSE INTO ONE.
+     *
+     * Two of this site's rich-text fields contain `</ul><ul>` — three separate
+     * lists running together, which Webflow emits as three `<ul>` elements.
+     * Portable Text models a list as a FLAT RUN of items carrying a depth, with
+     * no grouping above that, so the boundary between two adjacent lists has
+     * nowhere to live and they render as one `<ul>` with all the items.
+     *
+     * The bullets are identical; only the gap between the groups is lost.
+     * Carrying the boundary would mean a hidden field on the first item of each
+     * run, which the Studio is free to drop on the next save — a check that
+     * flaps is worse than a declared difference.
+     */
+    text: [],
+    tags: 2,
+    pages: ['/tour/hobbiton-waitomo-caves-tour-1-day'],
+    why: 'three adjacent <ul> elements in one field render as one list',
+  },
+  {
+    text: [],
+    tags: 1,
+    pages: ['/tour/black-water-rafting-tour-1-day'],
+    why: 'two adjacent <ul> elements in one field render as one list',
+  },
+  {
+    /**
+     * EMPTY INLINE ELEMENTS ARE DROPPED.
+     *
+     * The editor has left a few `<strong></strong>` and one `<p></p>` with
+     * nothing in them — `<li>No deposit<strong></strong> to hold your
+     * place!</li>` on Hollyford is the clearest. They carry no characters and
+     * no formatting, so Portable Text has nothing to represent them with: a
+     * span needs text, and a zero-length span is something the Studio removes
+     * the first time an editor saves the document.
+     *
+     * The rendered page is identical. The verifier's TEXT check sees the live
+     * line split in two by the empty tag, which is why Hollyford also declares
+     * the two halves.
+     */
+    text: ['No deposit', 'to hold your place!'],
+    tags: 1,
+    pages: [
+      '/tour/hollyford-valley-wilderness-experience',
+      '/tour/hobbiton-waitomo-rotorua-sub-gs-tour',
+      '/tour/waitomo-and-rotorua-1-day-tour',
+    ],
+    why: 'an empty <strong> or <p> in the source has nothing to represent it in Portable Text',
+  },
+  {
+    /**
      * WHICH reviews a tour page shows differs, because the live order is not
      * reproducible.
      *

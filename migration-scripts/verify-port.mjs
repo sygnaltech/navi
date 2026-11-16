@@ -213,7 +213,18 @@ const rows = [];
  * against the live site.
  */
 const baseIndex = process.argv.indexOf('--base');
-const BASE = baseIndex === -1 ? null : process.argv[baseIndex + 1]?.replace(/\/+$/, '');
+/**
+ * `VERIFY_BASE` is the same thing by another route, for `npm run preflight`.
+ *
+ * npm cannot forward `-- --base <url>` into the MIDDLE of a chained script, and
+ * three of preflight's steps now need a running server because the site renders
+ * on demand. An environment variable is the one form that reaches all of them:
+ *
+ *   VERIFY_BASE=http://localhost:4322 npm run preflight
+ */
+const BASE = (
+  baseIndex === -1 ? (process.env.VERIFY_BASE ?? null) : process.argv[baseIndex + 1]
+)?.replace(/\/+$/, '') ?? null;
 if (baseIndex !== -1 && !BASE) {
   console.error('\n--base needs a URL, e.g. --base http://localhost:4321\n');
   process.exit(1);

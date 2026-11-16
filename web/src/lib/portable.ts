@@ -88,39 +88,59 @@ const DECORATORS: Record<string, [string, string]> = {
   code: ['<code>', '</code>'],
 };
 
-function renderSpan(span: Span, markDefs: MarkDef[]): string {
-  /**
-   * A newline inside a span IS a `<br>`.
-   *
-   * The converter represents Webflow's `<br>` as a newline in the text,
-   * because Portable Text has no hard-break mark. Rendering it back as a `<br>`
-   * — rather than leaning on `white-space: pre-line` — matters twice over:
-   * `pre-line` appears NOWHERE in the ported Webflow stylesheet, so an earlier
-   * version's claim that it was already applied was wrong and the inline style
-   * was doing all the work; and it put the tag count one short per line break
-   * on 26 fields, which is a difference no reader can see and every structural
-   * check can.
-   */
-  let out = escape(span.text ?? '').split('\n').join('<br />');
-  const marks = span.marks ?? [];
-
+/** Wrap already-escaped text in its decorators, then its annotations. */
+function wrapMarks(text: string, marks: string[], markDefs: MarkDef[]): string {
+  let out = text;
   for (const mark of marks) {
     const pair = DECORATORS[mark];
     if (pair) out = `${pair[0]}${out}${pair[1]}`;
   }
-
   // Annotations (links) wrap outermost, so a bold link is <a><strong>…
   for (const mark of marks) {
     if (DECORATORS[mark]) continue;
     const def = markDefs.find((d) => d._key === mark);
     if (def?._type === 'link' && def.href) out = anchor(def.href, out);
   }
-
   return out;
 }
 
-const renderChildren = (block: Block) =>
-  (block.children ?? []).map((c) => renderSpan(c, block.markDefs ?? [])).join('');
+const sameMarks = (a: string[] = [], b: string[] = []) =>
+  a.length === b.length && a.every((m, i) => m === b[i]);
+
+/**
+ * Spans, with CONSECUTIVE IDENTICALLY-MARKED ONES MERGED.
+ *
+ * Two things are going on here and they interact.
+ *
+ * A newline inside a span IS a `<br>`: the converter represents Webflow's
+ * `<br>` as a newline because Portable Text has no hard-break mark, and it has
+ * to come back as a tag. Leaning on `white-space: pre-line` instead — which an
+ * earlier version did — is wrong twice over: `pre-line` appears NOWHERE in the
+ * ported Webflow stylesheet, and a newline leaves the page one `<body>` tag
+ * short per break, which no reader can see and every structural check can.
+ *
+ * But a `<br>` inside a `<strong>` splits ONE bold run into three spans that
+ * all carry the same mark, and wrapping each separately emits three `<strong>`
+ * where Webflow emits one. Merging first is what makes the two agree:
+ * `<strong>$2075.00 NZD / Adult<br />$1450.00 NZD / Child</strong>`, as on the
+ * live page, rather than three adjacent bold fragments.
+ */
+function renderChildren(block: Block): string {
+  const markDefs = block.markDefs ?? [];
+  const children = block.children ?? [];
+  const out: string[] = [];
+  let i = 0;
+  while (i < children.length) {
+    const marks = children[i].marks ?? [];
+    let text = '';
+    while (i < children.length && sameMarks(children[i].marks ?? [], marks)) {
+      text += escape(children[i].text ?? '').split('\n').join('<br />');
+      i += 1;
+    }
+    out.push(wrapMarks(text, marks, markDefs));
+  }
+  return out.join('');
+}
 
 const HEADINGS = new Set(['h1', 'h2', 'h3', 'h4', 'h5', 'h6']);
 
@@ -145,7 +165,12 @@ function renderFigure(type: 'image' | 'video', block: Block, inner: string): str
         (block.url ? ` data-page-url="${escape(block.url)}"` : '')
       : ` data-rt-type="image" data-rt-align="${escape(align)}"` +
         (block.maxWidth ? ` data-rt-max-width="${block.maxWidth}"` : '');
-  const caption = `<figcaption>${block.caption ? escape(block.caption) : ''}</figcaption>`;
+  // No caption field at all means the live figure had no `<figcaption>`; an
+  // EMPTY one means it had an empty one, which Webflow still emits.
+  const caption =
+    block.caption === undefined
+      ? ''
+      : `<figcaption>${escape(block.caption).split('\n').join('<br />')}</figcaption>`;
   return (
     `<figure class="w-richtext-figure-type-${type} w-richtext-align-${escape(align)}"` +
     `${style}${data}><div>${inner}</div>${caption}</figure>`

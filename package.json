@@ -31,7 +31,8 @@
     "sanity:import": "node migration-scripts/sanity/import.mjs",
     "sanity:verify": "node migration-scripts/sanity/verify.mjs",
     "test": "node migration-scripts/sanity/test-converter.mjs && node migration-scripts/sanity/test-portable.mjs",
-    "preflight": "npm run build && npm test && npm run test:templates && npm run check && npm run verify && npm run sitemap && npm run assets:check && npm run sanity:verify",
+    "//preflight": "Needs a RUNNING SERVER, because every page renders on demand: VERIFY_BASE=http://localhost:4322 npm run preflight",
+    "preflight": "npm run build && npm test && npm run test:templates && npm run check && npm run verify -- --cms --routes && npm run verify:assets && npm run sitemap && npm run assets:check && npm run sanity:verify",
     "test:templates": "node --experimental-strip-types migration-scripts/test-templates.mjs",
     "seams:sync": "node migration-scripts/sync-seams.mjs"
   },

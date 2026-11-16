@@ -24,7 +24,7 @@ import { readFile, access } from 'node:fs/promises';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
-import { REDIRECTS } from './redirects.config.mjs';
+import { REDIRECTS, SITEMAP_ADDITIONS } from './redirects.config.mjs';
 import { WEBFLOW_SOURCE } from './lib/project.mjs';
 import { userAgent } from './lib/ua.mjs';
 
@@ -51,11 +51,34 @@ const check = (name, ok, detail = '') => {
   }
 };
 
-const builtXml = await readFile(join(DIST, 'sitemap.xml'), 'utf8').catch(() => null);
-if (builtXml === null) {
-  console.error('\nNo dist/sitemap.xml — run `npm run build` first.\n');
+/**
+ * OUR SITEMAP IS RENDERED ON DEMAND, so it has to be FETCHED, not read.
+ *
+ * `/sitemap.xml` is an Astro route backed by the dataset — which is the point,
+ * because a publish should be in the sitemap immediately. That stopped
+ * `dist/sitemap.xml` existing, and this check went on reading it and failing
+ * with "run `npm run build` first" no matter how many times you had. Since it
+ * is a step of `npm run preflight`, preflight could not go green at all.
+ *
+ *   node migration-scripts/check-sitemap.mjs --base http://localhost:4322
+ */
+const baseArg = process.argv.indexOf('--base');
+// `VERIFY_BASE` is the same thing by another route — see verify-port.mjs.
+const base = baseArg === -1 ? (process.env.VERIFY_BASE ?? null) : process.argv[baseArg + 1];
+if (!base || base.startsWith('--')) {
+  console.error('\n--base <url> is required: the sitemap renders on demand, so this needs a');
+  console.error('running server. e.g. --base http://localhost:4322\n');
   process.exit(1);
 }
+
+const builtRes = await fetch(`${base.replace(/\/$/, '')}/sitemap.xml`, {
+  headers: { 'user-agent': userAgent('sitemap-check') },
+});
+if (!builtRes.ok) {
+  console.error(`\nCould not fetch ${base}/sitemap.xml: HTTP ${builtRes.status}\n`);
+  process.exit(1);
+}
+const builtXml = await builtRes.text();
 
 const liveRes = await fetch(`${ORIGIN}/sitemap.xml`, {
   headers: { 'user-agent': userAgent('sitemap-check') },
@@ -76,8 +99,14 @@ const live = paths(await liveRes.text());
  */
 const intentionallyDropped = new Map(REDIRECTS.map((r) => [r.from, `301 -> ${r.to}`]));
 
-/** URLs we add that the live sitemap does not have. */
-const intentionallyAdded = new Map(REDIRECTS.map((r) => [r.to, `replaces ${r.from}`]));
+/**
+ * URLs we add that the live sitemap does not have: a redirect's destination,
+ * plus the pages Webflow's own sitemap had simply gone stale on.
+ */
+const intentionallyAdded = new Map([
+  ...REDIRECTS.map((r) => [r.to, `replaces ${r.from}`]),
+  ...SITEMAP_ADDITIONS,
+]);
 
 // --- 1. nothing lost -------------------------------------------------------
 
@@ -95,13 +124,24 @@ for (const [path, why] of intentionallyDropped) {
 
 // --- 2. nothing listed that is not built -----------------------------------
 
+/**
+ * ASKED OF THE SERVER, not of `./dist`.
+ *
+ * Nothing but static assets is in `dist` any more — every page is rendered by
+ * the Worker — so "is there a file behind this entry?" has become "does this
+ * URL answer 200?". That is a stronger question anyway: it catches a route
+ * that throws as well as one that was never built.
+ */
 const unbuilt = [];
 for (const path of built) {
-  const file = path === '/' ? 'index.html' : `${path.replace(/^\//, '')}.html`;
-  if (!(await exists(join(DIST, file)))) unbuilt.push(`${path} -> dist/${file}`);
+  const res = await fetch(`${base.replace(/\/$/, '')}${path}`, {
+    method: 'HEAD',
+    headers: { 'user-agent': userAgent('sitemap-check') },
+  });
+  if (!res.ok) unbuilt.push(`${path} -> HTTP ${res.status}`);
 }
 check(
-  `all ${built.length} listed URLs exist in ./dist`,
+  `all ${built.length} listed URLs answer 200`,
   unbuilt.length === 0,
   unbuilt.join('\n      '),
 );
@@ -175,8 +215,12 @@ check(
   missingCanonical.join(', '),
 );
 
-const robots = await readFile(join(DIST, 'robots.txt'), 'utf8').catch(() => null);
-check('robots.txt is built', robots !== null);
+// Served, not built — `robots.txt` is an Astro route like the sitemap.
+const robotsRes = await fetch(`${base.replace(/\/$/, '')}/robots.txt`, {
+  headers: { 'user-agent': userAgent('sitemap-check') },
+});
+const robots = robotsRes.ok ? await robotsRes.text() : null;
+check('robots.txt is served', robots !== null, `HTTP ${robotsRes.status}`);
 check(
   'robots.txt points at the sitemap',
   Boolean(robots?.includes(`Sitemap: ${ORIGIN}/sitemap.xml`)),

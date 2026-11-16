@@ -15,5 +15,17 @@
 /area/matamata /area/hobbiton-and-waikato 301
 # Webflow's legacy query-string tour URLs; the id cannot be matched in _redirects
 /tours/tour /tours 301
+# Webflow redirect to /tour/hobbiton-cosplay-tour-1-day, which no longer exists
+/cosplay /tours 301
+# Webflow redirect to /tour/hobbiton-cosplay-tour-1-day, which no longer exists
+/gallery/cosplay /tours 301
+# Webflow redirect to /tour/matakana-market-and-winery-tour-1-day, which no longer exists
+/matakana /tours 301
+# Webflow redirect to /tour/waipoua-forest-giant-kauri-coast, which no longer exists
+/waipoua /tours 301
+# Webflow redirect to /tour/hobbiton-rotorua-waitomo-tour, which no longer exists
+/tour/gs16anr-gs48s /tours 301
+# listed in the live sitemap and 404 on the live site. Re-pointed rather than left as a 404, on instruction — see REVIEW.hd.
+/tour/hobbiton-rotorua-tour-kuirau-park-footbath-experience /tours 301
 # Webflow site search has no equivalent after cut-over and the page is not ported. Dropped on instruction — but the search FORM is still in the shared nav on every page and posts here, so this keeps a submitted search landing somewhere useful instead of on a 404. See REVIEW.hd.
 /search /tours 301

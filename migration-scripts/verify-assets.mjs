@@ -47,8 +47,11 @@ const LIVE = manifest.extractedFrom;
 
 const args = process.argv.slice(2);
 const FLAGS_WITH_VALUES = new Set(['--base']);
-const base = args[args.indexOf('--base') + 1];
-if (!args.includes('--base') || !base || base.startsWith('--')) {
+// `VERIFY_BASE` is the same thing by another route — see verify-port.mjs.
+const base = args.includes('--base')
+  ? args[args.indexOf('--base') + 1]
+  : (process.env.VERIFY_BASE ?? null);
+if (!base || base.startsWith('--')) {
   console.error('\n--base <url> is required: this check needs a running server.\n');
   process.exit(1);
 }

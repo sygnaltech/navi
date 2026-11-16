@@ -98,10 +98,21 @@ const clean = (text) =>
   text
     .replace(/‌/g, '')
     .replace(/ /g, ' ')
-    // ZWSP, ZWNJ, ZWJ and the BOM. Webflow's editor leaves all four as
-    // spacers; a lone ZWJ in a `<figcaption>` is the one in this corpus.
-    .replace(/[​-‍﻿]/g, '')
+    // A LITERAL NEWLINE IN A TEXT NODE IS WHITESPACE, NOT A LINE BREAK. Webflow
+    // leaves them in the markup for readability and the browser collapses them.
+    // Only a `<br>` ELEMENT produces the newline this pipeline treats as a hard
+    // break — so these go here, or the serialiser turns a source file's
+    // indentation into `<br>` tags. Two appeared on `/area/te-anau`.
+    .replace(/[\r\n]+/g, ' ')
     .replace(/[ \t]+/g, ' ');
+
+/**
+ * U+200D (ZWJ) IS CONTENT AND MUST NOT BE STRIPPED. `clean` above drops U+200C
+ * (ZWNJ) and only that, deliberately: Webflow's editor uses a ZWJ-only
+ * paragraph as a vertical spacer and RENDERS it — `/tour/rotorua-one-day-tour`
+ * has three — so collapsing them costs one `<p>` each. Stripping it took the
+ * structural check from 73 pages matching to 57 before this note existed.
+ */
 
 /** Is this element one that starts a new Portable Text block? */
 const isBlockish = (tag) =>
@@ -260,8 +271,27 @@ export function toPortableText(html, { onWarn = () => {} } = {}) {
   function figureBlock(el) {
     const type = el.getAttribute('data-rt-type');
     const align = el.getAttribute('data-rt-align') || undefined;
+    /**
+     * THE CAPTION IS KEPT AS FOUND, including when it is editor noise.
+     *
+     * Webflow emits a `<figcaption>` only when the editor has been in it, so
+     * its ABSENCE is a fact about the figure: `/tour/abel-tasman-guided-walk`
+     * has none and `/tour/hobbiton-waitomo-caves-tour-1-day` has
+     * `<figcaption><br>&zwj;</figcaption>`. Reducing the second to nothing
+     * makes the two look identical here and emits a `<figcaption>` on both —
+     * one tag too many on one page and one too few on the other.
+     *
+     * So: undefined when there is no element, and otherwise the text with its
+     * `<br>` kept as a newline, the way a span carries one.
+     */
     const captionEl = el.querySelector('figcaption');
-    const caption = clean(captionEl?.textContent ?? '').trim() || undefined;
+    // Cleaned PER NODE, because `clean` collapses literal newlines and the
+    // ones standing in for a `<br>` have to survive it.
+    const caption = captionEl
+      ? [...captionEl.childNodes]
+          .map((n) => (n.nodeName.toLowerCase() === 'br' ? '\n' : clean(n.textContent ?? '')))
+          .join('')
+      : undefined;
 
     if (type === 'image') {
       const img = el.querySelector('img');
@@ -278,7 +308,7 @@ export function toPortableText(html, { onWarn = () => {} } = {}) {
         ...(img.getAttribute('alt') ? { alt: img.getAttribute('alt') } : {}),
         ...(align ? { align } : {}),
         ...(Number.isFinite(maxWidth) ? { maxWidth } : {}),
-        ...(caption ? { caption } : {}),
+        ...(caption !== undefined ? { caption } : {}),
       };
     }
 
@@ -297,7 +327,7 @@ export function toPortableText(html, { onWarn = () => {} } = {}) {
           ? { dimensions: el.getAttribute('data-rt-dimensions') }
           : {}),
         ...(ratio ? { ratio: ratio.trim() } : {}),
-        ...(caption ? { caption } : {}),
+        ...(caption !== undefined ? { caption } : {}),
       };
     }
 

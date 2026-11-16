@@ -14,11 +14,12 @@
  * falls.
  *
  * WHAT WEBFLOW HAD. `manifest.json` declared 19 redirects. Eleven are carried
- * below. The other eight pointed at tour URLs that now 404 — `/cosplay`,
- * `/gallery/cosplay`, `/matakana`, `/waipoua`, `/tour/gs16anr-gs48s` and three
- * `/tours/tour?id=…` entries — and were DROPPED on instruction rather than
- * carried as redirects to a 404. They are recorded in REVIEW.hd so the decision
- * is findable if any of them still attracts traffic.
+ * below unchanged. The other eight pointed at tour URLs that now 404 —
+ * `/cosplay`, `/gallery/cosplay`, `/matakana`, `/waipoua`,
+ * `/tour/gs16anr-gs48s` and three `/tours/tour?id=…` entries. Carrying those
+ * verbatim would be a 301 to a 404, so they are RE-POINTED at `/tours` on
+ * instruction. One more URL joins them: the dead `…kuirau-park-footbath…`
+ * entry that the live sitemap lists and the live site 404s.
  *
  * `from` must be an absolute path with no query string and no trailing slash.
  * 301 is the only status used: these are permanent, and a 302 would tell Google
@@ -70,6 +71,46 @@ export const REDIRECTS = [
     why: "Webflow's legacy query-string tour URLs; the id cannot be matched in _redirects",
   },
 
+  // ── dead Webflow redirects, re-pointed on instruction ────────────────────
+  // Each of these was a live Webflow redirect whose TARGET has since been
+  // deleted, so carrying it verbatim would have been a 301 to a 404. They were
+  // dropped at first and are now pointed at the tours index instead: the old
+  // URLs may still attract traffic, and a visitor who asked for a tour that no
+  // longer exists is better served by the list than by a 404. Guessing a
+  // replacement tour would be worse than either.
+  {
+    from: '/cosplay',
+    to: '/tours',
+    why: 'Webflow redirect to /tour/hobbiton-cosplay-tour-1-day, which no longer exists',
+  },
+  {
+    from: '/gallery/cosplay',
+    to: '/tours',
+    why: 'Webflow redirect to /tour/hobbiton-cosplay-tour-1-day, which no longer exists',
+  },
+  {
+    from: '/matakana',
+    to: '/tours',
+    why: 'Webflow redirect to /tour/matakana-market-and-winery-tour-1-day, which no longer exists',
+  },
+  {
+    from: '/waipoua',
+    to: '/tours',
+    why: 'Webflow redirect to /tour/waipoua-forest-giant-kauri-coast, which no longer exists',
+  },
+  {
+    from: '/tour/gs16anr-gs48s',
+    to: '/tours',
+    why: 'Webflow redirect to /tour/hobbiton-rotorua-waitomo-tour, which no longer exists',
+  },
+  {
+    from: '/tour/hobbiton-rotorua-tour-kuirau-park-footbath-experience',
+    to: '/tours',
+    why:
+      'listed in the live sitemap and 404 on the live site. Re-pointed rather than left ' +
+      'as a 404, on instruction — see REVIEW.hd.',
+  },
+
   // ── decided during this migration ────────────────────────────────────────
   {
     from: '/search',
@@ -83,6 +124,25 @@ export const REDIRECTS = [
 ];
 
 export const STATUS = 301;
+
+/**
+ * URLs OUR sitemap lists that Webflow's did not — because Webflow's was stale.
+ *
+ * All five answer 200 on the live site today and are simply absent from the
+ * live `/sitemap.xml`, which Webflow last regenerated at some earlier publish.
+ * Ours is derived from the dataset at request time, so it cannot drift that way
+ * — which is the dynamic site being more correct than the one it replaces, the
+ * same class of staleness as the archived tour frozen into the live nav.
+ *
+ * Declared rather than tolerated: a NEW unexpected addition still fails.
+ */
+export const SITEMAP_ADDITIONS = new Map([
+  ['/data/llms', 'ported page, never in the live sitemap'],
+  ['/tour/black-water-rafting-tour-1-day', 'live 200, absent from the live sitemap'],
+  ['/tour/rotorua-express-tour', 'live 200, absent from the live sitemap'],
+  ['/tours/half-day', 'live 200, absent from the live sitemap'],
+  ['/tours/transfers', 'live 200, absent from the live sitemap'],
+]);
 
 /** Map lookup for the Worker-side fallback. */
 const BY_PATH = new Map(REDIRECTS.map((r) => [r.from, r.to]));

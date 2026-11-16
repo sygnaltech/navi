@@ -46,6 +46,21 @@ const MONTHS = [
   'July', 'August', 'September', 'October', 'November', 'December',
 ];
 
+/**
+ * A value safe to drop inside a single-quoted JS string inside a `<script>`.
+ *
+ * HTML entities rather than backslashes, because the live site uses entities —
+ * these strings are assigned through `innerHTML`, which decodes them. It is
+ * also the form that cannot escape: no quote, no angle bracket and no `&`
+ * survives, so neither the string nor the `</script>` can be broken out of.
+ */
+const jsLiteral = (s: string) =>
+  s
+    .replace(/&/g, '&amp;')
+    .replace(/'/g, '&#39;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;');
+
 export function reviewDate(iso?: string): string {
   if (!iso) return '';
   const d = new Date(iso);
@@ -269,7 +284,36 @@ export function makeCards(seam: SeamResolver) {
       }),
     );
 
+  /**
+   * The tour `<option>` list on `/agents` and `/booking`.
+   *
+   * The only collection list on this site that is JAVASCRIPT rather than
+   * markup: Webflow repeats an HTML embed once per tour, and each copy is a
+   * `<script>` that appends one `<option>` to `#tour1` on DOM ready. So the
+   * binding is a string substitution inside generated JS, and the two values
+   * are rewritten in place rather than the block being rebuilt — the rest of
+   * it, commented-out lines included, is Webflow's and stays as it is.
+   *
+   * `value` is `naviCode` ("MATA-SAT", "ROT"), which is what the booking system
+   * receives, NOT `tourAidCode` — they differ on several tours (`KUPE` vs
+   * `KUPE-EN`) and a wrong code is a booking against the wrong tour.
+   *
+   * The label is HTML-ESCAPED, because the live site escapes it: it is assigned
+   * through `innerHTML`, so `&#39;` and `&amp;` are decoded by the browser on
+   * assignment. Escaping also means a title can never close the `<script>` or
+   * break out of the quoted string.
+   */
+  const tourOptions = (tours: TourCard[], template: 'agents.0' | 'booking.0') =>
+    join(
+      tours.map((tour) =>
+        seam(template)
+          .replace(/opt\.value = '[^']*';/, `opt.value = '${jsLiteral(tour.naviCode ?? '')}';`)
+          .replace(/opt\.innerHTML = '[^']*';/, `opt.innerHTML = '${jsLiteral(tour.title)}';`),
+      ),
+    );
+
   return {
+    tourOptions,
     tourCardServices,
     tourCardVertical,
     tourCardSquare,

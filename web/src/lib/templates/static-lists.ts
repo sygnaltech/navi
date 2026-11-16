@@ -14,7 +14,7 @@
  * alongside the collection routes.
  */
 import {setText, setHtml, setAttr, setBackground, setListItems, countLists, hasSeam, removeEl} from '../seams.ts';
-import {imageUrl, type Shell, type TourCard} from '../cms.ts';
+import {areasByIsland, imageUrl, type Shell, type TourCard} from '../cms.ts';
 import type {Cards} from '../cards.ts';
 import type {SeamResolver} from '../seam-store.ts';
 
@@ -127,12 +127,107 @@ const BINDERS: Record<string, (body: string, ctx: Ctx) => string> = {
     return setListItems(body, 0, cards.tourCardVertical(shell.tours, 'tours.0'));
   },
 
+  /**
+   * `/agents` and `/booking` — one list each, and it is not markup.
+   *
+   * Webflow repeats an HTML embed once per tour; each copy is a `<script>` that
+   * appends one `<option>` to the booking form's tour `<select>`. See
+   * `cards.tourOptions`. Left frozen, the select offered the tours that existed
+   * at extraction time — including one that is a draft in Webflow — and a new
+   * tour could never be booked through either form.
+   */
+  agents(body, {shell, cards}) {
+    return setListItems(body, 0, cards.tourOptions(shell.tours, 'agents.0'));
+  },
+
+  booking(body, {shell, cards}) {
+    return setListItems(body, 0, cards.tourOptions(shell.tours, 'booking.0'));
+  },
+
   /** `/great-walks` — one list: the tours in the Great Walks category. */
   'great-walks'(body, {shell, cards}) {
     const walks = shell.tours.filter((t) =>
       (t.categories ?? []).some((c) => c.slug === 'great-walks'),
     );
     return setListItems(body, 0, cards.tourCardVertical(walks, 'great-walks.0'));
+  },
+
+  /**
+   * `/sitemap` — the human-readable index. Three lists:
+   *   0  every tour       title + brief, linked to the tour
+   *   1  every special    title + details, linked to `/special/<slug>`
+   *   2  every area       name + brief, linked to NOTHING
+   *
+   * TWO ODDITIES, BOTH REPRODUCED AS FOUND. The area rows carry `href="#"` on
+   * the live page — the designer never bound a link — and the special rows
+   * point at `/special/<slug>`, a route the live site answers 404 for. Neither
+   * is the port's doing and neither is fixed here; both are in REVIEW.hd.
+   */
+  sitemap(body, {shell, seam}) {
+    let out = body;
+
+    out = setListItems(
+      out,
+      0,
+      shell.tours
+        .map((tour) => {
+          let html = seam('sitemap.0');
+          html = setAttr(html, 'clickable-area', 'href', `/tour/${tour.slug}`);
+          html = setText(html, 'site-map-item-title', tour.title);
+          html = setText(html, 'site-map-item-detail', tour.brief ?? '');
+          return html;
+        })
+        .join('\n'),
+    );
+
+    out = setListItems(
+      out,
+      1,
+      (shell.specials ?? [])
+        .map((special) => {
+          let html = seam('sitemap.1');
+          html = setAttr(html, 'clickable-area', 'href', `/special/${special.slug}`);
+          html = setText(html, 'site-map-item-title', special.title);
+          html = setText(html, 'site-map-item-detail', special.details ?? '');
+          return html;
+        })
+        .join('\n'),
+    );
+
+    // `href="#"` is what the live rows have; the seam already carries it, so
+    // only the two text regions bind.
+    out = setListItems(
+      out,
+      2,
+      shell.areas
+        .map((area) => {
+          let html = seam('sitemap.2');
+          html = setText(html, 'site-map-item-title', area.name);
+          html = setText(html, 'site-map-item-detail', area.brief ?? '');
+          return html;
+        })
+        .join('\n'),
+    );
+
+    return out;
+  },
+
+  /**
+   * `/map` — the areas, as two lists split by island, the same split the nav
+   * uses. The row is the sitemap's area row with a real link on it.
+   */
+  map(body, {shell, seam}) {
+    const row = (area: Shell['areas'][number], template: 'map.0' | 'map.1') => {
+      let html = seam(template);
+      html = setAttr(html, 'clickable-area', 'href', `/area/${area.slug}`);
+      html = setText(html, 'site-map-item-title', area.name);
+      html = setText(html, 'site-map-item-detail', area.brief ?? '');
+      return html;
+    };
+    const {north, south} = areasByIsland(shell.areas);
+    let out = setListItems(body, 0, north.map((a) => row(a, 'map.0')).join('\n'));
+    out = setListItems(out, 1, south.map((a) => row(a, 'map.1')).join('\n'));
+    return out;
   },
 
   /** `/reviews` — one list: every review, newest first. */

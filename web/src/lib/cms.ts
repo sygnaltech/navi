@@ -63,6 +63,7 @@ const TOUR_CARD = `
   "title": title,
   "brief": brief,
   "nameDetail": nameDetail,
+  "naviCode": naviCode,
   "hero": heroImage${IMAGE},
   "priceAdult": priceAdult,
   "island": island,
@@ -77,6 +78,8 @@ export type TourCard = {
   title: string;
   brief?: string;
   nameDetail?: string;
+  /** The booking system's short code. The value of the `<option>` on /booking. */
+  naviCode?: string;
   hero: ImageRef;
   priceAdult?: number;
   island?: string | null;
@@ -221,12 +224,13 @@ export const getTour = (slug: string) => client.fetch<Tour | null>(TOUR_QUERY, {
  */
 export const SHELL_QUERY = `{
   "categories": *[_type == "tourCategory"]|order(seq asc){"slug": slug.current, name, brief, featured, seq, "thumb": thumb${IMAGE}, "hero": hero${IMAGE}},
-  "areas": *[_type == "area"]|order(name asc){"slug": slug.current, name, title, "island": island->slug.current},
+  "areas": *[_type == "area"]|order(name asc){"slug": slug.current, name, title, brief, "island": island->slug.current},
   "tags": *[_type == "tag"]|order(seq asc){"slug": slug.current, name, title, groupTitle, color},
   "tours": *[_type == "tour"]|order(seq asc, title asc){${TOUR_CARD}},
   "pickUps": *[_type == "pickUp"]|order(title asc){"slug": slug.current, title, address, latitude, longitude},
   "reviews": *[_type == "review"]|order(date desc){${REVIEW_CARD}},
   "news": *[_type == "news"]|order(date desc){"slug": slug.current, title, summary, "mainImage": mainImage${IMAGE}},
+  "specials": *[_type == "special"]|order(endDate asc){"slug": slug.current, title, details},
   "homepageHeroes": *[_type == "featured" && enabled == true
     && (!defined(startDate) || startDate <= now())
     && (!defined(endDate) || endDate >= now())]|order(pos asc){
@@ -236,7 +240,14 @@ export const SHELL_QUERY = `{
   }
 }`;
 
-export type AreaLink = {slug: string; name: string; title: string; island?: string | null};
+export type AreaLink = {
+  slug: string;
+  name: string;
+  title: string;
+  /** The one-line description under the name on `/map` and `/sitemap`. */
+  brief?: string;
+  island?: string | null;
+};
 
 export type Shell = {
   categories: Array<{
@@ -255,6 +266,8 @@ export type Shell = {
   pickUps: Array<{slug: string; title: string; address: string; latitude: string; longitude: string}>;
   reviews: ReviewCard[];
   news: Array<{slug: string; title: string; summary?: string; mainImage: ImageRef}>;
+  /** Every special. Listed on `/sitemap`; nothing else on the site shows them. */
+  specials: Array<{slug: string; title: string; details: string}>;
   homepageHeroes: Array<{
     slug: string;
     title: string;

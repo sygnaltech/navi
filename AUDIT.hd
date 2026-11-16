@@ -11,9 +11,9 @@ Every page of the ported site compared to its live equivalent on
 [www.tournewzealand.com](https://www.tournewzealand.com), with the dev server running on
 `http://localhost:4322`.
 
-Thirteen defects found, all thirteen fixed. What is left needs one thing from you — a re-import,
-so the six pictures the old converter dropped reach the dataset. See
-[What remains](#what-remains).
+Nineteen defects found, all nineteen fixed. Every page now matches the live site on structure, on
+every link and on every image, and every collection list on the site is bound to Sanity — nothing
+renders frozen content.
 
 ## How it was audited
 
@@ -49,14 +49,14 @@ region that differs rather than a tag count.
 
 |                                  | Before | After |
 | -------------------------------- | ------ | ----- |
-| Pages structurally identical      | 44/93  | 73/93 |
-| Of which the 22 ported pages      | 22/22  | 22/22 |
-| Category, area, tag, review, news | 15/44  | 44/44 |
-| Tour pages                        | 0/29   | 10/29 |
+| Pages structurally identical      | 44/93  | **93/93** |
+| Identical on every link and image | —      | **93/93** |
 
-Links and images: **88 of 93 pages identical**, and the five that are not are the five tours whose
-prose carries a picture that is not in the dataset yet. See
-[What remains](#what-remains).
+`npm run preflight` is green end to end, with a server running:
+
+```
+VERIFY_BASE=http://localhost:4322 npm run preflight
+```
 
 ## The home page hero — what that image was
 
@@ -180,9 +180,9 @@ whatever the region above it used; no live page repeats a review and neither doe
 -   `.title-link.yellow` on a related-tour card is the static word "Tour", not the tour's tag.
     Bound to `tag.name` it said "1 Day" where every live card says "Tour".
 
-## What remains
+## What was closed after the first pass
 
-### Blocked on one thing: the re-import
+### Rich-text figures
 
 `html-to-portable-text.mjs` converted text, marks, headings and lists, and dropped every node that
 carries no characters. `npm run sanity:verify` could not see it: that check compares the plain TEXT
@@ -198,13 +198,14 @@ into Webflow's own `<figure class="w-richtext-figure-type-…">` markup so the p
 styles them with no new CSS. `npm run sanity:convert` is green and reports **252 images, up from
 246** — the six.
 
-**The import is yours to run.** It uploads six new image assets into the production dataset.
+Converted and imported. **252 images, up from 246** — the six.
 
-```
-npm run sanity:import
-```
-
-Everything in [Still open](#still-open) below moves once it lands, so re-run the audit after.
+One thing the first attempt got wrong, recorded because it is the kind of mistake that looks like
+a tidy-up: the converter was also made to strip zero-width joiners. Webflow's editor uses a
+ZWJ-ONLY PARAGRAPH as a vertical spacer and RENDERS it — `/tour/rotorua-one-day-tour` has three —
+so stripping them cost a `<p>` each and took the structural check from 73 pages matching down to
+57. A zero-width character is only noise inside a `<figcaption>`, which is the one place it is
+dropped now.
 
 ### The `<br>` that was not a defect
 
@@ -217,15 +218,20 @@ ported Webflow stylesheet, so the inline style was carrying the whole thing and 
 none of it — the Matakana highlights ran together. And a newline is one `<body>` tag short of the
 live page on every break, which no reader can see and every structural check can.
 
-### Still open
+### Three more serialiser defects the figures exposed
 
-Twenty tour pages are between 1 and 9 `<body>` tags short of live. Most of that is the figures
-above, which are not in the dataset yet. Three pages are the other way round — ours carries two
-tags MORE than live — and `/tour/hollyford-valley-wilderness-experience` is missing the words "No
-deposit" and "to hold your place!", which is one more conditional region of the same family as the
-three below.
+-   **A `<br>` inside a `<strong>` emitted three `<strong>`s.** The break splits one bold run into
+    three spans carrying the same mark, and each was wrapped separately. Consecutive spans with
+    identical marks are now merged first, so `<strong>$2075.00 NZD / Adult<br />$1450.00 NZD /
+    Child</strong>` comes back as one run, as on the live page.
+-   **A literal newline in the source became a `<br>`.** Webflow leaves newlines in its markup for
+    readability and the browser collapses them; only a `<br>` ELEMENT is a line break. Two
+    spurious ones appeared on `/area/te-anau` the moment breaks started rendering as tags.
+-   **An absent `<figcaption>` is not the same as an empty one.** Webflow emits the element only
+    when the editor has been in it, so the caption is now stored as found — undefined when there
+    is no element at all — and the `<br>` inside one survives.
 
-### Closed: the three conditional regions
+### The three conditional regions
 
 Webflow omits a conditional region entirely when its condition is off, so a region absent from the
 sample item was absent from the frozen template for every page — and no single tour has all three.
@@ -239,6 +245,46 @@ not have it, so `highlights`, `pricingNotes` and `specialCancellationPolicy` all
 One field inside that region stays deliberately empty: `pricing-section-intro-text` is the dead
 field the migration does not carry (expired pricing notes on four tours), and it is empty on both
 live pages that have the region — so empty IS the live rendering.
+
+### The last four collection lists
+
+Four lists had been left frozen because they are not ordinary markup. All four are bound now, so
+**nothing on the site renders stale content**:
+
+-   **`/agents` and `/booking`** build the booking form's tour `<select>` from a collection of HTML
+    embeds — one generated `<script>` per tour, each appending an `<option>` on DOM ready. The
+    binding rewrites `opt.value` and `opt.innerHTML` inside that generated JS and leaves the rest
+    of it, commented-out lines included, as Webflow wrote it. The value is `naviCode`, not
+    `tourAidCode`: they differ on several tours (`KUPE` vs `KUPE-EN`) and a wrong code is a booking
+    against the wrong tour. Frozen, these two forms offered the tours that existed at extraction
+    time and no new tour could ever be booked through either.
+-   **`/sitemap`** lists every tour, every special and every area.
+-   **`/map`** lists the areas, split by island the same way the nav does.
+
+### What the sitemap page reproduces rather than fixes
+
+Two dead links on `/sitemap` are the live site's, not the port's, and are left exactly as found —
+both now recorded in REVIEW.hd. The five special rows link to `/special/<slug>`, which 404s on the
+live site and has no route in the export; the fifteen area rows carry `href="#"`, because the
+designer never bound a link to that row. `/map` lists the same areas with working links.
+
+### `npm run sitemap` could not pass, ever
+
+It read `dist/sitemap.xml`, which stopped existing when the routes went fully dynamic — so it
+failed with "run `npm run build` first" no matter how many times you had, and since it is a step of
+`npm run preflight`, preflight could not go green at all. It now fetches the served sitemap and
+HEADs every URL in it, which is a stronger check than "is there a file": it catches a route that
+throws as well as one that was never built.
+
+Our sitemap has 93 URLs to the live site's 90. Two of the live ones are your decisions (`/search`
+and the dead `…kuirau-park-footbath…` entry, both now 301s). The five we add — `/data/llms`,
+`/tour/black-water-rafting-tour-1-day`, `/tour/rotorua-express-tour`, `/tours/half-day`,
+`/tours/transfers` — **all answer 200 on the live site** and were simply missing from Webflow's own
+sitemap, which it last regenerated at some earlier publish. Ours is derived from the dataset per
+request and cannot drift that way.
+
+The eight dead Webflow redirects and the dead sitemap entry now 301 to `/tours`, per your note in
+REVIEW.hd. Fourteen redirects in total.
 
 ## Decisions — answered
 

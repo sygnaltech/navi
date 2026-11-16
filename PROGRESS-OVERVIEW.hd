@@ -16,7 +16,9 @@ Checkboxes only. Detail lives in [PROGRESS.hd](PROGRESS.hd); things to look at a
 - [x] All seven decisions answered and applied
 - [x] You start a dev server, for the Phase 3 audit
 - [x] MixItUp kept exactly as the live site has it; "No items found." not reproduced
-- [ ] **`npm run sanity:import`** — the only thing waiting on you. See [AUDIT.hd](AUDIT.hd)
+- [x] Dataset re-imported — 252 images
+- [x] `npm run preflight` **green**, with a server running:
+      `VERIFY_BASE=http://localhost:4322 npm run preflight`
 
 ## Phase 1 — Prepare
 
@@ -74,18 +76,17 @@ Checkboxes only. Detail lives in [PROGRESS.hd](PROGRESS.hd); things to look at a
 - [x] Images bound per item — all 71 rendered offline, distinct heroes asserted
 - [x] Shell's 9 collection lists bound to Sanity, with the right filters
 - [x] CMS lists bound on `/`, `/tours`, `/reviews`, `/portfolio`, `/great-walks`, `/pick-up`
-- [ ] CMS lists on `/agents` and `/booking` — the list is an inline `<script>` building a tour `<select>`
-- [ ] CMS lists on `/sitemap` and `/map` — link indexes, regions not yet mapped
+- [x] CMS lists on `/agents` and `/booking` — the tour `<select>` is built by one generated `<script>` per tour; bound by rewriting `opt.value` (`naviCode`) and `opt.innerHTML` in place
+- [x] CMS lists on `/sitemap` and `/map` — tours, specials and areas; `/map` split by island
+- [x] **Every collection list on the site is bound. Nothing is frozen.**
 
 ### Verified against the live site
 
 - [x] All 22 static pages structurally identical — `npm run verify -- --base <url> --cms`
 - [x] Verifier extended to the 71 collection routes — `--routes`
 - [x] Deliberate differences declared, not tolerated — `migration-scripts/divergences.config.mjs`
-- [x] 73 of 93 pages structurally identical
-- [x] Every category, area, tag, review and news page — 44 of 44
-- [x] Links and images asserted too — 88 of 93, `npm run verify:assets -- --base <url>`
-- [ ] 20 tour pages, 1–9 tags short — mostly the figures below, which land with the re-import
+- [x] **93 of 93 pages structurally identical**
+- [x] **93 of 93 identical on every link and every image** — `npm run verify:assets`
 
 ### Closed: conditional regions
 
@@ -95,11 +96,11 @@ Webflow omits a conditional region **entirely** when its condition is off, so a 
 
 The same class of gap on the **area, tag and category templates is also closed** — see [AUDIT.hd](AUDIT.hd).
 
-### Rich text: figures — code done, waiting on the import
+### Closed: rich-text figures
 
 - [x] 10 embedded videos and 6 embedded images were dropped by `html-to-portable-text.mjs`; converter, schema and serialiser now carry them
-- [x] `npm run sanity:convert` green — 252 images, up from 246
-- [ ] **`npm run sanity:import` — yours to run.** It uploads the six new image assets
+- [x] `<br>` comes back as a `<br>`, not a newline leaning on `white-space:pre-line` — which is in no stylesheet this site ships
+- [x] Re-converted and re-imported — 252 images
 
 `npm run sanity:verify` reported these fields "identical character for character" because it compares plain TEXT, and a figure leaves no trace there.
 
@@ -123,8 +124,10 @@ The same class of gap on the **area, tag and category templates is also closed**
 - [x] 11 of Webflow's 19 redirects carried; 8 dead ones dropped
 - [x] `/search` redirects to `/tours`
 - [x] Redirects served by the Worker as well as `_redirects`
-- [ ] `npm run sitemap` is BROKEN — it reads `dist/sitemap.xml`, which stopped existing when the routes went dynamic, so `npm run preflight` fails on it
-- [ ] Compared by hand instead: 93 ours vs 90 live. The two we omit are your decisions; the five we add — `/data/llms`, `/tour/black-water-rafting-tour-1-day`, `/tour/rotorua-express-tour`, `/tours/half-day`, `/tours/transfers` — all answer 200 on live and were simply missing from Webflow's own sitemap
+- [x] `npm run sitemap` fixed — it read `dist/sitemap.xml`, which stopped existing when the routes went dynamic; it now fetches the served sitemap and HEADs every listed URL
+- [x] Sitemap asserted against the live one — 93 ours vs 90 live, every difference declared
+- [x] The five we add — `/data/llms`, `/tour/black-water-rafting-tour-1-day`, `/tour/rotorua-express-tour`, `/tours/half-day`, `/tours/transfers` — all answer 200 on live and were simply missing from Webflow's own stale sitemap
+- [x] The 8 dead Webflow redirects and the dead sitemap entry now 301 to `/tours`, on your instruction in REVIEW.hd — 14 redirects total
 
 ### Forms
 
@@ -140,11 +143,12 @@ The same class of gap on the **area, tag and category templates is also closed**
 - [x] Link-and-image pass against live — the one the verifier cannot do
 - [x] Page-by-page audit against live
 - [x] [AUDIT.hd](AUDIT.hd) written — thirteen defects found, all thirteen fixed
-- [ ] Re-run the audit after `sanity:import`, against a production build rather than the dev server
+- [x] Audit re-run after `sanity:import` — 93/93 on both checks
+- [ ] Re-run against a production build rather than the dev server
 
 ## Cut-over
 
-- [ ] `npm run preflight` green
+- [x] `npm run preflight` green — against the dev server
 - [x] Deploy dry-run passes
 - [ ] Review on `*.workers.dev`
 - [ ] Studio deployed
