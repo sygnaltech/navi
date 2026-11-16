@@ -1,0 +1,93 @@
+[    1997ms] ReferenceError: $ is not defined
+    at http://127.0.0.1:4323/agents:550:27
+[    1997ms] ReferenceError: $ is not defined
+    at http://127.0.0.1:4323/agents:568:27
+[    1997ms] ReferenceError: $ is not defined
+    at http://127.0.0.1:4323/agents:586:27
+[    1997ms] ReferenceError: $ is not defined
+    at http://127.0.0.1:4323/agents:604:27
+[    1998ms] ReferenceError: $ is not defined
+    at http://127.0.0.1:4323/agents:622:27
+[    1998ms] ReferenceError: $ is not defined
+    at http://127.0.0.1:4323/agents:640:27
+[    1998ms] ReferenceError: $ is not defined
+    at http://127.0.0.1:4323/agents:658:27
+[    1998ms] ReferenceError: $ is not defined
+    at http://127.0.0.1:4323/agents:676:27
+[    1998ms] ReferenceError: $ is not defined
+    at http://127.0.0.1:4323/agents:694:27
+[    1998ms] ReferenceError: $ is not defined
+    at http://127.0.0.1:4323/agents:712:27
+[    1998ms] ReferenceError: $ is not defined
+    at http://127.0.0.1:4323/agents:730:27
+[    1998ms] ReferenceError: $ is not defined
+    at http://127.0.0.1:4323/agents:748:27
+[    1998ms] ReferenceError: $ is not defined
+    at http://127.0.0.1:4323/agents:766:27
+[    1998ms] ReferenceError: $ is not defined
+    at http://127.0.0.1:4323/agents:784:27
+[    1999ms] ReferenceError: $ is not defined
+    at http://127.0.0.1:4323/agents:802:27
+[    1999ms] ReferenceError: $ is not defined
+    at http://127.0.0.1:4323/agents:820:27
+[    1999ms] ReferenceError: $ is not defined
+    at http://127.0.0.1:4323/agents:838:27
+[    1999ms] ReferenceError: $ is not defined
+    at http://127.0.0.1:4323/agents:856:27
+[    1999ms] ReferenceError: $ is not defined
+    at http://127.0.0.1:4323/agents:874:27
+[    1999ms] ReferenceError: $ is not defined
+    at http://127.0.0.1:4323/agents:892:27
+[    2000ms] ReferenceError: $ is not defined
+    at http://127.0.0.1:4323/agents:910:27
+[    2000ms] ReferenceError: $ is not defined
+    at http://127.0.0.1:4323/agents:928:27
+[    2000ms] ReferenceError: $ is not defined
+    at http://127.0.0.1:4323/agents:946:27
+[    2000ms] ReferenceError: $ is not defined
+    at http://127.0.0.1:4323/agents:964:27
+[    2000ms] ReferenceError: $ is not defined
+    at http://127.0.0.1:4323/agents:982:27
+[    2000ms] ReferenceError: $ is not defined
+    at http://127.0.0.1:4323/agents:1000:27
+[    2001ms] ReferenceError: $ is not defined
+    at http://127.0.0.1:4323/agents:1018:27
+[    2001ms] ReferenceError: $ is not defined
+    at http://127.0.0.1:4323/agents:1036:27
+[    2001ms] ReferenceError: $ is not defined
+    at http://127.0.0.1:4323/agents:1054:27
+[    2070ms] [LOG] AUD @ http://127.0.0.1:4323/engine/index.js:251
+[    2070ms] [LOG] JPY @ http://127.0.0.1:4323/engine/index.js:252
+[    2070ms] [LOG] USD @ http://127.0.0.1:4323/engine/index.js:253
+[    2101ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://127.0.0.1:4323/modules/webflow-form.js:1
+[    2101ms] [LOG] Site package init v0.1.10 @ http://127.0.0.1:4323/engine/index.js:2948
+[    2102ms] [LOG] No specific route for this path. @ http://127.0.0.1:4323/engine/index.js:2887
+[    2115ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://127.0.0.1:4323/modules/webflow-form-ipinfo.js:1
+[    3067ms] [ERROR] Failed to load resource: net::ERR_FAILED @ https://www.google-analytics.com/g/collect?v=2&tid=G-KYN9DZR3X0&gtm=45je6bb1v888200264za20ozb860736861zd860736861xf1&_p=1794818952704&gcd=13l3l3l3l1l1&npa=0&dma=0&cid=969148020.1794818954&frm=0&ngs=1&pscdl=noapi&rcb=3&sr=2560x1440&uaa=x86&uab=64&uafvl=Not-A.Brand%3B99.0.0.0%7CGoogle%2520Chrome%3B157.0.8103.51%7CChromium%3B157.0.8103.51&uam=&uamb=0&uap=Windows&uapv=19.0.0&uaw=0&ul=en-us&_s=1&tag_exp=115938465~115938468~118897920~118897930~119860443~120213116~120385423~120412526~120420416~120469145~120469153~121246026~121246034~123785234&sid=1794818953&sct=1&seg=0&dl=http%3A%2F%2F127.0.0.1%2Fagents&dt=Hobbiton%20Tours%20-%20Travel%20Agent%20Registration&en=page_view&_fv=1&_nsi=1&_ss=1&tfd=3055:1
+[    3068ms] [ERROR] Failed to load resource: net::ERR_FAILED @ https://www.google.com/g/collect?v=2&tid=G-KYN9DZR3X0&gtm=45je6bb1v888200264za20ozb860736861zd860736861xf1&_p=1794818952704&gcd=13l3l3l3l1l1&npa=0&dma=0&cid=969148020.1794818954&frm=0&ngs=1&pscdl=noapi&rcb=3&sr=2560x1440&uaa=x86&uab=64&uafvl=Not-A.Brand%3B99.0.0.0%7CGoogle%2520Chrome%3B157.0.8103.51%7CChromium%3B157.0.8103.51&uam=&uamb=0&uap=Windows&uapv=19.0.0&uaw=0&ul=en-us&_s=1&tag_exp=115938465~115938468~118897920~118897930~119860443~120213116~120385423~120412526~120420416~120469145~120469153~121246026~121246034~123785234&sid=1794818953&sct=1&seg=0&dl=http%3A%2F%2F127.0.0.1%2Fagents&dt=Hobbiton%20Tours%20-%20Travel%20Agent%20Registration&en=page_view&_fv=1&_nsi=1&_ss=1&tfd=3055&gaf=1:1
+[    3605ms] [ERROR] Failed to load resource: net::ERR_FAILED @ https://us.i.posthog.com/e/:1
+[    5480ms] [ERROR] Failed to load resource: net::ERR_FAILED @ https://va.tawk.to/v1/session/start:1
+[    5805ms] [ERROR] Failed to load resource: net::ERR_FAILED @ https://webflow.com/api/v1/form/59f0db6e0aad1d00010940db:1
+[    6593ms] [ERROR] Failed to load resource: net::ERR_FAILED @ https://us.i.posthog.com/i/v0/e/:1
+[    6609ms] [ERROR] Failed to load resource: net::ERR_FAILED @ https://us.i.posthog.com/e/?retry_count=1:1
+[    7865ms] [LOG] AUD @ http://127.0.0.1:4323/engine/index.js:251
+[    7865ms] [LOG] JPY @ http://127.0.0.1:4323/engine/index.js:252
+[    7865ms] [LOG] USD @ http://127.0.0.1:4323/engine/index.js:253
+[    7901ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://127.0.0.1:4323/modules/webflow-form.js:1
+[    7902ms] [LOG] Site package init v0.1.10 @ http://127.0.0.1:4323/engine/index.js:2948
+[    7902ms] [LOG] Tour. @ http://127.0.0.1:4323/engine/index.js:2664
+[    7902ms] [LOG] {Name: Hobbiton Movie Set Tour, TourAidCode: RINGS-EN} @ http://127.0.0.1:4323/engine/index.js:2665
+[    7902ms] [LOG] tourAid? true @ http://127.0.0.1:4323/engine/index.js:2667
+[    7906ms] [LOG] calculating order @ http://127.0.0.1:4323/engine/index.js:2598
+[    7907ms] [LOG] order TourOrder @ http://127.0.0.1:4323/engine/index.js:2659
+[    7907ms] [LOG] test @ http://127.0.0.1:4323/engine/index.js:2622
+[    7929ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://127.0.0.1:4323/modules/webflow-form-ipinfo.js:1
+[    7985ms] [ERROR] Failed to load resource: net::ERR_FAILED @ https://us.i.posthog.com/e/:1
+[    9714ms] [ERROR] Failed to load resource: net::ERR_FAILED @ https://csp.withgoogle.com/csp/proto/06194a8f37177242d55a18e38c5a91c6:1
+[   10502ms] [WARNING] Google Maps JavaScript API has been loaded directly without loading=async. This can result in suboptimal performance. For best-practice loading patterns please see https://goo.gle/js-api-loading @ https://maps.googleapis.com/maps/api/js?v=3.64&key=AIzaSyDn8VcdTA0P4Smn8HU3ygF-UbnWKVYdXkA&language=en_GB&region=NZ&libraries=places,visualization,geometry,search:1547
+[   10536ms] [WARNING] As of February 21st, 2024, google.maps.Marker is deprecated. Please use google.maps.marker.AdvancedMarkerElement instead. At this time, google.maps.Marker is not scheduled to be discontinued, but google.maps.marker.AdvancedMarkerElement is recommended over google.maps.Marker. While google.maps.Marker will continue to receive bug fixes for any major regressions, existing bugs in google.maps.Marker will not be addressed. At least 12 months notice will be given before support is discontinued. Please see https://developers.google.com/maps/deprecations for additional details and https://developers.google.com/maps/documentation/javascript/advanced-markers/migration for the migration guide. @ https://maps.googleapis.com/maps/api/js?v=3.64&key=AIzaSyDn8VcdTA0P4Smn8HU3ygF-UbnWKVYdXkA&language=en_GB&region=NZ&libraries=places,visualization,geometry,search:1648
+[   10538ms] [WARNING] As of March 1st, 2025, google.maps.places.PlacesService is not available to new customers. Please use google.maps.places.Place instead. At this time, google.maps.places.PlacesService is not scheduled to be discontinued, but google.maps.places.Place is recommended over google.maps.places.PlacesService. While google.maps.places.PlacesService will continue to receive bug fixes for any major regressions, existing bugs in google.maps.places.PlacesService will not be addressed. At least 12 months notice will be given before support is discontinued. Please see https://developers.google.com/maps/legacy for additional details and https://developers.google.com/maps/documentation/javascript/places-migration-overview for the migration guide. @ https://maps.googleapis.com/maps/api/js?v=3.64&key=AIzaSyDn8VcdTA0P4Smn8HU3ygF-UbnWKVYdXkA&language=en_GB&region=NZ&libraries=places,visualization,geometry,search:661
+[   10543ms] [ERROR] Failed to load resource: net::ERR_FAILED @ https://www.google.com/maps/d/gen204?cid=mme&_reqid=78562&rt=j:1
+[   10848ms] [ERROR] Failed to load resource: net::ERR_FAILED @ https://va.tawk.to/v1/session/start:1
+[   11286ms] [LOG] order TourOrder @ https://us-assets.i.posthog.com/static/1.450.0/posthog-recorder.js:1
+[   11290ms] [ERROR] Failed to load resource: the server responded with a status of 503 (Service Unavailable) @ https://usebasin.com/f/57139b8e2264:1

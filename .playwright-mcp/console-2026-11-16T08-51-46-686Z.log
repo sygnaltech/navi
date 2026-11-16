@@ -1,0 +1,59 @@
+[    1006ms] [LOG] AUD @ http://127.0.0.1:4323/engine/index.js:251
+[    1006ms] [LOG] JPY @ http://127.0.0.1:4323/engine/index.js:252
+[    1006ms] [LOG] USD @ http://127.0.0.1:4323/engine/index.js:253
+[    1020ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://127.0.0.1:4323/modules/webflow-form.js:1
+[    1020ms] [LOG] Site package init v0.1.10 @ http://127.0.0.1:4323/engine/index.js:2948
+[    1020ms] [LOG] Tour. @ http://127.0.0.1:4323/engine/index.js:2664
+[    1020ms] [LOG] {Name: Hobbiton Movie Set Tour, TourAidCode: RINGS-EN} @ http://127.0.0.1:4323/engine/index.js:2665
+[    1021ms] [LOG] tourAid? true @ http://127.0.0.1:4323/engine/index.js:2667
+[    1023ms] [LOG] calculating order @ http://127.0.0.1:4323/engine/index.js:2598
+[    1023ms] [LOG] order TourOrder @ http://127.0.0.1:4323/engine/index.js:2659
+[    1023ms] [LOG] test @ http://127.0.0.1:4323/engine/index.js:2622
+[    1032ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://127.0.0.1:4323/modules/webflow-form-ipinfo.js:1
+[    1231ms] [ERROR] Failed to load resource: net::ERR_FAILED @ https://us.i.posthog.com/e/:1
+[    1761ms] [ERROR] Failed to load resource: net::ERR_FAILED @ https://www.youtube.com/api/stats/qoe?cpn=0_iCucKqgpW-5XmR&el=embedded&ns=yt&fexp=v1%2C100673025%2C1884%2C363%2C-76670628%2C27058999%2C34656%2C124674%2C117689%2C9252%2C16509%2C23206%2C35403%2C65299%2C15105%2C25059%2C4174%2C30446%2C18706%2C26008%2C13016%2C15426%2C661%2C9404%2C6629%2C17197%2C9500%2C55471%2C41207%2C20588%2C4200%2C39294%2C59015%2C1168%2C8130%2C1539%2C18086%2C2365%2C12331%2C11462%2C46288%2C13330%2C26539%2C3844%2C18499%2C6469%2C22507%2C2512%2C1180%2C33292%2C3074%2C15061%2C2%2C5702%2C6957%2C2008%2C120%2C12947%2C1864%2C6899%2C4595%2C9280%2C760%2C8204%2C2266%2C4783%2C8893%2C4711%2C2099%2C7809%2C9786%2C2218%2C45%2C6635%2C3421%2C1814%2C4270%2C451%2C3811%2C751%2C1626%2C441%2C4822%2C973%2C2529%2C3124%2C1646%2C10675%2C7461%2C94%2C4565%2C490%2C10818%2C2155%2C206%2C1797%2C1386%2C571%2C10842%2C2079%2C816%2C259%2C6967%2C1042%2C385%2C12%2C68%2C1029%2C571%2C1599%2C6787%2C25849&cl=1018714565&seq=1&event=streamingstats&docid=OSQ3o2VJO3I&cbr=Chrome&cbrver=157.0.0.0&c=WEB_EMBEDDED_PLAYER&cver=2.20261113.01.00&cplayer=UNIPLAYER&cos=Windows&cosver=10.0&cplatform=DESKTOP&vps=0.000:N,0.000:ER&cmt=0.000:0.000,0.000:0.000&error=0.000:auth::0.000:0;a6s.0;r.This_video_is_unavailable&vis=0.000:0&bh=0.000:0.000&qclc=ChAwX2lDdWNLcWdwVy01WG1SEAE:1
+[    1916ms] [ERROR] Failed to load resource: net::ERR_FAILED @ https://jnn-pa.googleapis.com/$rpc/google.internal.waa.v1.Waa/GenerateIT:1
+[    1921ms] [WARNING] The powerPreference option is currently ignored when calling requestAdapter() on Windows. See https://crbug.com/369219127 @ :1
+[    2087ms] [ERROR] Failed to load resource: net::ERR_FAILED @ https://jnn-pa.googleapis.com/$rpc/google.internal.waa.v1.Waa/GenerateIT:1
+[    2586ms] [ERROR] Failed to load resource: net::ERR_FAILED @ https://jnn-pa.googleapis.com/$rpc/google.internal.waa.v1.Waa/GenerateIT:1
+[    2883ms] [WARNING] Google Maps JavaScript API has been loaded directly without loading=async. This can result in suboptimal performance. For best-practice loading patterns please see https://goo.gle/js-api-loading @ https://maps.googleapis.com/maps/api/js?v=3.64&key=AIzaSyDn8VcdTA0P4Smn8HU3ygF-UbnWKVYdXkA&language=en_GB&region=NZ&libraries=places,visualization,geometry,search:1547
+[    2934ms] [WARNING] As of February 21st, 2024, google.maps.Marker is deprecated. Please use google.maps.marker.AdvancedMarkerElement instead. At this time, google.maps.Marker is not scheduled to be discontinued, but google.maps.marker.AdvancedMarkerElement is recommended over google.maps.Marker. While google.maps.Marker will continue to receive bug fixes for any major regressions, existing bugs in google.maps.Marker will not be addressed. At least 12 months notice will be given before support is discontinued. Please see https://developers.google.com/maps/deprecations for additional details and https://developers.google.com/maps/documentation/javascript/advanced-markers/migration for the migration guide. @ https://maps.googleapis.com/maps/api/js?v=3.64&key=AIzaSyDn8VcdTA0P4Smn8HU3ygF-UbnWKVYdXkA&language=en_GB&region=NZ&libraries=places,visualization,geometry,search:1648
+[    2936ms] [WARNING] As of March 1st, 2025, google.maps.places.PlacesService is not available to new customers. Please use google.maps.places.Place instead. At this time, google.maps.places.PlacesService is not scheduled to be discontinued, but google.maps.places.Place is recommended over google.maps.places.PlacesService. While google.maps.places.PlacesService will continue to receive bug fixes for any major regressions, existing bugs in google.maps.places.PlacesService will not be addressed. At least 12 months notice will be given before support is discontinued. Please see https://developers.google.com/maps/legacy for additional details and https://developers.google.com/maps/documentation/javascript/places-migration-overview for the migration guide. @ https://maps.googleapis.com/maps/api/js?v=3.64&key=AIzaSyDn8VcdTA0P4Smn8HU3ygF-UbnWKVYdXkA&language=en_GB&region=NZ&libraries=places,visualization,geometry,search:661
+[    2942ms] [ERROR] Failed to load resource: net::ERR_FAILED @ https://www.google.com/maps/d/gen204?cid=mme&_reqid=78710&rt=j:1
+[    3083ms] [ERROR] Failed to load resource: net::ERR_FAILED @ https://va.tawk.to/v1/session/start:1
+[    3402ms] [ERROR] Failed to load resource: net::ERR_FAILED @ https://jnn-pa.googleapis.com/$rpc/google.internal.waa.v1.Waa/GenerateIT:1
+[    3569ms] [ERROR] Failed to load resource: net::ERR_FAILED @ https://www.youtube.com/youtubei/v1/log_event?alt=json:1
+[    3940ms] [LOG] AUD @ https://cdn.jsdelivr.net/gh/sygnaltech/navi@0.1.10/dist/index.js:251
+[    3940ms] [LOG] JPY @ https://cdn.jsdelivr.net/gh/sygnaltech/navi@0.1.10/dist/index.js:252
+[    3940ms] [LOG] USD @ https://cdn.jsdelivr.net/gh/sygnaltech/navi@0.1.10/dist/index.js:253
+[    3995ms] [ERROR] Failed to load resource: net::ERR_FAILED @ https://us.i.posthog.com/e/:1
+[    4075ms] [LOG] Site package init v0.1.10 @ https://us-assets.i.posthog.com/static/1.450.0/posthog-recorder.js:1
+[    4075ms] [LOG] Tour. @ https://us-assets.i.posthog.com/static/1.450.0/posthog-recorder.js:1
+[    4075ms] [LOG] {Name: Puhoi River Kayaking, TourAidCode: } @ https://us-assets.i.posthog.com/static/1.450.0/posthog-recorder.js:1
+[    4076ms] [LOG] tourAid? false @ https://us-assets.i.posthog.com/static/1.450.0/posthog-recorder.js:1
+[    4078ms] [LOG] calculating order @ https://us-assets.i.posthog.com/static/1.450.0/posthog-recorder.js:1
+[    4078ms] [LOG] order TourOrder @ https://us-assets.i.posthog.com/static/1.450.0/posthog-recorder.js:1
+[    4078ms] [LOG] test @ https://us-assets.i.posthog.com/static/1.450.0/posthog-recorder.js:1
+[    4781ms] [ERROR] Failed to load resource: net::ERR_FAILED @ https://jnn-pa.googleapis.com/$rpc/google.internal.waa.v1.Waa/GenerateIT:1
+[    4784ms] [WARNING] The powerPreference option is currently ignored when calling requestAdapter() on Windows. See https://crbug.com/369219127 @ :1
+[    4960ms] [ERROR] Failed to load resource: net::ERR_FAILED @ https://jnn-pa.googleapis.com/$rpc/google.internal.waa.v1.Waa/GenerateIT:1
+[    5044ms] [ERROR] Failed to load resource: net::ERR_FAILED @ https://csp.withgoogle.com/csp/proto/06194a8f37177242d55a18e38c5a91c6:1
+[    5454ms] [ERROR] Failed to load resource: net::ERR_FAILED @ https://jnn-pa.googleapis.com/$rpc/google.internal.waa.v1.Waa/GenerateIT:1
+[    5638ms] [WARNING] Google Maps JavaScript API has been loaded directly without loading=async. This can result in suboptimal performance. For best-practice loading patterns please see https://goo.gle/js-api-loading @ https://maps.googleapis.com/maps/api/js?v=3.64&key=AIzaSyDn8VcdTA0P4Smn8HU3ygF-UbnWKVYdXkA&language=en_GB&region=NZ&libraries=places,visualization,geometry,search:1547
+[    5687ms] [WARNING] As of February 21st, 2024, google.maps.Marker is deprecated. Please use google.maps.marker.AdvancedMarkerElement instead. At this time, google.maps.Marker is not scheduled to be discontinued, but google.maps.marker.AdvancedMarkerElement is recommended over google.maps.Marker. While google.maps.Marker will continue to receive bug fixes for any major regressions, existing bugs in google.maps.Marker will not be addressed. At least 12 months notice will be given before support is discontinued. Please see https://developers.google.com/maps/deprecations for additional details and https://developers.google.com/maps/documentation/javascript/advanced-markers/migration for the migration guide. @ https://maps.googleapis.com/maps/api/js?v=3.64&key=AIzaSyDn8VcdTA0P4Smn8HU3ygF-UbnWKVYdXkA&language=en_GB&region=NZ&libraries=places,visualization,geometry,search:1648
+[    5688ms] [WARNING] As of March 1st, 2025, google.maps.places.PlacesService is not available to new customers. Please use google.maps.places.Place instead. At this time, google.maps.places.PlacesService is not scheduled to be discontinued, but google.maps.places.Place is recommended over google.maps.places.PlacesService. While google.maps.places.PlacesService will continue to receive bug fixes for any major regressions, existing bugs in google.maps.places.PlacesService will not be addressed. At least 12 months notice will be given before support is discontinued. Please see https://developers.google.com/maps/legacy for additional details and https://developers.google.com/maps/documentation/javascript/places-migration-overview for the migration guide. @ https://maps.googleapis.com/maps/api/js?v=3.64&key=AIzaSyDn8VcdTA0P4Smn8HU3ygF-UbnWKVYdXkA&language=en_GB&region=NZ&libraries=places,visualization,geometry,search:654
+[    5692ms] [ERROR] Failed to load resource: net::ERR_FAILED @ https://www.google.com/maps/d/gen204?cid=mme&_reqid=78713&rt=j:1
+[    5945ms] [ERROR] Failed to load resource: net::ERR_FAILED @ https://va.tawk.to/v1/session/start:1
+[    6248ms] [ERROR] Failed to load resource: net::ERR_FAILED @ https://jnn-pa.googleapis.com/$rpc/google.internal.waa.v1.Waa/GenerateIT:1
+[    6432ms] [ERROR] Failed to load resource: net::ERR_FAILED @ https://www.youtube.com/youtubei/v1/log_event?alt=json:1
+[    6994ms] [ERROR] Failed to load resource: net::ERR_FAILED @ https://us.i.posthog.com/s/:1
+[    7133ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://127.0.0.1:4323/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js:1
+[    7311ms] [LOG] AUD @ http://127.0.0.1:4323/engine/index.js:251
+[    7311ms] [LOG] JPY @ http://127.0.0.1:4323/engine/index.js:252
+[    7311ms] [LOG] USD @ http://127.0.0.1:4323/engine/index.js:253
+[    7325ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://127.0.0.1:4323/modules/webflow-form.js:1
+[    7325ms] [LOG] Site package init v0.1.10 @ http://127.0.0.1:4323/engine/index.js:2948
+[    7325ms] [LOG] No specific route for this path. @ http://127.0.0.1:4323/engine/index.js:2887
+[    7331ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://127.0.0.1:4323/modules/webflow-form-ipinfo.js:1
+[    7390ms] [ERROR] Failed to load resource: net::ERR_FAILED @ https://us.i.posthog.com/e/:1
+[    8112ms] [ERROR] Failed to load resource: net::ERR_FAILED @ https://va.tawk.to/v1/session/start:1

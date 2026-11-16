@@ -1,0 +1,121 @@
+- generic [active] [ref=e1]:
+  - generic [ref=e2]:
+    - generic [ref=e4]:
+      - link "English" [ref=e6] [cursor=pointer]:
+        - /url: "#"
+      - link "Japanese" [ref=e11] [cursor=pointer]:
+        - /url: https://navi.co.nz/tours/
+    - generic [ref=e17]:
+      - link [ref=e19] [cursor=pointer]:
+        - /url: /
+      - button "What would you like to see? Email Form 2" [ref=e24] [cursor=pointer]:
+        - generic [ref=e25]: What would you like to see?
+        - form "Email Form 2" [ref=e27]:
+          - textbox "I want to see..." [ref=e28]
+          - generic [aria-hidden] [ref=e29]: 
+    - banner [ref=e30]:
+      - generic [ref=e31]:
+        - navigation [ref=e32]:
+          - link [ref=e33] [cursor=pointer]:
+            - /url: /
+          - button "Tour tYPES" [ref=e35] [cursor=pointer]:
+            - generic [aria-hidden] [ref=e36]: 
+          - button "TourS" [ref=e39] [cursor=pointer]:
+            - generic [aria-hidden] [ref=e40]: 
+          - button "Regions" [ref=e43] [cursor=pointer]:
+            - generic [aria-hidden] [ref=e44]: 
+          - button "About" [ref=e47] [cursor=pointer]:
+            - generic [aria-hidden] [ref=e48]: 
+          - link "DESIGN YOUR tour" [ref=e50] [cursor=pointer]:
+            - /url: /custom-tours
+          - link "Contact" [ref=e51] [cursor=pointer]:
+            - /url: /contact
+        - text: 
+  - list [ref=e54]:
+    - listitem [ref=e55]:
+      - link [ref=e59] [cursor=pointer]:
+        - /url: /tour/hobbiton-waitomo-caves-tour-1-day
+        - heading "Tour Hobbiton" [level=1] [ref=e60]
+  - list [ref=e63]:
+    - listitem [ref=e64]:
+      - link "TOUR SELECTION Hobbiton Tours ☆Even if other sites show sold out, Navi tour is available for Hobbiton related tours ! Please secure your spot ! SEE TOURS" [ref=e65] [cursor=pointer]:
+        - /url: /tours/hobbiton
+        - generic [ref=e67]:
+          - generic [ref=e68]: TOUR SELECTION
+          - heading "Hobbiton Tours" [level=4] [ref=e69]
+          - paragraph [ref=e70]: ☆Even if other sites show sold out, Navi tour is available for Hobbiton related tours ! Please secure your spot !
+          - generic [ref=e71]: SEE TOURS
+    - listitem [ref=e72]:
+      - link "TOUR SELECTION Nature Tours Enjoy New Zealand's beautiful Nature SEE TOURS" [ref=e73] [cursor=pointer]:
+        - /url: /tours/nature
+        - generic [ref=e75]:
+          - generic [ref=e76]: TOUR SELECTION
+          - heading "Nature Tours" [level=4] [ref=e77]
+          - paragraph [ref=e78]: Enjoy New Zealand's beautiful Nature
+          - generic [ref=e79]: SEE TOURS
+    - listitem [ref=e80]:
+      - link "TOUR SELECTION Auckland Tours Stunning tours around Auckland, New Zealand SEE TOURS" [ref=e81] [cursor=pointer]:
+        - /url: /tours/auckland-tours
+        - generic [ref=e83]:
+          - generic [ref=e84]: TOUR SELECTION
+          - heading "Auckland Tours" [level=4] [ref=e85]
+          - paragraph [ref=e86]: Stunning tours around Auckland, New Zealand
+          - generic [ref=e87]: SEE TOURS
+    - listitem [ref=e88]:
+      - link "TOUR SELECTION Walking & Hiking Tours Discover for yourself. Feel the nature SEE TOURS" [ref=e89] [cursor=pointer]:
+        - /url: /tours/walking-hiking-tours
+        - generic [ref=e91]:
+          - generic [ref=e92]: TOUR SELECTION
+          - heading "Walking & Hiking Tours" [level=4] [ref=e93]
+          - paragraph [ref=e94]: Discover for yourself. Feel the nature
+          - generic [ref=e95]: SEE TOURS
+  - generic [ref=e97]:
+    - generic [ref=e98]: NAVI'S NEWS & BLOG
+    - generic [ref=e101]:
+      - list [ref=e102]:
+        - listitem [ref=e103]:
+          - link "News Top 10 Must-See Attractions in Auckland October 1, 2023 Explore the top 10 must-see attractions in Auckland, New Zealand, from the iconic Sky Tower to the beautiful Waiheke Island. LEARN MORE" [ref=e104] [cursor=pointer]:
+            - /url: /news/10-coolest-things-auckland
+            - generic [ref=e105]:
+              - generic [ref=e106]: News
+              - generic [ref=e110]: Top 10 Must-See Attractions in Auckland
+              - paragraph [ref=e112]: October 1, 2023
+              - paragraph [ref=e113]: Explore the top 10 must-see attractions in Auckland, New Zealand, from the iconic Sky Tower to the beautiful Waiheke Island.
+              - generic [ref=e114]: LEARN MORE
+      - navigation "List"
+  - generic [ref=e119]:
+    - generic [ref=e121]:
+      - heading "Discover New Zealand's Charms!" [level=3] [ref=e122]
+      - generic [ref=e123]:
+        - paragraph
+        - paragraph [ref=e124]:
+          - text: Join Our Small-Group Tours for a Relaxed Adventure! We are continually designing new tours to give you the best experience in
+          - strong [ref=e125]: New Zealand
+          - text: .
+    - form "Subscription Form" [ref=e129]:
+      - generic [ref=e130]:
+        - generic [ref=e131]: Email Address
+        - textbox "Email Address" [ref=e132]:
+          - /placeholder: Your email address
+      - button "Get Special Offers" [ref=e133] [cursor=pointer]
+  - generic [ref=e136]:
+    - generic [ref=e138]:
+      - link [ref=e139] [cursor=pointer]:
+        - /url: https://www.tripadvisor.co.nz/Attraction_Review-g1811027-d12861681-Reviews-NAVI_Tours-Auckland_North_Island.html
+      - link [ref=e140] [cursor=pointer]:
+        - /url: https://www.facebook.com/NaviNewZealand
+      - link [ref=e141] [cursor=pointer]:
+        - /url: https://www.youtube.com/channel/UCBGHiU-1y4UrbcF-MOFXYCg
+      - link [ref=e142] [cursor=pointer]:
+        - /url: https://twitter.com/NaviNZTours
+    - generic [ref=e145]:
+      - searchbox "I want to see..." [ref=e146]
+      - button "Search" [ref=e147] [cursor=pointer]
+  - generic [ref=e149]:
+    - generic [ref=e150]: Copyright 2025, Navi New Zealand.
+    - link "Contact Us" [ref=e151] [cursor=pointer]:
+      - /url: /contact
+    - link "Privacy Policy" [ref=e152] [cursor=pointer]:
+      - /url: /privacy
+    - link "Terms of Use" [ref=e153] [cursor=pointer]:
+      - /url: /terms

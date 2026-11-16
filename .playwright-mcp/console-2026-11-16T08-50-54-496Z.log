@@ -1,0 +1,31 @@
+[     800ms] [LOG] AUD @ http://127.0.0.1:4323/engine/index.js:251
+[     800ms] [LOG] JPY @ http://127.0.0.1:4323/engine/index.js:252
+[     800ms] [LOG] USD @ http://127.0.0.1:4323/engine/index.js:253
+[     819ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://127.0.0.1:4323/modules/webflow-form.js:1
+[     819ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://127.0.0.1:4323/modules/webflow-form-ipinfo.js:1
+[     832ms] [LOG] Site package init v0.1.10 @ http://127.0.0.1:4323/engine/index.js:2948
+[     832ms] [LOG] Tour. @ http://127.0.0.1:4323/engine/index.js:2664
+[     832ms] [LOG] {Name: Hobbiton Movie Set Tour, TourAidCode: RINGS-EN} @ http://127.0.0.1:4323/engine/index.js:2665
+[     832ms] [LOG] tourAid? true @ http://127.0.0.1:4323/engine/index.js:2667
+[     834ms] [LOG] calculating order @ http://127.0.0.1:4323/engine/index.js:2598
+[     834ms] [LOG] order TourOrder @ http://127.0.0.1:4323/engine/index.js:2659
+[     835ms] [LOG] test @ http://127.0.0.1:4323/engine/index.js:2622
+[    1849ms] [WARNING] Google Maps JavaScript API has been loaded directly without loading=async. This can result in suboptimal performance. For best-practice loading patterns please see https://goo.gle/js-api-loading @ https://maps.googleapis.com/maps/api/js?v=3.64&key=AIzaSyDn8VcdTA0P4Smn8HU3ygF-UbnWKVYdXkA&language=en_GB&region=NZ&libraries=places,visualization,geometry,search:1547
+[    1902ms] [WARNING] As of February 21st, 2024, google.maps.Marker is deprecated. Please use google.maps.marker.AdvancedMarkerElement instead. At this time, google.maps.Marker is not scheduled to be discontinued, but google.maps.marker.AdvancedMarkerElement is recommended over google.maps.Marker. While google.maps.Marker will continue to receive bug fixes for any major regressions, existing bugs in google.maps.Marker will not be addressed. At least 12 months notice will be given before support is discontinued. Please see https://developers.google.com/maps/deprecations for additional details and https://developers.google.com/maps/documentation/javascript/advanced-markers/migration for the migration guide. @ https://maps.googleapis.com/maps/api/js?v=3.64&key=AIzaSyDn8VcdTA0P4Smn8HU3ygF-UbnWKVYdXkA&language=en_GB&region=NZ&libraries=places,visualization,geometry,search:1648
+[    1904ms] [WARNING] As of March 1st, 2025, google.maps.places.PlacesService is not available to new customers. Please use google.maps.places.Place instead. At this time, google.maps.places.PlacesService is not scheduled to be discontinued, but google.maps.places.Place is recommended over google.maps.places.PlacesService. While google.maps.places.PlacesService will continue to receive bug fixes for any major regressions, existing bugs in google.maps.places.PlacesService will not be addressed. At least 12 months notice will be given before support is discontinued. Please see https://developers.google.com/maps/legacy for additional details and https://developers.google.com/maps/documentation/javascript/places-migration-overview for the migration guide. @ https://maps.googleapis.com/maps/api/js?v=3.64&key=AIzaSyDn8VcdTA0P4Smn8HU3ygF-UbnWKVYdXkA&language=en_GB&region=NZ&libraries=places,visualization,geometry,search:661
+[    4240ms] [LOG] AUD @ http://127.0.0.1:4323/engine/index.js:251
+[    4240ms] [LOG] JPY @ http://127.0.0.1:4323/engine/index.js:252
+[    4240ms] [LOG] USD @ http://127.0.0.1:4323/engine/index.js:253
+[    4268ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://127.0.0.1:4323/modules/webflow-form-ipinfo.js:1
+[    4268ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://127.0.0.1:4323/modules/webflow-form.js:1
+[    4270ms] [LOG] Site package init v0.1.10 @ https://us-assets.i.posthog.com/static/1.450.0/posthog-recorder.js:1
+[    4271ms] [LOG] Payment Page. @ https://us-assets.i.posthog.com/static/1.450.0/posthog-recorder.js:1
+[    4271ms] [LOG] TourOrder @ https://us-assets.i.posthog.com/static/1.450.0/posthog-recorder.js:1
+[    5293ms] [LOG] AUD @ http://127.0.0.1:4323/engine/index.js:251
+[    5293ms] [LOG] JPY @ http://127.0.0.1:4323/engine/index.js:252
+[    5293ms] [LOG] USD @ http://127.0.0.1:4323/engine/index.js:253
+[    5303ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://127.0.0.1:4323/modules/webflow-form.js:1
+[    5304ms] [LOG] Site package init v0.1.10 @ http://127.0.0.1:4323/engine/index.js:2948
+[    5304ms] [LOG] Payment Page. @ http://127.0.0.1:4323/engine/index.js:94
+[    5304ms] [LOG] TourOrder @ http://127.0.0.1:4323/engine/index.js:99
+[    5320ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://127.0.0.1:4323/modules/webflow-form-ipinfo.js:1

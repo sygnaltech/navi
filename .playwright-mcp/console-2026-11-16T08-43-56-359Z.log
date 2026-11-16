@@ -1,0 +1,397 @@
+[    1261ms] [LOG] AUD @ http://localhost:4321/engine/index.js:251
+[    1261ms] [LOG] JPY @ http://localhost:4321/engine/index.js:252
+[    1262ms] [LOG] USD @ http://localhost:4321/engine/index.js:253
+[    1334ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://localhost:4321/modules/webflow-form-ipinfo.js:1
+[    1334ms] [LOG] Site package init v0.1.10 @ http://localhost:4321/engine/index.js:2948
+[    1334ms] [LOG] Home. @ http://localhost:4321/engine/index.js:7
+[    1346ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://localhost:4321/modules/webflow-form.js:1
+[   32116ms] [LOG] AUD @ http://localhost:4321/engine/index.js:251
+[   32116ms] [LOG] JPY @ http://localhost:4321/engine/index.js:252
+[   32116ms] [LOG] USD @ http://localhost:4321/engine/index.js:253
+[   32176ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://localhost:4321/modules/webflow-form.js:1
+[   32177ms] [LOG] Site package init v0.1.10 @ http://localhost:4321/engine/index.js:2948
+[   32178ms] [LOG] Tour. @ http://localhost:4321/engine/index.js:2664
+[   32178ms] [LOG] {Name: Hobbiton Movie Set Tour, TourAidCode: RINGS-EN} @ http://localhost:4321/engine/index.js:2665
+[   32178ms] [LOG] tourAid? true @ http://localhost:4321/engine/index.js:2667
+[   32180ms] [LOG] calculating order @ http://localhost:4321/engine/index.js:2598
+[   32180ms] [LOG] order TourOrder @ http://localhost:4321/engine/index.js:2659
+[   32180ms] [LOG] test @ http://localhost:4321/engine/index.js:2622
+[   32183ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://localhost:4321/modules/webflow-form-ipinfo.js:1
+[   34026ms] [WARNING] Google Maps JavaScript API has been loaded directly without loading=async. This can result in suboptimal performance. For best-practice loading patterns please see https://goo.gle/js-api-loading @ https://maps.googleapis.com/maps/api/js?v=3.64&key=AIzaSyDn8VcdTA0P4Smn8HU3ygF-UbnWKVYdXkA&language=en_GB&region=NZ&libraries=places,visualization,geometry,search:1547
+[   34065ms] [WARNING] As of February 21st, 2024, google.maps.Marker is deprecated. Please use google.maps.marker.AdvancedMarkerElement instead. At this time, google.maps.Marker is not scheduled to be discontinued, but google.maps.marker.AdvancedMarkerElement is recommended over google.maps.Marker. While google.maps.Marker will continue to receive bug fixes for any major regressions, existing bugs in google.maps.Marker will not be addressed. At least 12 months notice will be given before support is discontinued. Please see https://developers.google.com/maps/deprecations for additional details and https://developers.google.com/maps/documentation/javascript/advanced-markers/migration for the migration guide. @ https://maps.googleapis.com/maps/api/js?v=3.64&key=AIzaSyDn8VcdTA0P4Smn8HU3ygF-UbnWKVYdXkA&language=en_GB&region=NZ&libraries=places,visualization,geometry,search:1648
+[   34067ms] [WARNING] As of March 1st, 2025, google.maps.places.PlacesService is not available to new customers. Please use google.maps.places.Place instead. At this time, google.maps.places.PlacesService is not scheduled to be discontinued, but google.maps.places.Place is recommended over google.maps.places.PlacesService. While google.maps.places.PlacesService will continue to receive bug fixes for any major regressions, existing bugs in google.maps.places.PlacesService will not be addressed. At least 12 months notice will be given before support is discontinued. Please see https://developers.google.com/maps/legacy for additional details and https://developers.google.com/maps/documentation/javascript/places-migration-overview for the migration guide. @ https://maps.googleapis.com/maps/api/js?v=3.64&key=AIzaSyDn8VcdTA0P4Smn8HU3ygF-UbnWKVYdXkA&language=en_GB&region=NZ&libraries=places,visualization,geometry,search:661
+[   36624ms] [LOG] AUD @ http://localhost:4321/engine/index.js:251
+[   36625ms] [LOG] JPY @ http://localhost:4321/engine/index.js:252
+[   36625ms] [LOG] USD @ http://localhost:4321/engine/index.js:253
+[   36716ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://localhost:4321/modules/webflow-form.js:1
+[   36719ms] [LOG] Site package init v0.1.10 @ https://us-assets.i.posthog.com/static/1.450.0/posthog-recorder.js:1
+[   36720ms] [LOG] No specific route for this path. @ https://us-assets.i.posthog.com/static/1.450.0/posthog-recorder.js:1
+[   36723ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://localhost:4321/modules/webflow-form-ipinfo.js:1
+[   39097ms] ReferenceError: $ is not defined
+    at http://localhost:4321/agents:550:27
+[   39097ms] ReferenceError: $ is not defined
+    at http://localhost:4321/agents:568:27
+[   39097ms] ReferenceError: $ is not defined
+    at http://localhost:4321/agents:586:27
+[   39097ms] ReferenceError: $ is not defined
+    at http://localhost:4321/agents:604:27
+[   39097ms] ReferenceError: $ is not defined
+    at http://localhost:4321/agents:622:27
+[   39097ms] ReferenceError: $ is not defined
+    at http://localhost:4321/agents:640:27
+[   39097ms] ReferenceError: $ is not defined
+    at http://localhost:4321/agents:658:27
+[   39097ms] ReferenceError: $ is not defined
+    at http://localhost:4321/agents:676:27
+[   39097ms] ReferenceError: $ is not defined
+    at http://localhost:4321/agents:694:27
+[   39097ms] ReferenceError: $ is not defined
+    at http://localhost:4321/agents:712:27
+[   39097ms] ReferenceError: $ is not defined
+    at http://localhost:4321/agents:730:27
+[   39097ms] ReferenceError: $ is not defined
+    at http://localhost:4321/agents:748:27
+[   39097ms] ReferenceError: $ is not defined
+    at http://localhost:4321/agents:766:27
+[   39097ms] ReferenceError: $ is not defined
+    at http://localhost:4321/agents:784:27
+[   39097ms] ReferenceError: $ is not defined
+    at http://localhost:4321/agents:802:27
+[   39097ms] ReferenceError: $ is not defined
+    at http://localhost:4321/agents:820:27
+[   39097ms] ReferenceError: $ is not defined
+    at http://localhost:4321/agents:838:27
+[   39097ms] ReferenceError: $ is not defined
+    at http://localhost:4321/agents:856:27
+[   39097ms] ReferenceError: $ is not defined
+    at http://localhost:4321/agents:874:27
+[   39097ms] ReferenceError: $ is not defined
+    at http://localhost:4321/agents:892:27
+[   39097ms] ReferenceError: $ is not defined
+    at http://localhost:4321/agents:910:27
+[   39097ms] ReferenceError: $ is not defined
+    at http://localhost:4321/agents:928:27
+[   39097ms] ReferenceError: $ is not defined
+    at http://localhost:4321/agents:946:27
+[   39097ms] ReferenceError: $ is not defined
+    at http://localhost:4321/agents:964:27
+[   39097ms] ReferenceError: $ is not defined
+    at http://localhost:4321/agents:982:27
+[   39097ms] ReferenceError: $ is not defined
+    at http://localhost:4321/agents:1000:27
+[   39097ms] ReferenceError: $ is not defined
+    at http://localhost:4321/agents:1018:27
+[   39097ms] ReferenceError: $ is not defined
+    at http://localhost:4321/agents:1036:27
+[   39097ms] ReferenceError: $ is not defined
+    at http://localhost:4321/agents:1054:27
+[   39117ms] [LOG] AUD @ http://localhost:4321/engine/index.js:251
+[   39117ms] [LOG] JPY @ http://localhost:4321/engine/index.js:252
+[   39117ms] [LOG] USD @ http://localhost:4321/engine/index.js:253
+[   39173ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://localhost:4321/modules/webflow-form.js:1
+[   39176ms] [LOG] Site package init v0.1.10 @ https://us-assets.i.posthog.com/static/1.450.0/posthog-recorder.js:1
+[   39176ms] [LOG] No specific route for this path. @ https://us-assets.i.posthog.com/static/1.450.0/posthog-recorder.js:1
+[   39183ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://localhost:4321/modules/webflow-form-ipinfo.js:1
+[   41569ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://localhost:4321/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js:1
+[   41571ms] [LOG] AUD @ http://localhost:4321/engine/index.js:251
+[   41571ms] [LOG] JPY @ http://localhost:4321/engine/index.js:252
+[   41571ms] [LOG] USD @ http://localhost:4321/engine/index.js:253
+[   41622ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://localhost:4321/modules/webflow-form.js:1
+[   41623ms] [LOG] Site package init v0.1.10 @ https://us-assets.i.posthog.com/static/1.450.0/posthog-recorder.js:1
+[   41623ms] [LOG] No specific route for this path. @ https://us-assets.i.posthog.com/static/1.450.0/posthog-recorder.js:1
+[   41625ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://localhost:4321/modules/webflow-form-ipinfo.js:1
+[   43983ms] [LOG] AUD @ http://localhost:4321/engine/index.js:251
+[   43983ms] [LOG] JPY @ http://localhost:4321/engine/index.js:252
+[   43983ms] [LOG] USD @ http://localhost:4321/engine/index.js:253
+[   44055ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://localhost:4321/modules/webflow-form-ipinfo.js:1
+[   44055ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://localhost:4321/modules/webflow-form.js:1
+[   44055ms] [LOG] Site package init v0.1.10 @ https://us-assets.i.posthog.com/static/1.450.0/posthog-recorder.js:1
+[   44056ms] [LOG] Payment Page. @ https://us-assets.i.posthog.com/static/1.450.0/posthog-recorder.js:1
+[   62163ms] [LOG] AUD @ http://localhost:4321/engine/index.js:251
+[   62163ms] [LOG] JPY @ http://localhost:4321/engine/index.js:252
+[   62163ms] [LOG] USD @ http://localhost:4321/engine/index.js:253
+[   62220ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://localhost:4321/modules/webflow-form.js:1
+[   62221ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://localhost:4321/modules/webflow-form-ipinfo.js:1
+[   62225ms] [LOG] Site package init v0.1.10 @ https://us-assets.i.posthog.com/static/1.450.0/posthog-recorder.js:1
+[   62225ms] [LOG] Tour. @ https://us-assets.i.posthog.com/static/1.450.0/posthog-recorder.js:1
+[   62225ms] [LOG] {Name: Hobbiton Movie Set Tour, TourAidCode: RINGS-EN} @ https://us-assets.i.posthog.com/static/1.450.0/posthog-recorder.js:1
+[   62225ms] [LOG] tourAid? true @ https://us-assets.i.posthog.com/static/1.450.0/posthog-recorder.js:1
+[   62229ms] [LOG] calculating order @ https://us-assets.i.posthog.com/static/1.450.0/posthog-recorder.js:1
+[   62230ms] [LOG] order TourOrder @ https://us-assets.i.posthog.com/static/1.450.0/posthog-recorder.js:1
+[   62230ms] [LOG] test @ https://us-assets.i.posthog.com/static/1.450.0/posthog-recorder.js:1
+[   63139ms] [WARNING] Google Maps JavaScript API has been loaded directly without loading=async. This can result in suboptimal performance. For best-practice loading patterns please see https://goo.gle/js-api-loading @ https://maps.googleapis.com/maps/api/js?v=3.64&key=AIzaSyDn8VcdTA0P4Smn8HU3ygF-UbnWKVYdXkA&language=en_GB&region=NZ&libraries=places,visualization,geometry,search:1547
+[   63187ms] [WARNING] As of February 21st, 2024, google.maps.Marker is deprecated. Please use google.maps.marker.AdvancedMarkerElement instead. At this time, google.maps.Marker is not scheduled to be discontinued, but google.maps.marker.AdvancedMarkerElement is recommended over google.maps.Marker. While google.maps.Marker will continue to receive bug fixes for any major regressions, existing bugs in google.maps.Marker will not be addressed. At least 12 months notice will be given before support is discontinued. Please see https://developers.google.com/maps/deprecations for additional details and https://developers.google.com/maps/documentation/javascript/advanced-markers/migration for the migration guide. @ https://maps.googleapis.com/maps/api/js?v=3.64&key=AIzaSyDn8VcdTA0P4Smn8HU3ygF-UbnWKVYdXkA&language=en_GB&region=NZ&libraries=places,visualization,geometry,search:1648
+[   63188ms] [WARNING] As of March 1st, 2025, google.maps.places.PlacesService is not available to new customers. Please use google.maps.places.Place instead. At this time, google.maps.places.PlacesService is not scheduled to be discontinued, but google.maps.places.Place is recommended over google.maps.places.PlacesService. While google.maps.places.PlacesService will continue to receive bug fixes for any major regressions, existing bugs in google.maps.places.PlacesService will not be addressed. At least 12 months notice will be given before support is discontinued. Please see https://developers.google.com/maps/legacy for additional details and https://developers.google.com/maps/documentation/javascript/places-migration-overview for the migration guide. @ https://maps.googleapis.com/maps/api/js?v=3.64&key=AIzaSyDn8VcdTA0P4Smn8HU3ygF-UbnWKVYdXkA&language=en_GB&region=NZ&libraries=places,visualization,geometry,search:661
+[   64940ms] [LOG] AUD @ http://localhost:4321/engine/index.js:251
+[   64940ms] [LOG] JPY @ http://localhost:4321/engine/index.js:252
+[   64940ms] [LOG] USD @ http://localhost:4321/engine/index.js:253
+[   65012ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://localhost:4321/modules/webflow-form.js:1
+[   65012ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://localhost:4321/modules/webflow-form-ipinfo.js:1
+[   65014ms] [LOG] Site package init v0.1.10 @ https://us-assets.i.posthog.com/static/1.450.0/posthog-recorder.js:1
+[   65014ms] [LOG] No specific route for this path. @ https://us-assets.i.posthog.com/static/1.450.0/posthog-recorder.js:1
+[   66778ms] ReferenceError: $ is not defined
+    at http://localhost:4321/agents:550:27
+[   66778ms] ReferenceError: $ is not defined
+    at http://localhost:4321/agents:568:27
+[   66778ms] ReferenceError: $ is not defined
+    at http://localhost:4321/agents:586:27
+[   66778ms] ReferenceError: $ is not defined
+    at http://localhost:4321/agents:604:27
+[   66778ms] ReferenceError: $ is not defined
+    at http://localhost:4321/agents:622:27
+[   66778ms] ReferenceError: $ is not defined
+    at http://localhost:4321/agents:640:27
+[   66778ms] ReferenceError: $ is not defined
+    at http://localhost:4321/agents:658:27
+[   66778ms] ReferenceError: $ is not defined
+    at http://localhost:4321/agents:676:27
+[   66778ms] ReferenceError: $ is not defined
+    at http://localhost:4321/agents:694:27
+[   66778ms] ReferenceError: $ is not defined
+    at http://localhost:4321/agents:712:27
+[   66778ms] ReferenceError: $ is not defined
+    at http://localhost:4321/agents:730:27
+[   66778ms] ReferenceError: $ is not defined
+    at http://localhost:4321/agents:748:27
+[   66778ms] ReferenceError: $ is not defined
+    at http://localhost:4321/agents:766:27
+[   66778ms] ReferenceError: $ is not defined
+    at http://localhost:4321/agents:784:27
+[   66778ms] ReferenceError: $ is not defined
+    at http://localhost:4321/agents:802:27
+[   66778ms] ReferenceError: $ is not defined
+    at http://localhost:4321/agents:820:27
+[   66778ms] ReferenceError: $ is not defined
+    at http://localhost:4321/agents:838:27
+[   66778ms] ReferenceError: $ is not defined
+    at http://localhost:4321/agents:856:27
+[   66778ms] ReferenceError: $ is not defined
+    at http://localhost:4321/agents:874:27
+[   66778ms] ReferenceError: $ is not defined
+    at http://localhost:4321/agents:892:27
+[   66778ms] ReferenceError: $ is not defined
+    at http://localhost:4321/agents:910:27
+[   66779ms] ReferenceError: $ is not defined
+    at http://localhost:4321/agents:928:27
+[   66779ms] ReferenceError: $ is not defined
+    at http://localhost:4321/agents:946:27
+[   66779ms] ReferenceError: $ is not defined
+    at http://localhost:4321/agents:964:27
+[   66779ms] ReferenceError: $ is not defined
+    at http://localhost:4321/agents:982:27
+[   66779ms] ReferenceError: $ is not defined
+    at http://localhost:4321/agents:1000:27
+[   66779ms] ReferenceError: $ is not defined
+    at http://localhost:4321/agents:1018:27
+[   66780ms] ReferenceError: $ is not defined
+    at http://localhost:4321/agents:1036:27
+[   66780ms] ReferenceError: $ is not defined
+    at http://localhost:4321/agents:1054:27
+[   66787ms] [LOG] AUD @ http://localhost:4321/engine/index.js:251
+[   66787ms] [LOG] JPY @ http://localhost:4321/engine/index.js:252
+[   66787ms] [LOG] USD @ http://localhost:4321/engine/index.js:253
+[   66842ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://localhost:4321/modules/webflow-form.js:1
+[   66842ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://localhost:4321/modules/webflow-form-ipinfo.js:1
+[   66845ms] [LOG] Site package init v0.1.10 @ https://us-assets.i.posthog.com/static/1.450.0/posthog-recorder.js:1
+[   66845ms] [LOG] No specific route for this path. @ https://us-assets.i.posthog.com/static/1.450.0/posthog-recorder.js:1
+[   68261ms] [LOG] AUD @ https://cdn.jsdelivr.net/gh/sygnaltech/navi@0.1.10/dist/index.js:251
+[   68261ms] [LOG] JPY @ https://cdn.jsdelivr.net/gh/sygnaltech/navi@0.1.10/dist/index.js:252
+[   68261ms] [LOG] USD @ https://cdn.jsdelivr.net/gh/sygnaltech/navi@0.1.10/dist/index.js:253
+[   68326ms] [LOG] Site package init v0.1.10 @ https://cdn.jsdelivr.net/gh/sygnaltech/navi@0.1.10/dist/index.js:2948
+[   68326ms] [LOG] Tour. @ https://cdn.jsdelivr.net/gh/sygnaltech/navi@0.1.10/dist/index.js:2664
+[   68326ms] [LOG] {Name: Waitomo &amp; Hobbiton 1-Day Tour, TourAidCode: WHOB-EN} @ https://cdn.jsdelivr.net/gh/sygnaltech/navi@0.1.10/dist/index.js:2665
+[   68326ms] [LOG] tourAid? true @ https://cdn.jsdelivr.net/gh/sygnaltech/navi@0.1.10/dist/index.js:2667
+[   68329ms] [LOG] calculating order @ https://cdn.jsdelivr.net/gh/sygnaltech/navi@0.1.10/dist/index.js:2598
+[   68329ms] [LOG] order TourOrder @ https://cdn.jsdelivr.net/gh/sygnaltech/navi@0.1.10/dist/index.js:2659
+[   68329ms] [LOG] test @ https://cdn.jsdelivr.net/gh/sygnaltech/navi@0.1.10/dist/index.js:2622
+[   69279ms] [WARNING] Google Maps JavaScript API has been loaded directly without loading=async. This can result in suboptimal performance. For best-practice loading patterns please see https://goo.gle/js-api-loading @ https://maps.googleapis.com/maps/api/js?v=3.64&key=AIzaSyDn8VcdTA0P4Smn8HU3ygF-UbnWKVYdXkA&language=en_GB&region=NZ&libraries=places,visualization,geometry,search:1547
+[   69293ms] [WARNING] As of February 21st, 2024, google.maps.Marker is deprecated. Please use google.maps.marker.AdvancedMarkerElement instead. At this time, google.maps.Marker is not scheduled to be discontinued, but google.maps.marker.AdvancedMarkerElement is recommended over google.maps.Marker. While google.maps.Marker will continue to receive bug fixes for any major regressions, existing bugs in google.maps.Marker will not be addressed. At least 12 months notice will be given before support is discontinued. Please see https://developers.google.com/maps/deprecations for additional details and https://developers.google.com/maps/documentation/javascript/advanced-markers/migration for the migration guide. @ https://maps.googleapis.com/maps/api/js?v=3.64&key=AIzaSyDn8VcdTA0P4Smn8HU3ygF-UbnWKVYdXkA&language=en_GB&region=NZ&libraries=places,visualization,geometry,search:1648
+[   69294ms] [WARNING] As of March 1st, 2025, google.maps.places.PlacesService is not available to new customers. Please use google.maps.places.Place instead. At this time, google.maps.places.PlacesService is not scheduled to be discontinued, but google.maps.places.Place is recommended over google.maps.places.PlacesService. While google.maps.places.PlacesService will continue to receive bug fixes for any major regressions, existing bugs in google.maps.places.PlacesService will not be addressed. At least 12 months notice will be given before support is discontinued. Please see https://developers.google.com/maps/legacy for additional details and https://developers.google.com/maps/documentation/javascript/places-migration-overview for the migration guide. @ https://maps.googleapis.com/maps/api/js?v=3.64&key=AIzaSyDn8VcdTA0P4Smn8HU3ygF-UbnWKVYdXkA&language=en_GB&region=NZ&libraries=places,visualization,geometry,search:661
+[   70336ms] [LOG] AUD @ https://cdn.jsdelivr.net/gh/sygnaltech/navi@0.1.10/dist/index.js:251
+[   70336ms] [LOG] JPY @ https://cdn.jsdelivr.net/gh/sygnaltech/navi@0.1.10/dist/index.js:252
+[   70336ms] [LOG] USD @ https://cdn.jsdelivr.net/gh/sygnaltech/navi@0.1.10/dist/index.js:253
+[   70530ms] [LOG] Site package init v0.1.10 @ https://us-assets.i.posthog.com/static/1.450.0/posthog-recorder.js:1
+[   70530ms] [LOG] No specific route for this path. @ https://us-assets.i.posthog.com/static/1.450.0/posthog-recorder.js:1
+[   71534ms] ReferenceError: $ is not defined
+    at https://www.tournewzealand.com/agents:651:27
+[   71534ms] ReferenceError: $ is not defined
+    at https://www.tournewzealand.com/agents:668:27
+[   71534ms] ReferenceError: $ is not defined
+    at https://www.tournewzealand.com/agents:685:27
+[   71534ms] ReferenceError: $ is not defined
+    at https://www.tournewzealand.com/agents:702:27
+[   71534ms] ReferenceError: $ is not defined
+    at https://www.tournewzealand.com/agents:719:27
+[   71534ms] ReferenceError: $ is not defined
+    at https://www.tournewzealand.com/agents:736:27
+[   71534ms] ReferenceError: $ is not defined
+    at https://www.tournewzealand.com/agents:753:27
+[   71534ms] ReferenceError: $ is not defined
+    at https://www.tournewzealand.com/agents:770:27
+[   71534ms] ReferenceError: $ is not defined
+    at https://www.tournewzealand.com/agents:787:27
+[   71534ms] ReferenceError: $ is not defined
+    at https://www.tournewzealand.com/agents:804:27
+[   71534ms] ReferenceError: $ is not defined
+    at https://www.tournewzealand.com/agents:821:27
+[   71535ms] ReferenceError: $ is not defined
+    at https://www.tournewzealand.com/agents:838:27
+[   71535ms] ReferenceError: $ is not defined
+    at https://www.tournewzealand.com/agents:855:27
+[   71535ms] ReferenceError: $ is not defined
+    at https://www.tournewzealand.com/agents:872:27
+[   71535ms] ReferenceError: $ is not defined
+    at https://www.tournewzealand.com/agents:889:27
+[   71535ms] ReferenceError: $ is not defined
+    at https://www.tournewzealand.com/agents:906:27
+[   71535ms] ReferenceError: $ is not defined
+    at https://www.tournewzealand.com/agents:923:27
+[   71535ms] ReferenceError: $ is not defined
+    at https://www.tournewzealand.com/agents:940:27
+[   71535ms] ReferenceError: $ is not defined
+    at https://www.tournewzealand.com/agents:957:27
+[   71535ms] ReferenceError: $ is not defined
+    at https://www.tournewzealand.com/agents:974:27
+[   71535ms] ReferenceError: $ is not defined
+    at https://www.tournewzealand.com/agents:991:27
+[   71535ms] ReferenceError: $ is not defined
+    at https://www.tournewzealand.com/agents:1008:27
+[   71535ms] ReferenceError: $ is not defined
+    at https://www.tournewzealand.com/agents:1025:27
+[   71535ms] ReferenceError: $ is not defined
+    at https://www.tournewzealand.com/agents:1042:27
+[   71535ms] ReferenceError: $ is not defined
+    at https://www.tournewzealand.com/agents:1059:27
+[   71535ms] ReferenceError: $ is not defined
+    at https://www.tournewzealand.com/agents:1076:27
+[   71535ms] ReferenceError: $ is not defined
+    at https://www.tournewzealand.com/agents:1093:27
+[   71535ms] ReferenceError: $ is not defined
+    at https://www.tournewzealand.com/agents:1110:27
+[   71535ms] ReferenceError: $ is not defined
+    at https://www.tournewzealand.com/agents:1127:27
+[   71535ms] ReferenceError: $ is not defined
+    at https://www.tournewzealand.com/agents:1144:27
+[   71543ms] [LOG] AUD @ https://cdn.jsdelivr.net/gh/sygnaltech/navi@0.1.10/dist/index.js:251
+[   71543ms] [LOG] JPY @ https://cdn.jsdelivr.net/gh/sygnaltech/navi@0.1.10/dist/index.js:252
+[   71543ms] [LOG] USD @ https://cdn.jsdelivr.net/gh/sygnaltech/navi@0.1.10/dist/index.js:253
+[   71757ms] [LOG] Site package init v0.1.10 @ https://us-assets.i.posthog.com/static/1.450.0/posthog-recorder.js:1
+[   71757ms] [LOG] No specific route for this path. @ https://us-assets.i.posthog.com/static/1.450.0/posthog-recorder.js:1
+[  135560ms] [LOG] AUD @ http://localhost:4321/engine/index.js:251
+[  135560ms] [LOG] JPY @ http://localhost:4321/engine/index.js:252
+[  135560ms] [LOG] USD @ http://localhost:4321/engine/index.js:253
+[  135652ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://localhost:4321/modules/webflow-form.js:1
+[  135652ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://localhost:4321/modules/webflow-form-ipinfo.js:1
+[  135674ms] [LOG] Site package init v0.1.10 @ https://us-assets.i.posthog.com/static/1.450.0/posthog-recorder.js:1
+[  135675ms] [LOG] Home. @ https://us-assets.i.posthog.com/static/1.450.0/posthog-recorder.js:1
+[  234477ms] [LOG] AUD @ http://localhost:4321/engine/index.js:251
+[  234477ms] [LOG] JPY @ http://localhost:4321/engine/index.js:252
+[  234477ms] [LOG] USD @ http://localhost:4321/engine/index.js:253
+[  234559ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://localhost:4321/modules/webflow-form.js:1
+[  234560ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://localhost:4321/modules/webflow-form-ipinfo.js:1
+[  234564ms] [LOG] Site package init v0.1.10 @ https://us-assets.i.posthog.com/static/1.450.0/posthog-recorder.js:1
+[  234565ms] [LOG] Tour. @ https://us-assets.i.posthog.com/static/1.450.0/posthog-recorder.js:1
+[  234565ms] [LOG] {Name: Hobbiton Movie Set Tour, TourAidCode: RINGS-EN} @ https://us-assets.i.posthog.com/static/1.450.0/posthog-recorder.js:1
+[  234565ms] [LOG] tourAid? true @ https://us-assets.i.posthog.com/static/1.450.0/posthog-recorder.js:1
+[  234570ms] [LOG] calculating order @ https://us-assets.i.posthog.com/static/1.450.0/posthog-recorder.js:1
+[  234570ms] [LOG] order TourOrder @ https://us-assets.i.posthog.com/static/1.450.0/posthog-recorder.js:1
+[  234570ms] [LOG] test @ https://us-assets.i.posthog.com/static/1.450.0/posthog-recorder.js:1
+[  235424ms] [WARNING] The powerPreference option is currently ignored when calling requestAdapter() on Windows. See https://crbug.com/369219127 @ :1
+[  236455ms] [WARNING] Google Maps JavaScript API has been loaded directly without loading=async. This can result in suboptimal performance. For best-practice loading patterns please see https://goo.gle/js-api-loading @ https://maps.googleapis.com/maps/api/js?v=3.64&key=AIzaSyDn8VcdTA0P4Smn8HU3ygF-UbnWKVYdXkA&language=en_GB&region=NZ&libraries=places,visualization,geometry,search:1547
+[  236472ms] [WARNING] As of February 21st, 2024, google.maps.Marker is deprecated. Please use google.maps.marker.AdvancedMarkerElement instead. At this time, google.maps.Marker is not scheduled to be discontinued, but google.maps.marker.AdvancedMarkerElement is recommended over google.maps.Marker. While google.maps.Marker will continue to receive bug fixes for any major regressions, existing bugs in google.maps.Marker will not be addressed. At least 12 months notice will be given before support is discontinued. Please see https://developers.google.com/maps/deprecations for additional details and https://developers.google.com/maps/documentation/javascript/advanced-markers/migration for the migration guide. @ https://maps.googleapis.com/maps/api/js?v=3.64&key=AIzaSyDn8VcdTA0P4Smn8HU3ygF-UbnWKVYdXkA&language=en_GB&region=NZ&libraries=places,visualization,geometry,search:1648
+[  236474ms] [WARNING] As of March 1st, 2025, google.maps.places.PlacesService is not available to new customers. Please use google.maps.places.Place instead. At this time, google.maps.places.PlacesService is not scheduled to be discontinued, but google.maps.places.Place is recommended over google.maps.places.PlacesService. While google.maps.places.PlacesService will continue to receive bug fixes for any major regressions, existing bugs in google.maps.places.PlacesService will not be addressed. At least 12 months notice will be given before support is discontinued. Please see https://developers.google.com/maps/legacy for additional details and https://developers.google.com/maps/documentation/javascript/places-migration-overview for the migration guide. @ https://maps.googleapis.com/maps/api/js?v=3.64&key=AIzaSyDn8VcdTA0P4Smn8HU3ygF-UbnWKVYdXkA&language=en_GB&region=NZ&libraries=places,visualization,geometry,search:661
+[  237946ms] [LOG] AUD @ http://localhost:4321/engine/index.js:251
+[  237946ms] [LOG] JPY @ http://localhost:4321/engine/index.js:252
+[  237946ms] [LOG] USD @ http://localhost:4321/engine/index.js:253
+[  238029ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://localhost:4321/modules/webflow-form.js:1
+[  238029ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://localhost:4321/modules/webflow-form-ipinfo.js:1
+[  238035ms] [LOG] Site package init v0.1.10 @ https://us-assets.i.posthog.com/static/1.450.0/posthog-recorder.js:1
+[  238035ms] [LOG] Tour. @ https://us-assets.i.posthog.com/static/1.450.0/posthog-recorder.js:1
+[  238035ms] [LOG] {Name: Hobbiton Movie Set Tour, TourAidCode: RINGS-EN} @ https://us-assets.i.posthog.com/static/1.450.0/posthog-recorder.js:1
+[  238035ms] [LOG] tourAid? true @ https://us-assets.i.posthog.com/static/1.450.0/posthog-recorder.js:1
+[  238037ms] [LOG] calculating order @ https://us-assets.i.posthog.com/static/1.450.0/posthog-recorder.js:1
+[  238038ms] [LOG] order TourOrder @ https://us-assets.i.posthog.com/static/1.450.0/posthog-recorder.js:1
+[  238038ms] [LOG] test @ https://us-assets.i.posthog.com/static/1.450.0/posthog-recorder.js:1
+[  239828ms] [WARNING] Google Maps JavaScript API has been loaded directly without loading=async. This can result in suboptimal performance. For best-practice loading patterns please see https://goo.gle/js-api-loading @ https://maps.googleapis.com/maps/api/js?v=3.64&key=AIzaSyDn8VcdTA0P4Smn8HU3ygF-UbnWKVYdXkA&language=en_GB&region=NZ&libraries=places,visualization,geometry,search:1547
+[  239854ms] [WARNING] As of February 21st, 2024, google.maps.Marker is deprecated. Please use google.maps.marker.AdvancedMarkerElement instead. At this time, google.maps.Marker is not scheduled to be discontinued, but google.maps.marker.AdvancedMarkerElement is recommended over google.maps.Marker. While google.maps.Marker will continue to receive bug fixes for any major regressions, existing bugs in google.maps.Marker will not be addressed. At least 12 months notice will be given before support is discontinued. Please see https://developers.google.com/maps/deprecations for additional details and https://developers.google.com/maps/documentation/javascript/advanced-markers/migration for the migration guide. @ https://maps.googleapis.com/maps/api/js?v=3.64&key=AIzaSyDn8VcdTA0P4Smn8HU3ygF-UbnWKVYdXkA&language=en_GB&region=NZ&libraries=places,visualization,geometry,search:1648
+[  239857ms] [WARNING] As of March 1st, 2025, google.maps.places.PlacesService is not available to new customers. Please use google.maps.places.Place instead. At this time, google.maps.places.PlacesService is not scheduled to be discontinued, but google.maps.places.Place is recommended over google.maps.places.PlacesService. While google.maps.places.PlacesService will continue to receive bug fixes for any major regressions, existing bugs in google.maps.places.PlacesService will not be addressed. At least 12 months notice will be given before support is discontinued. Please see https://developers.google.com/maps/legacy for additional details and https://developers.google.com/maps/documentation/javascript/places-migration-overview for the migration guide. @ https://maps.googleapis.com/maps/api/js?v=3.64&key=AIzaSyDn8VcdTA0P4Smn8HU3ygF-UbnWKVYdXkA&language=en_GB&region=NZ&libraries=places,visualization,geometry,search:661
+[  241271ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://localhost:4321/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js:1
+[  241277ms] [LOG] AUD @ http://localhost:4321/engine/index.js:251
+[  241277ms] [LOG] JPY @ http://localhost:4321/engine/index.js:252
+[  241277ms] [LOG] USD @ http://localhost:4321/engine/index.js:253
+[  241335ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://localhost:4321/modules/webflow-form.js:1
+[  241335ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://localhost:4321/modules/webflow-form-ipinfo.js:1
+[  241339ms] [LOG] Site package init v0.1.10 @ https://us-assets.i.posthog.com/static/1.450.0/posthog-recorder.js:1
+[  241340ms] [LOG] No specific route for this path. @ https://us-assets.i.posthog.com/static/1.450.0/posthog-recorder.js:1
+[  242948ms] ReferenceError: $ is not defined
+    at http://localhost:4321/agents:550:27
+[  242948ms] ReferenceError: $ is not defined
+    at http://localhost:4321/agents:568:27
+[  242948ms] ReferenceError: $ is not defined
+    at http://localhost:4321/agents:586:27
+[  242948ms] ReferenceError: $ is not defined
+    at http://localhost:4321/agents:604:27
+[  242948ms] ReferenceError: $ is not defined
+    at http://localhost:4321/agents:622:27
+[  242948ms] ReferenceError: $ is not defined
+    at http://localhost:4321/agents:640:27
+[  242948ms] ReferenceError: $ is not defined
+    at http://localhost:4321/agents:658:27
+[  242948ms] ReferenceError: $ is not defined
+    at http://localhost:4321/agents:676:27
+[  242948ms] ReferenceError: $ is not defined
+    at http://localhost:4321/agents:694:27
+[  242948ms] ReferenceError: $ is not defined
+    at http://localhost:4321/agents:712:27
+[  242948ms] ReferenceError: $ is not defined
+    at http://localhost:4321/agents:730:27
+[  242948ms] ReferenceError: $ is not defined
+    at http://localhost:4321/agents:748:27
+[  242948ms] ReferenceError: $ is not defined
+    at http://localhost:4321/agents:766:27
+[  242948ms] ReferenceError: $ is not defined
+    at http://localhost:4321/agents:784:27
+[  242948ms] ReferenceError: $ is not defined
+    at http://localhost:4321/agents:802:27
+[  242948ms] ReferenceError: $ is not defined
+    at http://localhost:4321/agents:820:27
+[  242948ms] ReferenceError: $ is not defined
+    at http://localhost:4321/agents:838:27
+[  242948ms] ReferenceError: $ is not defined
+    at http://localhost:4321/agents:856:27
+[  242948ms] ReferenceError: $ is not defined
+    at http://localhost:4321/agents:874:27
+[  242948ms] ReferenceError: $ is not defined
+    at http://localhost:4321/agents:892:27
+[  242948ms] ReferenceError: $ is not defined
+    at http://localhost:4321/agents:910:27
+[  242949ms] ReferenceError: $ is not defined
+    at http://localhost:4321/agents:928:27
+[  242949ms] ReferenceError: $ is not defined
+    at http://localhost:4321/agents:946:27
+[  242949ms] ReferenceError: $ is not defined
+    at http://localhost:4321/agents:964:27
+[  242949ms] ReferenceError: $ is not defined
+    at http://localhost:4321/agents:982:27
+[  242949ms] ReferenceError: $ is not defined
+    at http://localhost:4321/agents:1000:27
+[  242949ms] ReferenceError: $ is not defined
+    at http://localhost:4321/agents:1018:27
+[  242949ms] ReferenceError: $ is not defined
+    at http://localhost:4321/agents:1036:27
+[  242949ms] ReferenceError: $ is not defined
+    at http://localhost:4321/agents:1054:27
+[  242981ms] [LOG] AUD @ http://localhost:4321/engine/index.js:251
+[  242981ms] [LOG] JPY @ http://localhost:4321/engine/index.js:252
+[  242981ms] [LOG] USD @ http://localhost:4321/engine/index.js:253
+[  243049ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://localhost:4321/modules/webflow-form.js:1
+[  243050ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://localhost:4321/modules/webflow-form-ipinfo.js:1
+[  243053ms] [LOG] Site package init v0.1.10 @ https://us-assets.i.posthog.com/static/1.450.0/posthog-recorder.js:1
+[  243054ms] [LOG] No specific route for this path. @ https://us-assets.i.posthog.com/static/1.450.0/posthog-recorder.js:1
+[  244404ms] [LOG] AUD @ http://localhost:4321/engine/index.js:251
+[  244404ms] [LOG] JPY @ http://localhost:4321/engine/index.js:252
+[  244404ms] [LOG] USD @ http://localhost:4321/engine/index.js:253
+[  244481ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://localhost:4321/modules/webflow-form-ipinfo.js:1
+[  244481ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://localhost:4321/modules/webflow-form.js:1
+[  244488ms] [LOG] Site package init v0.1.10 @ https://us-assets.i.posthog.com/static/1.450.0/posthog-recorder.js:1
+[  244488ms] [LOG] No specific route for this path. @ https://us-assets.i.posthog.com/static/1.450.0/posthog-recorder.js:1

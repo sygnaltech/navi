@@ -1,0 +1,19 @@
+[     964ms] [LOG] AUD @ http://localhost:4321/engine/index.js:251
+[     964ms] [LOG] JPY @ http://localhost:4321/engine/index.js:252
+[     964ms] [LOG] USD @ http://localhost:4321/engine/index.js:253
+[    1023ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://localhost:4321/modules/webflow-form.js:1
+[    1023ms] [LOG] Site package init v0.1.10 @ http://localhost:4321/engine/index.js:2948
+[    1024ms] [LOG] Home. @ http://localhost:4321/engine/index.js:7
+[    1035ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://localhost:4321/modules/webflow-form-ipinfo.js:1
+[    5084ms] [LOG] AUD @ http://127.0.0.1:4323/engine/index.js:251
+[    5084ms] [LOG] JPY @ http://127.0.0.1:4323/engine/index.js:252
+[    5084ms] [LOG] USD @ http://127.0.0.1:4323/engine/index.js:253
+[    5107ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://127.0.0.1:4323/modules/webflow-form.js:1
+[    5107ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://127.0.0.1:4323/modules/webflow-form-ipinfo.js:1
+[    5110ms] [LOG] Site package init v0.1.10 @ http://127.0.0.1:4323/engine/index.js:2948
+[    5110ms] [LOG] Home. @ http://127.0.0.1:4323/engine/index.js:7
+[    7178ms] [LOG] AUD @ https://cdn.jsdelivr.net/gh/sygnaltech/navi@0.1.10/dist/index.js:251
+[    7178ms] [LOG] JPY @ https://cdn.jsdelivr.net/gh/sygnaltech/navi@0.1.10/dist/index.js:252
+[    7178ms] [LOG] USD @ https://cdn.jsdelivr.net/gh/sygnaltech/navi@0.1.10/dist/index.js:253
+[    7399ms] [LOG] Site package init v0.1.10 @ https://us-assets.i.posthog.com/static/1.450.0/posthog-recorder.js:1
+[    7400ms] [LOG] Home. @ https://us-assets.i.posthog.com/static/1.450.0/posthog-recorder.js:1

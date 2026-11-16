@@ -1,0 +1,15 @@
+[     535ms] [LOG] AUD @ http://127.0.0.1:4323/engine/index.js:251
+[     535ms] [LOG] JPY @ http://127.0.0.1:4323/engine/index.js:252
+[     535ms] [LOG] USD @ http://127.0.0.1:4323/engine/index.js:253
+[     562ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://127.0.0.1:4323/modules/webflow-form.js:1
+[     571ms] [LOG] Site package init v0.1.10 @ http://127.0.0.1:4323/engine/index.js:2948
+[     571ms] [LOG] Home. @ http://127.0.0.1:4323/engine/index.js:7
+[     573ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://127.0.0.1:4323/modules/webflow-form-ipinfo.js:1
+[    2134ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://127.0.0.1:4323/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js:1
+[    2148ms] [LOG] AUD @ http://127.0.0.1:4323/engine/index.js:251
+[    2148ms] [LOG] JPY @ http://127.0.0.1:4323/engine/index.js:252
+[    2148ms] [LOG] USD @ http://127.0.0.1:4323/engine/index.js:253
+[    2191ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://127.0.0.1:4323/modules/webflow-form.js:1
+[    2191ms] [LOG] Site package init v0.1.10 @ https://us-assets.i.posthog.com/static/1.450.0/posthog-recorder.js:1
+[    2192ms] [LOG] No specific route for this path. @ https://us-assets.i.posthog.com/static/1.450.0/posthog-recorder.js:1
+[    2208ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://127.0.0.1:4323/modules/webflow-form-ipinfo.js:1
