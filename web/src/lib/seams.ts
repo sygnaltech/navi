@@ -165,6 +165,42 @@ export function setAttr(html: string, cls: string, attr: string, value: string, 
 }
 
 /**
+ * Replace the `value` of the `<input>` carrying `id`.
+ *
+ * ADDRESSED BY ID AND RESTRICTED TO `<input>`, which is the exception to this
+ * file's class-by-class rule, and both halves of that are load-bearing.
+ *
+ * The booking form's payload is five hidden inputs that Webflow gave ids and no
+ * classes at all, so `setAttr` has nothing to aim at. And the tour page carries
+ * TWO elements with `id="tour"` — the visible "Tour Requested" row earlier in
+ * the document, and the hidden input that the enquiry actually travels in.
+ * Anything that matched on the id alone would find the `<div>` first and bind
+ * the payload by adding a `value` attribute to an element that has never had
+ * one, leaving the real input holding the sample tour's name.
+ *
+ * `escape` is applied to the value, so a title with an `&` or a `"` in it
+ * cannot terminate the attribute.
+ */
+export function setInputValue(html: string, id: string, value: string): string {
+  const span = scan(html).find(
+    (s) => s.tag === 'input' && new RegExp(`\\sid="${id}"`).test(s.attrs),
+  );
+  if (!span) {
+    throw new Error(
+      `seam <input id="${id}"> not found in the template. The frozen Webflow ` +
+        'markup changed — fix the seam rather than letting the sample item\'s ' +
+        'form payload publish on every page.',
+    );
+  }
+  const open = span.open;
+  const attr = ` value="${escape(value ?? '')}"`;
+  const next = /\svalue="[^"]*"/.test(open)
+    ? open.replace(/\svalue="[^"]*"/, () => attr)
+    : open.replace(/\s*\/?>$/, (end) => `${attr}${end}`);
+  return html.slice(0, span.start) + next + html.slice(span.start + open.length);
+}
+
+/**
  * Replace a CSS background-image URL.
  *
  * Webflow writes these as `style="background-image:url(&quot;…&quot;)"`, with

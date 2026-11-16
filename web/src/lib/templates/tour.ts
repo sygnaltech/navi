@@ -23,6 +23,7 @@ import {
   setHtml,
   setAttr,
   setBackground,
+  setInputValue,
   setListItems,
   setRepeaterTemplate,
   getEmbedSrc,
@@ -196,6 +197,39 @@ export function bindTour(template: string, tour: Tour, shell: Shell, cards: Card
    * port untouched and still submitted; what it submitted was wrong.
    */
   body = setText(body, 'tour-info', tour.title);
+
+  /**
+   * THE HIDDEN PAYLOAD — five inputs that carry the booking itself.
+   *
+   * `.tour-info` above is what the CUSTOMER reads. These are what navi.co.nz
+   * RECEIVES, and unbound all five held the sample tour: every one of the 29
+   * pages submitted "Hobbiton Movie Set Tour", code `RINGS-EN`, $425/$213 and
+   * `can-pay-online=true`. So an enquiry from any tour was filed as Hobbiton,
+   * at Hobbiton's prices — and the 15 tours that cannot be paid for online were
+   * offering online payment, which is the half that takes money rather than
+   * just misreporting it.
+   *
+   * Values are the live ones, read off the Webflow export rather than invented:
+   * the booking code is `naviCode` (NOT `tourAidCode`, which is the calendar's
+   * and is unset on 13 tours), prices are plain integers with no decimals, the
+   * two price fields are EMPTY STRINGS where the tour has no price, and the
+   * flag is the literal "true"/"false".
+   *
+   * A tour with no `naviCode` throws rather than submitting a blank code: the
+   * enquiry would arrive unidentifiable, which is worse than a failed build.
+   * All 29 set one.
+   */
+  if (!tour.naviCode) {
+    throw new Error(
+      `tour "${tour.slug}" has no naviCode — its enquiries would arrive with no ` +
+        'booking code. Set it in the Studio rather than shipping the page.',
+    );
+  }
+  body = setInputValue(body, 'tour', tour.title);
+  body = setInputValue(body, 'tour-code', tour.naviCode);
+  body = setInputValue(body, 'adult-price', tour.priceAdult != null ? String(tour.priceAdult) : '');
+  body = setInputValue(body, 'child-price', tour.priceChild != null ? String(tour.priceChild) : '');
+  body = setInputValue(body, 'can-pay-online', tour.canPayOnline ? 'true' : 'false');
 
   /**
    * The booking-calendar embed, and the region around it.

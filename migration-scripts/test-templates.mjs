@@ -168,6 +168,35 @@ for (const tour of tours) {
     heroesSeen.set(tour.slug, key);
   }
 
+  /**
+   * THE BOOKING PAYLOAD — the five hidden inputs the enquiry travels in.
+   *
+   * Asserted per tour because nothing else can see them: they are invisible on
+   * the page, identical in structure on all 29, and a page still submits
+   * perfectly well with the sample tour's code and prices in them. A text diff
+   * against the live page is the only other check that would catch it, and the
+   * values it compares are exactly these.
+   */
+  const payload = Object.fromEntries(
+    [...html.matchAll(/<input[^>]*\sid="([^"]+)"[^>]*\svalue="([^"]*)"[^>]*>/g)].map((m) => [
+      m[1],
+      m[2],
+    ]),
+  );
+  const expected = {
+    tour: escapeText(tour.title),
+    'tour-code': escapeText(tour.naviCode),
+    'adult-price': tour.priceAdult != null ? String(tour.priceAdult) : '',
+    'child-price': tour.priceChild != null ? String(tour.priceChild) : '',
+    'can-pay-online': tour.canPayOnline ? 'true' : 'false',
+  };
+  const wrong = Object.entries(expected).filter(([k, v]) => payload[k] !== v);
+  check(
+    `/tour/${tour.slug} — booking payload (${expected['tour-code']})`,
+    wrong.length === 0,
+    wrong.map(([k, v]) => `${k}: want "${v}", got "${payload[k]}"`).join('; '),
+  );
+
   // The photo gallery must have one item per photo.
   const galleryItems = (html.match(/class="sidebar-tour-photo"/g) ?? []).length;
   check(
