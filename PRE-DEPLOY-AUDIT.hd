@@ -11,7 +11,7 @@ Critical repairs from the live/dev comparison, code review and local production-
 
 - [x] **1 Bind the actual booking payload on every tour.** All 29 pages retain the sample's hidden tour name, `RINGS-EN` code, $425/$213 prices and `can-pay-online=true`. For example, Waitomo & Hobbiton should submit `WHOB-EN` and $525/$263. This misidentifies enquiries and can send tours into the wrong payment flow. Repair `web/src/lib/templates/tour.ts`, including hidden inputs and the online-payment flag.
 
-- [ ] **2 Restore date selection for tours without a calendar.** `window.Tour` still identifies every page as Hobbiton with a TourAid code. The engine therefore locks the required date field even on the 13 tours with no calendar, preventing normal booking/enquiry submission. Bind the script data per tour; verify `/tour/puhoi-river-kayaking` permits manual date selection.
+- [x] **2 Restore date selection for tours without a calendar.** `window.Tour` still identifies every page as Hobbiton with a TourAid code. The engine therefore locks the required date field even on the 13 tours with no calendar, preventing normal booking/enquiry submission. Bind the script data per tour; verify `/tour/puhoi-river-kayaking` permits manual date selection.
 
 - [ ] **3 Replace Webflow processing for agent registration.** `/agents` has no external form action and still submits to `webflow.com/api/v1/form/...`. Webflow does not process forms on externally hosted exports. Connect a supported backend and verify delivery before cut-over. Source: `web/src/html/main.agents.html`; [Webflow documentation](https://help.webflow.com/hc/en-us/articles/33961341546899-Collect-form-submissions-on-exported-sites).
 

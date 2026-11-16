@@ -201,6 +201,42 @@ export function setInputValue(html: string, id: string, value: string): string {
 }
 
 /**
+ * Rebind a `window.<name> = { … };` object literal inside an inline `<script>`.
+ *
+ * Webflow's "custom code" embeds are how this site hands page data to its own
+ * JavaScript, and they are the one seam that is neither an element nor an
+ * attribute — so nothing else in this file can reach them, and frozen they ship
+ * the SAMPLE item's data to every page's scripts. That is invisible in the
+ * rendered page and invisible in a text diff of the rendered page, because the
+ * comparison strips `<script>` contents before comparing.
+ *
+ * THE VALUE IS WRITTEN AS REAL JSON, which is a deliberate difference from the
+ * live page. Webflow HTML-escapes the bound fields inside the script tag, so
+ * a title containing `&` reaches the live page escaped, and a classic
+ * `<script>` does NOT decode entities — so that escaped form really is the
+ * string the live page's JS sees. Reproducing it would be reproducing a bug.
+ * The one escape kept is `<` as a unicode escape, which JSON and JS read back
+ * identically and which cannot close the script tag early.
+ *
+ * Handles a FLAT literal only — `[^{}]*` stops at a nested brace, so a nested
+ * object throws rather than binding half of itself. Every embed here is flat.
+ */
+export function setScriptGlobal(html: string, name: string, value: unknown): string {
+  const re = new RegExp(`([ \\t]*)(window\\.${name}\\s*=\\s*)\\{[^{}]*\\}(\\s*;)`);
+  const m = re.exec(html);
+  if (!m) {
+    throw new Error(
+      `seam "window.${name} = {…}" not found in the template. The frozen Webflow ` +
+        'embed changed — fix the seam rather than letting the sample item\'s data ' +
+        'drive the scripts on every page.',
+    );
+  }
+  const [, pad, lead, tail] = m;
+  const json = JSON.stringify(value, null, 2).replace(/</g, '\\u003c').split('\n').join(`\n${pad}`);
+  return html.slice(0, m.index) + `${pad}${lead}${json}${tail}` + html.slice(m.index + m[0].length);
+}
+
+/**
  * Replace a CSS background-image URL.
  *
  * Webflow writes these as `style="background-image:url(&quot;…&quot;)"`, with

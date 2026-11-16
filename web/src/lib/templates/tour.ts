@@ -26,6 +26,7 @@ import {
   setInputValue,
   setListItems,
   setRepeaterTemplate,
+  setScriptGlobal,
   getEmbedSrc,
   setEmbedSrc,
   removeEl,
@@ -241,19 +242,46 @@ export function bindTour(template: string, tour: Tour, shell: Shell, cards: Card
    * The URL is read back out of the markup and only its `tour=` parameter
    * swapped, so the third-party endpoint stays owned by the frozen page rather
    * than being rebuilt from a string literal here.
+   *
+   * `/` IS LEFT UNENCODED, which `encodeURIComponent` does not do on its own.
+   * One code contains a slash, and the live page sends it raw in the query
+   * string — so encoding it as `%2F` hands that tour's calendar a `tour=` value
+   * no live page has ever sent, and a calendar that returns nothing is a date
+   * field that cannot be filled, which is the same failure as having no
+   * calendar at all. Every other reserved character stays encoded: another code
+   * contains a `+`, which a form-decoder reads as a space.
    */
   if (hasSeam(body, 'code-embed')) {
     if (tour.tourAidCode) {
       const src = getEmbedSrc(body, 'code-embed');
-      body = setEmbedSrc(
-        body,
-        'code-embed',
-        src.replace(/([?&]tour=)[^&]*/, `$1${encodeURIComponent(tour.tourAidCode)}`),
-      );
+      const code = encodeURIComponent(tour.tourAidCode).replace(/%2F/g, '/');
+      body = setEmbedSrc(body, 'code-embed', src.replace(/([?&]tour=)[^&]*/, `$1${code}`));
     } else {
       body = removeEnclosing(body, 'code-embed');
     }
   }
+
+  /**
+   * `window.Tour` — and it is what decides whether the date field WORKS.
+   *
+   * `/engine/index.js` reads `window.Tour.TourAidCode` on load. Non-empty, it
+   * treats the booking calendar above as the only way to pick a date: the
+   * "Requested Date" input gets `pointer-events: none`, blurs itself on focus,
+   * and NO datepicker is attached. Empty, it attaches the datepicker so the
+   * date can be typed.
+   *
+   * Frozen at the sample's `RINGS-EN`, that locked the field on all 29 pages —
+   * including the 13 with no calendar, where the removal above leaves nothing
+   * to pick a date FROM. The field is `required`, so those pages could not be
+   * submitted at all: not a booking, not even an enquiry.
+   *
+   * So this is the SAME condition as the embed and has to agree with it. Both
+   * read `tourAidCode`; neither may be bound without the other.
+   */
+  body = setScriptGlobal(body, 'Tour', {
+    Name: tour.title,
+    TourAidCode: tour.tourAidCode ?? '',
+  });
 
   /**
    * "Pick-Up Location" — the CBD hotel select — is on NORTH ISLAND tours only.

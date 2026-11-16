@@ -101,7 +101,7 @@ const SAMPLE = {
 // ── tours ──────────────────────────────────────────────────────────────────
 
 const TOUR_FIELDS = `
-  "slug": slug.current, title, nameDetail, brief, naviCode, island,
+  "slug": slug.current, title, nameDetail, brief, naviCode, tourAidCode, island,
   "hero": heroImage{"ref": asset._ref, "alt": alt, "hotspot": hotspot},
   "photos": photos[]{"ref": asset._ref, "alt": alt, "hotspot": hotspot},
   highlights, body, pricingSection, priceAdult, priceChild, priceNoteChild,
@@ -195,6 +195,34 @@ for (const tour of tours) {
     `/tour/${tour.slug} — booking payload (${expected['tour-code']})`,
     wrong.length === 0,
     wrong.map(([k, v]) => `${k}: want "${v}", got "${payload[k]}"`).join('; '),
+  );
+
+  /**
+   * `window.Tour` AND THE CALENDAR MUST AGREE, which is why they are one check.
+   *
+   * The engine locks the "Requested Date" field whenever `TourAidCode` is
+   * non-empty, on the understanding that the calendar embed fills it in. A page
+   * with a code and no calendar therefore has a required field nothing can
+   * fill, and cannot be submitted at all — the exact failure the sample's
+   * frozen code caused on the 13 tours that have no calendar.
+   */
+  const g = /window\.Tour\s*=\s*(\{[^{}]*\})\s*;/.exec(html);
+  let tourGlobal = null;
+  try {
+    tourGlobal = g ? JSON.parse(g[1]) : null;
+  } catch {
+    tourGlobal = null;
+  }
+  const hasCalendar = /tour-calendar\?tour=/.test(html);
+  check(
+    `/tour/${tour.slug} — window.Tour, calendar ${hasCalendar ? 'present' : 'absent'}`,
+    tourGlobal !== null &&
+      tourGlobal.Name === tour.title &&
+      tourGlobal.TourAidCode === (tour.tourAidCode ?? '') &&
+      hasCalendar === Boolean(tour.tourAidCode),
+    tourGlobal === null
+      ? `window.Tour missing or not JSON: ${g ? g[1] : '(no match)'}`
+      : `got ${JSON.stringify(tourGlobal)}, calendar=${hasCalendar}`,
   );
 
   // The photo gallery must have one item per photo.
