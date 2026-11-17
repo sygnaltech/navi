@@ -28,7 +28,7 @@
     <div id="book-now" class="content-section reseller-form less-top-padding less-bottom-padding">
       <div class="w-container">
         <div class="w-form">
-          <form id="wf-form-Agent-Registration-Form" name="wf-form-Agent-Registration-Form" data-name="Agent Registration Form" method="get" data-wf-page-id="5b46d92a76d89c47225d522d" data-wf-element-id="bf5666b5-72f6-5edf-25dc-909f5ef30168">
+          <form id="wf-form-Agent-Registration-Form" name="wf-form-Agent-Registration-Form" data-name="Agent Registration Form" method="post" action="https://studio.sygnal.com/api/forms/submit/u6a50l0VWkaI" data-studio-form>
             <div class="title yellow">REGISTER AS A NAVI-CERTIFIED RESELLER</div>
             <p class="white">Enter your details below and we&#x27;ll contact you with all of our special reseller offers.</p>
             <div class="w-row">
@@ -46,7 +46,7 @@
                 <div class="booking-form-column">
                   <h3 class="booking-form-heading">Notes</h3><label for="Notes">Notes / Comments:</label><textarea id="Notes" name="Notes" placeholder="Any details, or questions you have?  What countries do you typically sell in?" maxlength="5000" data-name="Notes" class="large-textarea w-input"></textarea>
                   <div class="spacer"></div>
-                </div><input type="submit" data-wait="Please wait..." class="rounded-button w-button" value="Register Now" />
+                </div><input type="text" name="_gotcha" tabindex="-1" autocomplete="off" aria-hidden="true" style="position:absolute;left:-9999px;width:1px;height:1px;opacity:0" /><input type="hidden" name="_ts" value="" /><input type="submit" data-wait="Please wait..." class="rounded-button w-button" value="Register Now" />
                 <div class="collection-list-wrapper w-dyn-list">
                   <div role="list" class="w-dyn-items">
                     <div role="listitem" class="w-dyn-item">
@@ -641,6 +641,7 @@
 
     <!-- Sygnal Attributes | Form Handlers -->
     <script type="module" src="/engine/webflow-form.js"></script>
+    <script src="/engine/studio-form.js"></script>
 
     <!-- Site code -->
     <script src="/engine/index.js"></script>
