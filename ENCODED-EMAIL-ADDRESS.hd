@@ -1,0 +1,62 @@
+---
+id: 1OTlmBPPFMXESEYbOWuAjD
+title: "Encoded Email Addresses"
+format-version: 2
+date: 2026-11-19
+---
+
+# Encoded Email Addresses
+
+Email addresses on this site are never written into the HTML in plain form —
+harvesters scrape page source. They ship XOR-encoded in the markup and are
+decoded in the visitor's browser by `/engine/email-decode.js`, so the visitor
+sees the real address but `view-source` never contains it.
+
+This replicates Cloudflare Scrape Shield "Email Obfuscation", which the old
+proxied site relied on. Off that proxy, Cloudflare's injected
+`/cdn-cgi/scripts/.../email-decode.min.js` 404s and the page shows the literal
+`[email protected]` fallback — that is the symptom this technique fixes.
+
+## Encoding scheme
+
+A hex string. The first byte is the XOR key; each later byte XORed with the
+key is one byte of the UTF-8 address.
+
+Encode one-liner (address → hex, key `0x2a` arbitrary):
+
+```js
+const enc = (s, k = 0x2a) =>
+  [k, ...new TextEncoder().encode(s).map((b) => b ^ k)]
+    .map((b) => b.toString(16).padStart(2, '0')).join('');
+```
+
+## Markup shapes (both handled by the decoder)
+
+1. **Display text** — a span the decoder replaces with the decoded address:
+
+   ```html
+   <span class="__cf_email__" data-cfemail="HEX">[email&#160;protected]</span>
+   ```
+
+2. **Mailto link** — an anchor whose href fragment decodes to the mailto
+   target (a `?subject=` suffix survives into the `mailto:`). If the anchor
+   itself carries `data-cfemail`, its text is replaced too:
+
+   ```html
+   <a href="/cdn-cgi/l/email-protection#HEX">…</a>
+   <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="HEX">[email&#160;protected]</a>
+   ```
+
+The `[email&#160;protected]` inner text is the no-JS fallback — keep it.
+
+## To add an encoded email to a page
+
+1. Encode the address (and for links, the full target including any
+   `?subject=` suffix) with the one-liner above.
+2. Use one of the markup shapes.
+3. Include the decoder before the closing body scripts:
+   `<script src="/engine/email-decode.js"></script>`
+
+Used on: `web/src/html/main.contact.html`, `web/src/html/main.about.html`.
+Never swap the markup for a plain `mailto:` or paste the decoded address into
+any served HTML — that defeats the whole mechanism.
