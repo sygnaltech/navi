@@ -18,3 +18,5 @@ Critical repairs from the live/dev comparison, code review and local production-
 - [ ] **4 Restore the contact-form handler dependencies.** `/engine/webflow-form.js` imports `/modules/webflow-form.js` and `/modules/webflow-form-ipinfo.js`; both return 404 in dev and the production build. The Basin handler never initializes: an intercepted submission navigated away to Basin instead of following the configured `/thanks` flow. Bundle the dependencies and verify success, failure and redirect handling.
 
 - [ ] **5 Move raw card entry on** `/booking` **to hosted checkout.** The inherited form collects the full card number and expiry in ordinary inputs and posts them to `navi.co.nz/tours/bookEnglishTours.php`, while third-party analytics/chat scripts run on the same page. Replace these fields with the hosted Windcave/PayPal payment flow so card details are entered at the payment provider.
+
+<p></p>

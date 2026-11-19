@@ -1,7 +1,7 @@
 {
   "name": "tournewzealand-com",
   "type": "module",
-  "version": "0.1.4",
+  "version": "0.1.5",
   "private": true,
   "description": "www.tournewzealand.com — repo root. The site is web/, the Studio is studio/; schema/, config/, project.jsonc and migration-scripts/ are shared by both.",
   "scripts": {
