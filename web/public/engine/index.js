@@ -2753,7 +2753,10 @@
             method,
             body: params,
             headers: {
-              "Content-Type": "application/x-www-form-urlencoded"
+              "Content-Type": "application/x-www-form-urlencoded",
+              // Selects Studio's JSON response; without it the endpoint
+              // answers with a redirect, which this handler does itself.
+              "Accept": "application/json"
             }
           }).then((response) => {
             if (response.ok) {

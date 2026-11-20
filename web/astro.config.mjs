@@ -34,9 +34,14 @@ export default defineConfig({
     // so ported pages keep byte-identical paths and no redirects are needed.
     format: 'file',
   },
+  // The localhost.sygnal.com tunnel expects the dev server on 3000.
+  server: {port: 3000},
   devToolbar: {enabled: false},
 
   vite: {
+    // Let the localhost.sygnal.com tunnel reach the dev server.
+    server: {allowedHosts: ['localhost.sygnal.com']},
+
     // project.jsonc resolved ONCE, here, and injected as a compile-time
     // constant. This file runs in plain Node and is never bundled, so the
     // filesystem read is safe here and nowhere else — see the long note in

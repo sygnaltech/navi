@@ -125,6 +125,51 @@ Studio prod form for the test: **Booking Form**, muid `GwaxVWaQb0a7`
 (site Navi `Ho6HGiKgfFh3`, account 72). Webhook target must be configured in
 the Studio UI (the MCP has no webhook surface).
 
+## Studio's webhook payload (captured 2026-11-20)
+
+Test booking submitted through the real tour page (wired to Studio) → Studio
+fired the webhook into the catcher. Request: POST, `application/json`,
+`user-agent: Sygnal-Studio-Forms`, header `x-studio-form: <form muid>`.
+Body shape:
+
+```json
+{
+  "event": "form.submission.received",
+  "sent_at": 1795139822,
+  "site": {"muid": "…", "name": "Navi", "hostname": "www.tournewzealand.com"},
+  "form": {"muid": "…", "name": "Booking Form"},
+  "submission": {
+    "muid": "…", "created_at": 1795139822,
+    "from_name": "…", "from_email": "…", "subject": null, "spam_score": 20,
+    "fields": { /* every form field verbatim, exact names — all 19 present;
+                  _ts and _gotcha stripped */ },
+    "files": [],
+    "country": "NZ", "city": "Auckland", "page_url": "…"
+  }
+}
+```
+
+### Verdict: a transform is needed (or a Studio-side option)
+
+All 19 consumed fields arrive intact and correctly named, but **nested at
+`body.submission.fields.*`**, while every workflow expression reads the flat
+`body.*`. Options:
+
+- **A — lift node in n8n**: a Code/Set node after the Webhook producing
+  `{body: $json.body.submission.fields}`. Fixes `Set` ( `$json.body.X` ) but
+  NOT `Set1`, whose expressions pin `$node["Webhook"].json.body.X` — those
+  references bypass any intermediate node and must be edited anyway.
+- **B — edit the expressions**: point all `Set`/`Set1` values at
+  `body.submission.fields.X`. No new node; ~26 mechanical edits; `Set1`'s
+  `$node["Webhook"]` references keep working.
+- **C — Studio-side flat mode**: a webhook payload option that posts the
+  fields flat (Basin-compatible). Keeps every existing n8n workflow
+  untouched for every client; the envelope metadata could move to headers.
+
+Open question either way: does Studio fire the webhook for a submission it
+files as spam? Basin forwarded everything with `spam: true/false`; the n8n
+workflow currently receives spam too. Needs confirming (and deciding).
+
 ## Task list
 
 - [x] Trace how n8n is invoked on the live site (answer: Basin's webhook, server-side)
@@ -134,16 +179,20 @@ the Studio UI (the MCP has no webhook surface).
       fields — answer: the 19 flat form/JS fields, no Basin metadata
 - [x] Stand up a catcher: dev-only `/api/webhook-capture` route (above)
 - [x] Studio "Booking Form" created (muid `GwaxVWaQb0a7`)
-- [ ] **PM:** tunnel to the dev server so Studio prod can reach the catcher
-- [ ] **PM:** point Booking Form's webhook at
-      `https://<tunnel>/api/webhook-capture` (Studio UI)
-- [ ] Test submission from the dev server to Studio; read the capture back
-- [ ] Diff Studio payload vs Basin payload; decide: transform node in n8n,
-      or shape Studio's webhook output to be Basin-compatible
-- [ ] Rewire the site's booking form from Basin to the Studio Booking Form
-      (same pattern as the contact form; also keep the `total*` appends
-      working — the index.js intercept and studio-form.js must not fight
-      over the same submit event)
+- [x] Tunnel up (`https://localhost.sygnal.com` → dev server on port 3000;
+      dev port moved to 3000, host allowed in `vite.server.allowedHosts`)
+- [x] Booking Form webhook pointed at the catcher (Studio UI)
+- [x] Test submission through the real tour page; capture read back — payload
+      shape documented above
+- [x] Diff Studio payload vs Basin payload — all 19 fields verbatim but
+      nested under `submission.fields`; transform options A/B/C above,
+      **decision pending**
+- [x] Rewire the site's booking form from Basin to the Studio Booking Form —
+      action repointed in `main.tpl-tour.html`, `_gotcha` + runtime-stamped
+      `_ts` added, and the `index.js` intercept kept (it does the `total*`
+      appends and the /payment redirect); `Accept: application/json` added to
+      its fetch so Studio answers JSON. `studio-form.js` deliberately NOT
+      attached to this form.
 - [ ] Repoint / confirm the n8n webhook target for the new flow
 - [ ] End-to-end test: dev-site booking → Studio → n8n → Tour-Aid email +
       Google Sheets row
