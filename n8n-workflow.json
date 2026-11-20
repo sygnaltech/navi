@@ -1,0 +1,675 @@
+{
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "30647a93-a17d-4510-9d44-348f19252204",
+        "options": {
+          "responseHeaders": {
+            "entries": [
+              {
+                "name": "Access-Control-Allow-Origin",
+                "value": "*"
+              }
+            ]
+          }
+        }
+      },
+      "id": "1541552b-0689-424d-881f-c3751414b6b9",
+      "name": "Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [
+        -16,
+        208
+      ],
+      "webhookId": "30647a93-a17d-4510-9d44-348f19252204"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://navi.co.nz/tours/bookEnglishTours.php",
+        "sendBody": true,
+        "contentType": "multipart-form-data",
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "adults",
+              "value": "={{ $json[\"adults\"] }}"
+            },
+            {
+              "name": "children",
+              "value": "={{ $json[\"children\"] }}"
+            },
+            {
+              "name": "Booking-Type",
+              "value": "={{ $json[\"Booking-Type\"] }}"
+            },
+            {
+              "name": "Date",
+              "value": "={{ $json[\"Date\"] }}"
+            },
+            {
+              "name": "Notes",
+              "value": "={{ $json[\"Notes\"] }}"
+            },
+            {
+              "name": "Name",
+              "value": "={{ $json[\"Name\"] }}"
+            },
+            {
+              "name": "phone",
+              "value": "={{ $json[\"phone\"] }}"
+            },
+            {
+              "name": "email",
+              "value": "={{ $json[\"email\"] }}"
+            },
+            {
+              "name": "accommodation",
+              "value": "={{ $json[\"accommodation\"] }}"
+            },
+            {
+              "name": "Arrival-Date",
+              "value": "={{ $json[\"Arrival-Date\"] }}"
+            },
+            {
+              "name": "Departure-Date",
+              "value": "={{ $json[\"Departure-Date\"] }}"
+            },
+            {
+              "name": "Terms-Accepted",
+              "value": "={{ $json[\"Terms-Accepted\"] }}"
+            },
+            {
+              "name": "tourName",
+              "value": "={{ $json[\"tourName\"] }}"
+            },
+            {
+              "name": "total",
+              "value": "={{ $json[\"total\"] }}"
+            },
+            {
+              "name": "totalFees",
+              "value": "={{ $json[\"totalFees\"] }}"
+            },
+            {
+              "name": "totalWithFees",
+              "value": "={{ $json[\"totalWithFees\"] }}"
+            },
+            {
+              "name": "pickUp",
+              "value": "={{ $json[\"pickUp\"] }}"
+            },
+            {
+              "name": "tourCode",
+              "value": "={{ $json[\"tourCode\"] }}"
+            },
+            {
+              "name": "totalAdults",
+              "value": "={{ $json[\"totalAdults\"] }}"
+            },
+            {
+              "name": "totalChildren",
+              "value": "={{ $json[\"totalChildren\"] }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "043e9d57-0a54-432f-a043-0bb0eba8068a",
+      "name": "HTTP Request",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 3,
+      "position": [
+        784,
+        32
+      ],
+      "continueOnFail": true
+    },
+    {
+      "parameters": {
+        "keepOnlySet": true,
+        "values": {
+          "string": [
+            {
+              "name": "Booking-Type",
+              "value": "={{ $json[\"body\"][\"booking-type\"] }}"
+            },
+            {
+              "name": "Date",
+              "value": "={{ $json[\"body\"][\"date\"] }}"
+            },
+            {
+              "name": "Notes",
+              "value": "={{ $json[\"body\"][\"notes\"] }}"
+            },
+            {
+              "name": "Name",
+              "value": "={{ $json[\"body\"][\"name\"] }}"
+            },
+            {
+              "name": "phone",
+              "value": "={{ $json[\"body\"][\"phone\"] }}"
+            },
+            {
+              "name": "email",
+              "value": "={{ $json[\"body\"][\"email\"] }}"
+            },
+            {
+              "name": "accommodation"
+            },
+            {
+              "name": "Arrival-Date",
+              "value": "={{ $json[\"body\"][\"arrival-date\"] }}"
+            },
+            {
+              "name": "Departure-Date",
+              "value": "={{ $json[\"body\"][\"departure-date\"] }}"
+            },
+            {
+              "name": "Terms-Accepted",
+              "value": "={{ $json[\"body\"][\"terms-accepted\"] }}"
+            },
+            {
+              "name": "tourCode",
+              "value": "={{ $json[\"body\"][\"tour-code\"] }}"
+            },
+            {
+              "name": "pickUp",
+              "value": "={{ $json[\"body\"][\"pick-up\"] }}"
+            },
+            {
+              "name": "tourName",
+              "value": "={{ $json[\"body\"][\"tour\"] }}"
+            }
+          ],
+          "number": [
+            {
+              "name": "adults",
+              "value": "={{ $json[\"body\"][\"adults\"] }}"
+            },
+            {
+              "name": "children",
+              "value": "={{ $json[\"body\"][\"children\"] }}"
+            },
+            {
+              "name": "total",
+              "value": "={{ $json[\"body\"][\"total\"] }}"
+            },
+            {
+              "name": "=totalFees",
+              "value": "={{ $json[\"body\"][\"totalFees\"] }}"
+            },
+            {
+              "name": "totalWithFees",
+              "value": "={{ $json[\"body\"][\"totalWithFees\"] }}"
+            },
+            {
+              "name": "totalAdults",
+              "value": "={{ $json[\"body\"][\"totalAdults\"] }}"
+            },
+            {
+              "name": "totalChildren",
+              "value": "={{ $json[\"body\"][\"totalChildren\"] }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "889eaf13-658b-42ed-980e-2287c8082965",
+      "name": "Set",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 1,
+      "position": [
+        624,
+        32
+      ]
+    },
+    {
+      "parameters": {
+        "keepOnlySet": true,
+        "values": {
+          "string": [
+            {
+              "name": "Type",
+              "value": "={{$node[\"Webhook\"].json[\"body\"][\"booking-type\"]}}"
+            },
+            {
+              "name": "Date",
+              "value": "={{ $node[\"Webhook\"].json[\"body\"][\"date\"] }}"
+            },
+            {
+              "name": "Notes",
+              "value": "={{ $node[\"Webhook\"].json[\"body\"][\"notes\"] }}"
+            },
+            {
+              "name": "Name",
+              "value": "={{ $node[\"Webhook\"].json[\"body\"][\"name\"] }}"
+            },
+            {
+              "name": "Phone",
+              "value": "={{ $node[\"Webhook\"].json[\"body\"][\"phone\"] }}"
+            },
+            {
+              "name": "Email",
+              "value": "={{ $node[\"Webhook\"].json[\"body\"][\"email\"] }}"
+            },
+            {
+              "name": "Pick-Up",
+              "value": "={{ $node[\"Webhook\"].json[\"body\"][\"pick-up\"] }}"
+            },
+            {
+              "name": "Arrival-Date",
+              "value": "={{ $node[\"Webhook\"].json[\"body\"][\"arrival-date\"] }}"
+            },
+            {
+              "name": "Departure-Date",
+              "value": "={{ $node[\"Webhook\"].json[\"body\"][\"departure-date\"] }}"
+            },
+            {
+              "name": "Tms",
+              "value": "={{ new Date().toISOString() }}"
+            },
+            {
+              "name": "Tour-Code",
+              "value": "={{ $node[\"Webhook\"].json[\"body\"][\"tour-code\"] }}"
+            }
+          ],
+          "number": [
+            {
+              "name": "Adults",
+              "value": "={{ $node[\"Webhook\"].json[\"body\"][\"adults\"] }}"
+            },
+            {
+              "name": "Children",
+              "value": "={{ $node[\"Webhook\"].json[\"body\"][\"children\"] }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "0d3a2e9c-5cce-40a5-8f5a-74c0fbe919e0",
+      "name": "Set1",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 1,
+      "position": [
+        624,
+        384
+      ]
+    },
+    {
+      "parameters": {
+        "content": "## Tour-Aid \n",
+        "height": 216.7092738335325,
+        "width": 489.062119366626
+      },
+      "id": "8a3a0073-a674-47e0-9aa1-cda452a5fe96",
+      "name": "Note",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        592,
+        -48
+      ]
+    },
+    {
+      "parameters": {
+        "content": "## Google Sheets Reporting \n[Google Sheet](https://docs.google.com/spreadsheets/d/19h1QxpKTrFOujxkoVsBn6_9K_f830evL_hmCEtqYtfE/edit?gid=0#gid=0)",
+        "height": 244.47515025658424,
+        "width": 489.062119366626
+      },
+      "id": "0f3c7d50-3ee6-47f5-99a6-23b837cda527",
+      "name": "Note1",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        592,
+        304
+      ]
+    },
+    {
+      "parameters": {
+        "content": "## Record in Slack",
+        "height": 218.09756765468512,
+        "width": 489.062119366626
+      },
+      "id": "c739de19-9528-4988-99d7-71f0513688fb",
+      "name": "Note2",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        592,
+        592
+      ]
+    },
+    {
+      "parameters": {
+        "content": "Does an email notification.",
+        "height": 114.39707673568816,
+        "width": 150
+      },
+      "id": "3ca874e6-1268-4459-87bf-9dff7003c974",
+      "name": "Note3",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        912,
+        -96
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.apilayer.com/spamchecker",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "contentType": "raw",
+        "rawContentType": "[empty]",
+        "body": "={{$json[\"body\"][\"name\"]}}\n{{$json[\"body\"][\"email\"]}}\n{{$json[\"body\"][\"notes\"]}}",
+        "options": {}
+      },
+      "id": "3e888802-2a9a-478d-a778-83648ff59856",
+      "name": "SPAM Check",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 3,
+      "position": [
+        288,
+        528
+      ],
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "9",
+          "name": "Header Auth account"
+        }
+      },
+      "continueOnFail": true
+    },
+    {
+      "parameters": {
+        "url": "https://monitor.sygnal.com/c1e18bf2-7c0b-46ad-ab33-2ea597b4e464/ping",
+        "options": {}
+      },
+      "id": "bf0f66fc-5f1e-47e8-9f67-3f8a9679d024",
+      "name": "Sygnal Monitor",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [
+        1168,
+        32
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "19h1QxpKTrFOujxkoVsBn6_9K_f830evL_hmCEtqYtfE",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "570070810",
+          "mode": "id"
+        },
+        "columns": {
+          "mappingMode": "autoMapInputData",
+          "value": {},
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Tms",
+              "displayName": "Tms",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Name",
+              "displayName": "Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Phone",
+              "displayName": "Phone",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Email",
+              "displayName": "Email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Tour-Code",
+              "displayName": "Tour-Code",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Date",
+              "displayName": "Date",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Adults",
+              "displayName": "Adults",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Children",
+              "displayName": "Children",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Pick-Up",
+              "displayName": "Pick-Up",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Arrival-Date",
+              "displayName": "Arrival-Date",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Departure-Date",
+              "displayName": "Departure-Date",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Type",
+              "displayName": "Type",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Notes",
+              "displayName": "Notes",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        816,
+        384
+      ],
+      "id": "73d2426a-a722-4ac4-8e14-e0ec14176976",
+      "name": "Append row in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "3",
+          "name": "Google Sheets | Sygnal"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Set",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Set1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request": {
+      "main": [
+        [
+          {
+            "node": "Sygnal Monitor",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set1": {
+      "main": [
+        [
+          {
+            "node": "Append row in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "SPAM Check": {
+      "main": [
+        []
+      ]
+    }
+  },
+  "pinData": {
+    "Webhook": [
+      {
+        "headers": {
+          "host": "sygnal-n8n-u1282.vm.elestio.app",
+          "x-real-ip": "125.236.192.7",
+          "x-forwarded-for": "125.236.192.7",
+          "x-forwarded-proto": "https",
+          "x-forwarded-port": "443",
+          "connection": "close",
+          "content-length": "322",
+          "pragma": "no-cache",
+          "cache-control": "no-cache",
+          "sec-ch-ua-platform": "\"Windows\"",
+          "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36",
+          "sec-ch-ua": "\"Google Chrome\";v=\"135\", \"Not-A.Brand\";v=\"8\", \"Chromium\";v=\"135\"",
+          "content-type": "application/x-www-form-urlencoded",
+          "sec-ch-ua-mobile": "?0",
+          "accept": "*/*",
+          "origin": "https://navi-tours.webflow.io",
+          "sec-fetch-site": "cross-site",
+          "sec-fetch-mode": "cors",
+          "sec-fetch-dest": "empty",
+          "referer": "https://navi-tours.webflow.io/",
+          "accept-encoding": "gzip, deflate, br, zstd",
+          "accept-language": "en-US,en;q=0.9,la;q=0.8,es;q=0.7",
+          "priority": "u=1, i"
+        },
+        "params": {},
+        "query": {},
+        "body": {
+          "booking-type": "Booking",
+          "adults": "1",
+          "children": "",
+          "notes": "",
+          "pick-up": "",
+          "name": "Mike TEST",
+          "phone": "",
+          "email": "mike@sygnal.com",
+          "arrival-date": "",
+          "departure-date": "",
+          "tour": "Waitomo & Hobbiton 1-Day Tour",
+          "tour-code": "WHOB-EN",
+          "terms-accepted": "on",
+          "test": "123",
+          "date": "24 May 2025",
+          "total": "505",
+          "totalFees": "15.149999999999999",
+          "totalWithFees": "520.15",
+          "totalAdults": "505",
+          "totalChildren": "0"
+        }
+      }
+    ]
+  },
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "fc5bcf36329a190df4da20d969f2d84aee67092908ee453ae020cb52acdafae6"
+  }
+}

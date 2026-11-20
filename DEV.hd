@@ -1,0 +1,122 @@
+---
+id: 7xcPoyZ0waEANbLZ2YLoCu
+format-version: 2
+---
+
+Got it. The web hooks are actually called by Sygnal forms. I need to analyze therefore.
+
+
+
+
+
+
+[http://sygnal-n8n-u1282.vm.elestio.app:5678/mcp-server/http](http://sygnal-n8n-u1282.vm.elestio.app:5678/mcp-server/http)
+
+
+
+```
+claude mcp add --transport http --scope project n8n https://sygnal-n8n-clone-u1282.vm.elestio.app/mcp-server/http --header "Authorization: Bearer ${N8N_MCP_TOKEN}"
+```
+
+
+
+```
+http://sygnal-n8n-u1282.vm.elestio.app:5678/mcp-server/http
+```
+
+
+```
+eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI5Y2MyYWIxMy04OTI2LTQyNzEtODNiNS02YjA3MDkwM2Q4YzQiLCJpc3MiOiJuOG4iLCJhdWQiOiJtY3Atc2VydmVyLWFwaSIsImp0aSI6Ijg2MzczZDQ4LTg1MTEtNDU4MS04NmI4LWE5ZTg2ZDM5MDVmMiIsImlhdCI6MTc5NTEzNjM4NH0.Lw84rD47JrQ3vYLWeQ2QeDtR3h9cU6Nqf0rFMhIW0zc
+```
+
+
+
+```
+{
+  "mcpServers": {
+    "n8n-mcp": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "supergateway",
+        "--streamableHttp",
+        "http://sygnal-n8n-u1282.vm.elestio.app:5678/mcp-server/http",
+        "--header",
+        "authorization:Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI5Y2MyYWIxMy04OTI2LTQyNzEtODNiNS02YjA3MDkwM2Q4YzQiLCJpc3MiOiJuOG4iLCJhdWQiOiJtY3Atc2VydmVyLWFwaSIsImp0aSI6Ijg2MzczZDQ4LTg1MTEtNDU4MS04NmI4LWE5ZTg2ZDM5MDVmMiIsImlhdCI6MTc5NTEzNjM4NH0.Lw84rD47JrQ3vYLWeQ2QeDtR3h9cU6Nqf0rFMhIW0zc"
+      ]
+    }
+  }
+}
+```
+
+
+
+```
+[
+  {
+    "headers": {
+      "host": "sygnal-n8n-clone-u1282.vm.elestio.app",
+      "x-real-ip": "159.203.12.147",
+      "x-forwarded-for": "159.203.12.147",
+      "x-forwarded-proto": "https",
+      "x-forwarded-port": "443",
+      "connection": "close",
+      "content-length": "691",
+      "user-agent": "Faraday v2.14.3",
+      "content-type": "application/json",
+      "accept": "application/json",
+      "x-basin-signature": "sha256=49d4ce5082d8ba43c3799d48b91c1b27a9e5ce7a83d115d9cf0b97b0ceb00cdf",
+      "accept-encoding": "gzip;q=1.0,deflate;q=0.6,identity;q=0.3",
+      "traceparent": "00-cc5e066acaca2cfb55bcf3aea7b7edf2-2e4d37e1d69985e4-00",
+      "tracestate": "3175561@nr=0-0-3175561-910127380-2e4d37e1d69985e4-04228133b8d3b6a7-0-0.460756-1795077217909",
+      "newrelic": "eyJ2IjpbMCwxXSwiZCI6eyJ0eSI6IkFwcCIsImFjIjoiMzE3NTU2MSIsImFwIjoiOTEwMTI3MzgwIiwidHgiOiIwNDIyODEzM2I4ZDNiNmE3IiwidHIiOiJjYzVlMDY2YWNhY2EyY2ZiNTViY2YzYWVhN2I3ZWRmMiIsInNhIjpmYWxzZSwicHIiOjAuNDYwNzU2LCJ0aSI6MTc5NTA3NzIxNzkwOSwiaWQiOiIyZTRkMzdlMWQ2OTk4NWU0In19"
+    },
+    "params": {},
+    "query": {},
+    "body": {
+      "date": "19 Nov 2026",
+      "booking-type": "Booking",
+      "adults": "1",
+      "children": "",
+      "notes": "",
+      "name": "Mike TEST",
+      "phone": "",
+      "email": "mike@sygnal.com",
+      "arrival-date": "",
+      "departure-date": "",
+      "tour": "Queenstown Cruise & Farm Experience",
+      "tour-code": "SD700",
+      "terms-accepted": "on",
+      "test": "123",
+      "total": "0",
+      "totalFees": "0",
+      "totalWithFees": "0",
+      "totalAdults": "0",
+      "totalChildren": "0",
+      "ip": "125.236.192.7",
+      "geocoded_country": "New Zealand",
+      "geocoded_region": "Auckland",
+      "geocoded_city": "Auckland",
+      "timestamp": "2026-11-19  8:33 AM (UTC)",
+      "spam": false,
+      "spam_reason": null,
+      "id": 66820212,
+      "form_id": 59025,
+      "form_name": "Booking",
+      "project_name": "TOURAUCKLAND.NZ",
+      "origin": "http://localhost:4321",
+      "attachments": []
+    },
+    "webhookUrl": "http://sygnal-n8n-u1282.vm.elestio.app:5678/webhook/30647a93-a17d-4510-9d44-348f19252204",
+    "executionMode": "production"
+  }
+]
+```
+
+<p></p>
+
+<p></p>
+
+<p></p>
+
+<p></p>

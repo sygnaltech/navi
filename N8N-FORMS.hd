@@ -1,0 +1,152 @@
+---
+id: 0w7D81oSVFREBENCEqH2gF
+title: "n8n Forms Pipeline"
+format-version: 2
+date: 2026-11-20
+---
+
+# n8n Forms Pipeline
+
+Migrating the booking pipeline's form backend from Basin to Sygnal Studio Forms
+without breaking the n8n workflow that sits behind it. This doc tracks what we
+know, what we've verified, and what's still to do.
+
+## The live pipeline (verified 2026-11-20)
+
+Three layers. The n8n call is **server-side, made by Basin** — it never appears
+in page source, which is why it looked absent from the site.
+
+1. **Browser → Basin.** `index.js` intercepts `#booking-form` and POSTs
+   `application/x-www-form-urlencoded` to `usebasin.com/f/57139b8e2264`.
+   The commented-out `webhook-test` script tag on the tour pages is a dead
+   leftover (see REVIEW.hd) and plays no part.
+2. **Basin → n8n.** Basin's webhook integration POSTs **JSON** (signed with
+   `x-basin-signature`, UA `Faraday`) to the production webhook
+   `http://sygnal-n8n-u1282.vm.elestio.app:5678/webhook/30647a93-a17d-4510-9d44-348f19252204`.
+   Body = form fields + Basin metadata (below).
+3. **n8n Webhook node** wraps each request as
+   `{headers, params, query, body, webhookUrl, executionMode}` — this envelope
+   is the node's own output format, nobody sends it. Downstream nodes read
+   `$json.body.*`.
+
+### Workflow shape (export: `n8n-workflow.json`, analysed 2026-11-20)
+
+Webhook (POST, CORS `Access-Control-Allow-Origin: *`) fans out to:
+
+- **Tour-Aid**: Set → HTTP Request (POST multipart to
+  `https://navi.co.nz/tours/bookEnglishTours.php`, does an email
+  notification; `continueOnFail`) → Sygnal Monitor (GET
+  `https://monitor.sygnal.com/…/ping`)
+- **Google Sheets Reporting**: Set1 → Append row in sheet (autoMapInputData;
+  columns Tms, Name, Phone, Email, Tour-Code, Date, Adults, Children,
+  Pick-Up, Arrival-Date, Departure-Date, Type, Notes)
+- Disconnected: SPAM Check (POST `api.apilayer.com/spamchecker`, reads
+  `body.name` / `body.email` / `body.notes`), "Record in Slack" section
+
+Instances: original `sygnal-n8n-u1282` (production webhook target) and working
+clone `sygnal-n8n-clone-u1282`. Reference execution: workflow
+`68w9Rtxp2AXoerQp`, execution `14992` (on the clone).
+
+**The contract: only the 19 flat `body.*` form/JS fields are consumed.**
+`Set` and `Set1` read: `booking-type`, `date`, `notes`, `name`, `phone`,
+`email`, `arrival-date`, `departure-date`, `terms-accepted`, `tour-code`,
+`pick-up`, `tour`, `adults`, `children`, `total`, `totalFees`,
+`totalWithFees`, `totalAdults`, `totalChildren`. **None of Basin's 13
+metadata keys are referenced anywhere** — so the Studio payload only has to
+deliver those 19 fields flat under `body`, nothing more.
+
+Two incidental findings from the export:
+
+- The Webhook node's `pinData` sample is a **browser-direct** urlencoded POST
+  from `navi-tours.webflow.io` — the original integration had the page post
+  straight to n8n (hence the CORS header). Basin forwarding (JSON) came
+  later; n8n parses both encodings into `body.*` identically, so both shapes
+  worked.
+- Minor latent oddity: one Set field is named `=totalFees` (expression-mode
+  name). It evaluates to `totalFees`, so it works, but it will confuse
+  anyone editing the node.
+
+### Payload body — field inventory
+
+**Form fields** (browser-sent; ported form verified field-identical to live):
+`date`, `booking-type`, `adults`, `children`, `notes`, `pick-up`, `name`,
+`phone`, `email`, `arrival-date`, `departure-date`, `tour` (hidden),
+`tour-code` (hidden), `terms-accepted`, `test` (leftover hidden field, always
+`123` — present in the Webflow markup, carried into every submission).
+
+**JS-appended at submit** (by the `index.js` intercept): `total`, `totalFees`,
+`totalWithFees`, `totalAdults`, `totalChildren`.
+
+**Basin-added metadata** (13 keys): `ip`, `geocoded_country`,
+`geocoded_region`, `geocoded_city`, `timestamp`, `spam`, `spam_reason`, `id`,
+`form_id`, `form_name`, `project_name`, `origin`, `attachments`.
+
+## The question to answer
+
+When a Studio form fires its outbound webhook at the same n8n endpoint, does
+its JSON body match the Basin shape — or do we add a transform step (or shape
+Studio's payload) so `$json.body.*` references keep resolving?
+
+Known risk areas:
+
+- **Nesting** — Studio stores submission fields in a `data` object; if the
+  webhook mirrors that, every flat `$json.body.X` reference breaks.
+- **Metadata naming** — Studio: `country`/`city`, `spam_score`/`signals`.
+  Basin: `geocoded_*`, `spam`/`spam_reason`, plus `id`/`form_id`/`form_name`/
+  `project_name` with no obvious Studio twins.
+- **Encoding** — Basin sends JSON; confirm what Studio sends.
+
+## Constraints hit so far
+
+- The `n8n-mcp` server in `.mcp.json` fails to load (cause unknown; endpoint
+  is plain `http://` :5678 — may need an auth header).
+- DevTools-driven Chrome is blocked at the clone's n8n sign-in, so workflow
+  export and execution reads need the PM's own browser session.
+- The Studio Forms MCP exposes **no webhook configuration** on forms or sites
+  (checked both schemas 2026-11-20) — webhook targets are set elsewhere
+  (Studio UI).
+
+## The catcher (in place, 2026-11-20)
+
+Instead of a catcher workflow in n8n, the dev site itself catches: dev-only
+Astro route `web/src/pages/api/webhook-capture.ts`.
+
+- `POST /api/webhook-capture` — records method, headers, raw body, and the
+  body parsed as JSON or urlencoded. This is the URL Studio's webhook targets
+  (through the tunnel).
+- `GET /api/webhook-capture` — lists captures; `?clear=1` empties.
+- Captures live in module memory (dev SSR runs in workerd; its filesystem is
+  virtual, so no disk) — **read back promptly after each submission**, an HMR
+  reload clears them.
+- Self-tested with JSON and urlencoded POSTs; answers 404 when deployed.
+  Delete the route when this investigation closes.
+
+Studio prod form for the test: **Booking Form**, muid `GwaxVWaQb0a7`
+(site Navi `Ho6HGiKgfFh3`, account 72). Webhook target must be configured in
+the Studio UI (the MCP has no webhook surface).
+
+## Task list
+
+- [x] Trace how n8n is invoked on the live site (answer: Basin's webhook, server-side)
+- [x] Inventory the live payload: form fields vs JS-appended vs Basin metadata
+- [x] Verify the ported booking form is field-identical to live
+- [x] Export the workflow JSON (`n8n-workflow.json`) and extract the consumed
+      fields — answer: the 19 flat form/JS fields, no Basin metadata
+- [x] Stand up a catcher: dev-only `/api/webhook-capture` route (above)
+- [x] Studio "Booking Form" created (muid `GwaxVWaQb0a7`)
+- [ ] **PM:** tunnel to the dev server so Studio prod can reach the catcher
+- [ ] **PM:** point Booking Form's webhook at
+      `https://<tunnel>/api/webhook-capture` (Studio UI)
+- [ ] Test submission from the dev server to Studio; read the capture back
+- [ ] Diff Studio payload vs Basin payload; decide: transform node in n8n,
+      or shape Studio's webhook output to be Basin-compatible
+- [ ] Rewire the site's booking form from Basin to the Studio Booking Form
+      (same pattern as the contact form; also keep the `total*` appends
+      working — the index.js intercept and studio-form.js must not fight
+      over the same submit event)
+- [ ] Repoint / confirm the n8n webhook target for the new flow
+- [ ] End-to-end test: dev-site booking → Studio → n8n → Tour-Aid email +
+      Google Sheets row
+- [ ] Remove the temporary `/api/webhook-capture` route
+- [ ] Decide fate of the dead `webhook-test` script comment on tour pages
+      (currently kept; documented in REVIEW.hd)
