@@ -1,5 +1,9 @@
 {
   "mcpServers": {
+    "flowflare": {
+      "type": "http",
+      "url": "https://flowflare.sygnal.com/mcp"
+    },
     "studio-navi": {
       "type": "http",
       "url": "https://studio.sygnal.com/mcp"
