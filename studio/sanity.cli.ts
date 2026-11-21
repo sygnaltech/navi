@@ -18,4 +18,9 @@ export default defineCliConfig({
   // needs a token with the "Deploy Studio" role; an Editor-only token is
   // refused.
   studioHost: project.sanity.studioHost,
+
+  // Also pinned so the CLI never prompts for the application id on deploy.
+  deployment: {
+    appId: project.sanity.appId,
+  },
 });

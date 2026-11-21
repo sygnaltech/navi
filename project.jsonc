@@ -21,10 +21,12 @@
 		"projectId": "6gnkakot",
 		"dataset": "production",
 		// `navi` resolves to a studio under another Sanity org, so it is not ours
-		// to claim. Availability is only confirmed at deploy time — `sanity deploy
-		// --dry-run` says "name availability is checked on deploy" — so this is
-		// unverified until the first Studio deploy.
+		// to claim. Claimed by the first Studio deploy (2026-11-21); the Studio
+		// lives at https://navitours.sanity.studio/.
 		"studioHost": "navitours",
+		// Assigned by Sanity on the first Studio deploy. Pinned so `sanity deploy`
+		// never prompts for an application id again.
+		"appId": "cv6y1kjcol8yl0b8622b7pzw",
 		// "vX" is Sanity's own token for "always the newest API". Replace with a
 		// "YYYY-MM-DD" date only to pin a site whose queries must stop moving.
 		"apiVersion": "vX"
