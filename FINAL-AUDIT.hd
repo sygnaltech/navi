@@ -28,7 +28,7 @@ Audited 21 November 2026 NZDT. [Hosted release](https://navi.sygnal.cloud/) · [
 ### Webflow dependencies
 
 - [x] 10. Host the two Webflow CDN images locally.
-- [ ] 11. Stop the search box from submitting to Webflow.
+- [x] 11. Hidden search box. No launch action needed.
 - [ ] 12. Fix or remove the legacy form script with missing imports.
 - [ ] 13. Retest navigation and forms with Webflow hosts blocked.
 
@@ -37,7 +37,7 @@ Audited 21 November 2026 NZDT. [Hosted release](https://navi.sygnal.cloud/) · [
 ### Sitemaps and links
 
 - [ ] 14. Remove the noindex page `/data/llms` from the XML sitemap.
-- [ ] 15. Add production canonical tags and verify them on hosted pages.
+- [ ] 15. Verify production canonical tags after redeploying.
 - [ ] 16. Keep preview and workers.dev URLs out of search results.
 - [ ] 17. Restore or redirect the missing Queenstown–Christchurch tour.
 - [ ] 18. Fix the area and specials links on `/sitemap`.
@@ -77,7 +77,7 @@ Audited 21 November 2026 NZDT. [Hosted release](https://navi.sygnal.cloud/) · [
 
 **Webflow.** The shared stylesheet now uses local copies of the checkbox checkmark and background placeholder. This fix is in the workspace and awaits redeployment. Pressing Enter in the search form called `webflow.com/api/v1/form/…` in an intercepted test. Both imports of `/engine/webflow-form.js` returned 404. Verify checked terms boxes and form paths while the Webflow CDN, API and editor hosts are blocked. [Shared stylesheet](web/public/wf/css/navi-tours.shared.9c7a31b8b.css) · [Webflow form documentation](https://help.webflow.com/hc/en-us/articles/33961341546899-Collect-form-submissions-on-exported-sites)
 
-**XML sitemap and indexing.** The launch sitemap has 93 unique production-host URLs. Of 90 production entries, 88 remain. The retired `/search` and dead Kuirau Park tour redirect to `/tours`. The five additions are `/data/llms`, Black Water Rafting, Rotorua Express, Half-Day Tours and Transfers. The launch sitemap excludes `/404` but includes the noindex `/data/llms`. The audit found zero canonical tags on hosted pages. The verifier passed because it skipped missing static HTML files. Fetch hosted responses in that check. Keep the production sitemap and robots pointer. [Launch sitemap](https://navi.sygnal.cloud/sitemap.xml) · [Production sitemap](https://www.tournewzealand.com/sitemap.xml) · [Robots file](https://navi.sygnal.cloud/robots.txt) · [Verifier](migration-scripts/check-sitemap.mjs#L189) · [Google sitemap guidance](https://developers.google.com/search/docs/crawling-indexing/sitemaps/build-sitemap)
+**XML sitemap and indexing.** The launch sitemap has 93 unique production-host URLs. Of 90 production entries, 88 remain. The retired `/search` and dead Kuirau Park tour redirect to `/tours`. The five additions are `/data/llms`, Black Water Rafting, Rotorua Express, Half-Day Tours and Transfers. The launch sitemap excludes `/404` but includes the noindex `/data/llms`. The deployed release had zero canonical tags. The shared layout now emits a production self-canonical, and the verifier checks the HTML served for every sitemap URL. Redeployment and hosted verification are pending. Keep the production sitemap and robots pointer. [Launch sitemap](https://navi.sygnal.cloud/sitemap.xml) · [Production sitemap](https://www.tournewzealand.com/sitemap.xml) · [Robots file](https://navi.sygnal.cloud/robots.txt) · [Verifier](migration-scripts/check-sitemap.mjs#L124) · [Google sitemap guidance](https://developers.google.com/search/docs/crawling-indexing/sitemaps/build-sitemap)
 
 **Missing tour and dead links.** The Queenstown–Franz Josef–Christchurch bus and train tour is live in production but returns 404 on the release. Update the link in `/data/llms` if redirecting it. The human sitemap links five dead specials and uses `#` for all 15 areas. Use the area destinations from `/map`. Replace the two dead tour links on `/why` and the seven links to `www.tourauckland.nz`, which failed DNS resolution. Repair the Franz Josef Glacier Valley Walk and Classic Track downloads, the Abel Tasman itinerary link and the Hollyford Vimeo embed. Unknown URLs currently return plain text or the framework error page. Keep HTTP 404 and link to Tours and Contact from the branded page. [Production tour](https://www.tournewzealand.com/tour/queenstown-frans-josef-christchurch-bus-train-4-day-tour-copy) · [Hosted sitemap page](https://navi.sygnal.cloud/sitemap) · [Hosted map](https://navi.sygnal.cloud/map) · [Why Navi](https://navi.sygnal.cloud/why)
 

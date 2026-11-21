@@ -1,5 +1,5 @@
 /**
- * Compare the built sitemap against the live Webflow one, and against ./dist.
+ * Compare the served sitemap and pages against the live Webflow URL inventory.
  *
  *   node migration-scripts/check-sitemap.mjs
  *
@@ -9,31 +9,19 @@
  *    stops being recrawled, and nothing on the site looks broken — this is the
  *    failure that would be found months later in Search Console.
  *
- * 2. EVERY LISTED URL IS ACTUALLY BUILT. A sitemap entry with no file behind it
- *    is a 404 handed to Google on a plate. This is the check that catches a
- *    renamed slug where the sitemap and the route disagree.
+ * 2. EVERY LISTED URL SERVES A PAGE WITH ITS OWN CANONICAL.
  *
  * 3. NOTHING EXTRA, except what we chose. Deliberate differences are declared
  *    in redirects.config.mjs rather than tolerated, so a NEW difference fails
  *    even though an expected one does not.
- *
- * LAYOUT: `WEB` assumes the Astro app sits in `web/`. In a single-package repo,
- * point it at ROOT instead.
  */
-import { readFile, access } from 'node:fs/promises';
-import { dirname, join } from 'node:path';
-import { fileURLToPath } from 'node:url';
+import { JSDOM } from 'jsdom';
 
 import { REDIRECTS, SITEMAP_ADDITIONS } from './redirects.config.mjs';
 import { WEBFLOW_SOURCE } from './lib/project.mjs';
 import { userAgent } from './lib/ua.mjs';
 
-const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
-// See lib/paths.mjs for why this is probed rather than hardcoded.
-const { WEB, DIST } = await import('./lib/paths.mjs');
 const ORIGIN = WEBFLOW_SOURCE;
-
-const exists = (p) => access(p).then(() => true, () => false);
 
 /** Pull the paths out of a sitemap XML string. */
 const paths = (xml) =>
@@ -133,17 +121,37 @@ for (const [path, why] of intentionallyDropped) {
  * that throws as well as one that was never built.
  */
 const unbuilt = [];
+const invalidCanonicals = [];
 for (const path of built) {
   const res = await fetch(`${base.replace(/\/$/, '')}${path}`, {
-    method: 'HEAD',
+    redirect: 'manual',
     headers: { 'user-agent': userAgent('sitemap-check') },
   });
-  if (!res.ok) unbuilt.push(`${path} -> HTTP ${res.status}`);
+  if (res.status !== 200) {
+    unbuilt.push(`${path} -> HTTP ${res.status}`);
+    await res.body?.cancel();
+    continue;
+  }
+
+  const dom = new JSDOM(await res.text());
+  const links = dom.window.document.head.querySelectorAll('link[rel~="canonical" i]');
+  const hrefs = Array.from(links, (link) => link.getAttribute('href'));
+  dom.window.close();
+
+  const expected = new URL(path, ORIGIN).href;
+  if (hrefs.length !== 1 || hrefs[0] !== expected) {
+    invalidCanonicals.push(`${path} -> ${JSON.stringify(hrefs)} (expected ${expected})`);
+  }
 }
 check(
   `all ${built.length} listed URLs answer 200`,
   unbuilt.length === 0,
   unbuilt.join('\n      '),
+);
+check(
+  'each served page has one production self-canonical',
+  unbuilt.length === 0 && invalidCanonicals.length === 0,
+  invalidCanonicals.join('\n      '),
 );
 
 // --- 3. nothing unexpected added -------------------------------------------
@@ -167,52 +175,6 @@ check(
   'well-formed and namespaced',
   builtXml.startsWith('<?xml version="1.0" encoding="UTF-8"?>') &&
     builtXml.includes('xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"'),
-);
-
-// --- canonical tags --------------------------------------------------------
-
-/**
- * EVERY PAGE MUST DECLARE ITSELF AS ITS OWN CANONICAL.
- *
- * A canonical tag is an instruction, not a hint: pointing twenty pages at three
- * siblings tells Google the other seventeen are duplicates and the correct
- * response is to drop them from the index. It is also completely invisible —
- * every page renders perfectly, and the only symptom arrives weeks later as
- * traffic.
- *
- * This happened. The CMS routes render from a template whose manifest entry
- * holds the extraction SAMPLE's metadata, so each collection published one
- * item's URL on all of its pages. BaseLayout now refuses to build a template
- * without an explicit canonical, which makes the structural mistake impossible;
- * this check covers the one it cannot, a canonical that is present and wrong.
- */
-const canonicalOf = (html) => html.match(/<link rel="canonical" href="([^"]*)"/)?.[1];
-
-const wrongCanonical = [];
-const missingCanonical = [];
-for (const path of [...built, '/404']) {
-  const file = join(DIST, `${path === '/' ? '/index' : path}.html`);
-  const html = await readFile(file, 'utf8').catch(() => null);
-  if (html === null) continue;
-
-  const href = canonicalOf(html);
-  if (!href) {
-    missingCanonical.push(path);
-    continue;
-  }
-  const self = new URL(href).pathname.replace(/\/$/, '') || '/';
-  if (self !== path) wrongCanonical.push(`${path} -> ${self}`);
-}
-
-check(
-  'every page is its own canonical',
-  wrongCanonical.length === 0,
-  wrongCanonical.join('\n      '),
-);
-check(
-  'every page has a canonical',
-  missingCanonical.length === 0,
-  missingCanonical.join(', '),
 );
 
 // Served, not built — `robots.txt` is an Astro route like the sitemap.

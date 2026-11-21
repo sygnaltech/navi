@@ -56,7 +56,11 @@ const {
  */
 const stamp = (html: string) => html.replaceAll('__WF_PAGE_ID__', wfPage ?? '');
 
-const nav = markCurrent(stamp(bindNav(navHtml, shell)), new URL(Astro.request.url).pathname);
+const {pathname} = Astro.url;
+const canonical = new URL(project.webflow.source);
+canonical.pathname = pathname.replace(/\/+$/, '') || '/';
+
+const nav = markCurrent(stamp(bindNav(navHtml, shell)), pathname);
 const footer = stamp(footerHtml);
 
 const document = body
@@ -69,6 +73,7 @@ const document = body
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>{title}</title>
+    <link rel="canonical" href={canonical.href} />
     {description && <meta name="description" content={description} />}
     {ogTitle && <meta property="og:title" content={ogTitle} />}
     {ogDescription && <meta property="og:description" content={ogDescription} />}
