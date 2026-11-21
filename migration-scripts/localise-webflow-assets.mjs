@@ -91,7 +91,7 @@ const dryRun = process.argv.includes('--dry-run');
  *         An unquoted `url(...)` would need the construct matched as a whole;
  *         assert rather than assume if a future site has any.
  */
-const WF_HOST = String.raw`https:\/\/(?:[a-z0-9.-]*\.)?website-files\.com\/`;
+const WF_HOST = String.raw`https:\/\/(?:(?:[a-z0-9.-]*\.)?website-files\.com|d3e54v103j8qbb\.cloudfront\.net)\/`;
 
 /** Stop at a literal quote, whitespace, `<`/`>`, or an entity-encoded quote. */
 const WF_URL = new RegExp(`${WF_HOST}(?:(?!&quot;|&#0?39;|&apos;)[^"'\\s<>])+`, 'g');

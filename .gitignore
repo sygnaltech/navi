@@ -13,6 +13,7 @@ dist
 .sanity
 
 backups/
+migration/backup/
 
 # The verbatim Webflow CMS dump. Large, re-pullable with `npm run wf:pull`, and
 # the committed artifact is the converted NDJSON rather than the input.

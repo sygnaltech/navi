@@ -2110,7 +2110,7 @@ textarea.w-input, textarea.w-select {
 
 .w-checkbox-input--inputType-custom.w--redirected-checked {
   background-color: #3898ec;
-  background-image: url("https://d3e54v103j8qbb.cloudfront.net/static/custom-checkbox-checkmark.589d534424.svg");
+  background-image: url("/wf/assets/custom-checkbox-checkmark.589d534424.svg");
   background-position: 50%;
   background-repeat: no-repeat;
   background-size: cover;
@@ -2732,7 +2732,7 @@ figcaption {
 }
 
 .column-icon-box {
-  background-image: url("https://d3e54v103j8qbb.cloudfront.net/img/background-image.svg");
+  background-image: url("/wf/assets/background-image.svg");
   background-position: 0 0;
   background-size: 125px;
   width: 80px;
@@ -2830,7 +2830,7 @@ figcaption {
 }
 
 .vertical-box {
-  background-image: url("https://d3e54v103j8qbb.cloudfront.net/img/background-image.svg");
+  background-image: url("/wf/assets/background-image.svg");
   background-position: 50%;
   background-size: cover;
   border-radius: 10px;
@@ -3047,7 +3047,7 @@ figcaption {
 }
 
 .testimonial-pic {
-  background-image: url("https://d3e54v103j8qbb.cloudfront.net/img/background-image.svg");
+  background-image: url("/wf/assets/background-image.svg");
   background-position: 0 0;
   background-size: 125px;
   border: 4px solid #ffe400;
@@ -3514,7 +3514,7 @@ figcaption {
 }
 
 .vertical-container {
-  background-image: url("https://d3e54v103j8qbb.cloudfront.net/img/background-image.svg");
+  background-image: url("/wf/assets/background-image.svg");
   background-position: 50%;
   background-repeat: no-repeat;
   background-size: cover;
@@ -3548,7 +3548,7 @@ figcaption {
 }
 
 .big-square-container {
-  background-image: url("https://d3e54v103j8qbb.cloudfront.net/img/background-image.svg");
+  background-image: url("/wf/assets/background-image.svg");
   background-position: 50%;
   background-repeat: no-repeat;
   background-size: cover;
@@ -3589,7 +3589,7 @@ figcaption {
 }
 
 .square-container {
-  background-image: url("https://d3e54v103j8qbb.cloudfront.net/img/background-image.svg");
+  background-image: url("/wf/assets/background-image.svg");
   background-position: 50%;
   background-repeat: no-repeat;
   background-size: cover;
@@ -3678,7 +3678,7 @@ figcaption {
 
 .blog-preview-image {
   cursor: pointer;
-  background-image: url("https://d3e54v103j8qbb.cloudfront.net/img/background-image.svg");
+  background-image: url("/wf/assets/background-image.svg");
   background-position: 50%;
   background-repeat: no-repeat;
   background-size: cover;
@@ -3957,7 +3957,7 @@ figcaption {
 }
 
 .image-sample {
-  background-image: url("https://d3e54v103j8qbb.cloudfront.net/img/background-image.svg");
+  background-image: url("/wf/assets/background-image.svg");
   background-position: 50%;
   background-repeat: no-repeat;
   background-size: cover;
@@ -3985,7 +3985,7 @@ figcaption {
 }
 
 .pop-up-sample-1 {
-  background-image: url("https://d3e54v103j8qbb.cloudfront.net/img/background-image.svg");
+  background-image: url("/wf/assets/background-image.svg");
   background-position: 50%;
   background-repeat: no-repeat;
   background-size: cover;
@@ -4510,7 +4510,7 @@ figcaption {
 }
 
 .hero-big {
-  background-image: url("https://d3e54v103j8qbb.cloudfront.net/img/background-image.svg");
+  background-image: url("/wf/assets/background-image.svg");
   background-position: 50%;
   background-repeat: no-repeat;
   background-size: cover;
@@ -4769,7 +4769,7 @@ figcaption {
 
 .tour-category {
   color: #e6e9ec;
-  background-image: linear-gradient(#0000, #000), url("https://d3e54v103j8qbb.cloudfront.net/img/background-image.svg");
+  background-image: linear-gradient(#0000, #000), url("/wf/assets/background-image.svg");
   background-position: 0 0, 50%;
   min-height: 300px;
   padding: 30px 20px 20px 30px;
@@ -4793,7 +4793,7 @@ figcaption {
 }
 
 .div-block {
-  background-image: url("https://d3e54v103j8qbb.cloudfront.net/img/background-image.svg");
+  background-image: url("/wf/assets/background-image.svg");
   background-position: 50%;
   background-size: cover;
   min-height: 340px;
@@ -6125,7 +6125,7 @@ figcaption {
 }
 
 .selection-item-bgimage {
-  background-image: url("https://d3e54v103j8qbb.cloudfront.net/img/background-image.svg");
+  background-image: url("/wf/assets/background-image.svg");
   background-position: 50%;
   background-size: cover;
   min-height: 380px;
@@ -6738,7 +6738,7 @@ figcaption {
 }
 
 .tour-card {
-  background-image: url("https://d3e54v103j8qbb.cloudfront.net/img/background-image.svg");
+  background-image: url("/wf/assets/background-image.svg");
   background-position: 50%;
   background-repeat: no-repeat;
   background-size: cover;

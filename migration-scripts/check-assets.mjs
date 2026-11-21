@@ -96,7 +96,7 @@ const rel = (f) =>
 
 // --- 1. no Webflow hosts ---------------------------------------------------
 
-const WEBFLOW_HOSTS = /https?:\/\/[^"'\s)]*(?:website-files\.com|webflow\.io|assets\.website-files)/g;
+const WEBFLOW_HOSTS = /https?:\/\/[^"'\s)]*(?:website-files\.com|webflow\.io|assets\.website-files|d3e54v103j8qbb\.cloudfront\.net)/g;
 
 /**
  * The same hosts, PERCENT-ENCODED.
