@@ -10,6 +10,7 @@
     "build": "npm --prefix web run build --",
     "check": "npm --prefix web run check --",
     "preview": "wrangler dev",
+    "backup": "node migration-scripts/backup-dataset.mjs",
     "guard:deploy": "node migration-scripts/guard-production-deploy.mjs",
     "deploy": "npm run guard:deploy && npm run build && wrangler deploy --config wrangler.prod.jsonc",
     "check:deploy": "wrangler deploy --dry-run --config wrangler.prod.jsonc",

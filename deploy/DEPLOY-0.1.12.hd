@@ -1,0 +1,57 @@
+---
+id: 7nHOU1ByQQe0c40i2sK6lU
+title: Deploy — v0.1.12
+format-version: 2
+date: '2026-11-21T00:00:00.000Z'
+description: Production deploy runbook for www.tournewzealand.com v0.1.12.
+tags:
+  - deploy
+  - prod
+  - runbook
+---
+
+# Deploy — v0.1.12
+
+Ships the pre-cut-over audit fixes (production 404 page, canonical tags, retired-tour redirect, self-hosted stylesheet assets) and the 2026 footer copyright; no migrations, and the Sanity dataset is untouched (backup is precautionary). The `navi.sygnal.cloud` staging route is now active in `wrangler.prod.jsonc`; the public `www.tournewzealand.com` route stays commented out, so this is still not the Webflow cut-over.
+
+## Deploy
+
+- [x] **1.** Export the Sanity production dataset. Precautionary — this release does not write to it. Lands at `backups/<YYYY-MM-DD>.tar.gz`.
+
+```bash
+npm run backup
+```
+
+- [x] **2.** Deploy the Worker. The script guards that the dataset is `production`, builds `web/`, and deploys with `wrangler.prod.jsonc`.
+
+```bash
+npm run deploy
+```
+
+- [ ] **3.** Critical check: the staging domain serves the site. Expect HTTP `200` — anything else, stop and roll back.
+
+```bash
+curl -s -o /dev/null -w "%{http_code}" https://navi.sygnal.cloud/
+```
+
+- [x] **4.** Tag the release.
+
+```bash
+git tag -a v0.1.12 -m "Release 0.1.12 — pre-cut-over audit fixes and 2026 copyright"
+```
+
+- [x] **5.** Push the tag.
+
+```bash
+git push origin v0.1.12
+```
+
+## If it goes wrong
+
+Fully reversible by code alone: no migration shipped and the Sanity dataset was never written, so the backup from step 1 should not be needed. The public domain is still on Webflow, so only `navi.sygnal.cloud` and the workers.dev URL are affected either way.
+
+- [ ] **1.** Roll the Worker back to the previously deployed version.
+
+```bash
+npx wrangler rollback --config wrangler.prod.jsonc
+```

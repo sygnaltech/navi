@@ -8,7 +8,7 @@
     "build": "sanity build",
     "deploy": "node ../migration-scripts/guard-production-deploy.mjs --studio && sanity deploy",
     "schema:deploy": "sanity schema deploy",
-    "export": "sanity dataset export production ../migration/backup/production.tar.gz",
+    "export": "node ../migration-scripts/backup-dataset.mjs",
     "import": "sanity dataset import ../migration/sanity/content.ndjson production"
   },
   "dependencies": {
