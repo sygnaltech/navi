@@ -92,7 +92,7 @@ const intentionallyDropped = new Map(REDIRECTS.map((r) => [r.from, `301 -> ${r.t
  * plus the pages Webflow's own sitemap had simply gone stale on.
  */
 const intentionallyAdded = new Map([
-  ...REDIRECTS.map((r) => [r.to, `replaces ${r.from}`]),
+  ...REDIRECTS.map((r) => [r.to.replace(/\/$/, '') || '/', `replaces ${r.from}`]),
   ...SITEMAP_ADDITIONS,
 ]);
 

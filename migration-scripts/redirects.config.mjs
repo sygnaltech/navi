@@ -113,6 +113,11 @@ export const REDIRECTS = [
 
   // ── decided during this migration ────────────────────────────────────────
   {
+    from: '/tour/queenstown-frans-josef-christchurch-bus-train-4-day-tour-copy',
+    to: '/tours/',
+    why: 'The old public Queenstown–Christchurch tour is no longer listed. See final audit item 17.',
+  },
+  {
     from: '/search',
     to: '/tours',
     why:
