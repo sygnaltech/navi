@@ -7,14 +7,7 @@
  * file alone would never fire. Both are generated from the same array in
  * `migration-scripts/redirects.config.mjs`, so they cannot disagree.
  *
- * The 404 body is the ported Webflow 404 page when there is one, and a plain
- * response otherwise.
- *
- * > The not-found substitution must GUARD ON THE RESPONSE ALREADY HAVING A
- * > BODY. On the reference migration it fired during the prerender of the 404
- * > page itself and wrote `dist/404.html` as the nine bytes of its own fallback
- * > string. Nothing here prerenders, but the guard is kept: it costs one
- * > condition and the failure is silent.
+ * Missing page routes render the site’s 404 page at the requested URL.
  */
 import type {MiddlewareHandler} from 'astro';
 
@@ -24,10 +17,11 @@ const BY_PATH = new Map<string, string>(REDIRECTS.map((r: {from: string; to: str
 
 export const onRequest: MiddlewareHandler = async (context, next) => {
   const {pathname, search} = new URL(context.request.url);
+  const path = pathname.replace(/\/+$/, '') || '/';
 
   // Trailing slashes are normalised before matching: Webflow served
   // extensionless URLs and both forms are in the wild on inbound links.
-  const target = BY_PATH.get(pathname.replace(/\/+$/, '') || '/');
+  const target = BY_PATH.get(path);
   if (target) {
     return new Response(null, {
       status: STATUS,
@@ -40,16 +34,21 @@ export const onRequest: MiddlewareHandler = async (context, next) => {
 
   const response = await next();
 
-  if (response.status === 404) {
-    const body = await response.clone().text();
-    // Already has something to show — leave it alone.
-    if (body.trim().length > 0) return response;
+  if (response.status !== 404 || path === '/404' || response.body !== null) return response;
 
-    return new Response('Not found', {
-      status: 404,
-      headers: {'content-type': 'text/plain; charset=utf-8'},
-    });
+  const {method, headers} = context.request;
+  const accept = headers.get('accept');
+  const isPageRequest =
+    (method === 'GET' || method === 'HEAD') &&
+    !path.startsWith('/api/') &&
+    (accept?.includes('text/html') ||
+      ((!accept || accept === '*/*') && !/\.[^/]+$/.test(path)));
+  if (isPageRequest) {
+    return context.rewrite('/404');
   }
 
-  return response;
+  return new Response(method === 'HEAD' ? null : 'Not found', {
+    status: 404,
+    headers: {'content-type': 'text/plain; charset=utf-8'},
+  });
 };
