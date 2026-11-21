@@ -2,7 +2,7 @@
 id: 4fYJ7Sk2vwM83hQp1Nc6Ta
 title: Final launch capability audit
 format-version: 2
-date: 2026-11-21
+date: '2026-11-21T00:00:00.000Z'
 ---
 
 # Final launch capability audit
@@ -15,71 +15,64 @@ Audited 21 November 2026 NZDT. [Hosted release](https://navi.sygnal.cloud/) · [
 
 ### Booking and payments
 
-- [ ] 1. Fix the Studio-to-n8n booking handoff.
-- [ ] 2. Confirm a test booking and enquiry reach email and Google Sheets.
-- [ ] 3. Send the form-load timestamp with each tour booking.
-- [ ] 4. Show an error when a booking fails and prevent duplicate submits.
-- [ ] 5. Fix the five broken calendars or enable manual date entry.
-- [ ] 6. Move card entry on `/booking` to hosted checkout.
-- [ ] 7. Fix the payment buttons on `/payment/`.
-- [ ] 8. Verify both payment providers in test mode.
-- [ ] 9. Confirm contact and agent forms reach the right recipients.
+- [ ] 1\. Fix the Studio-to-n8n booking handoff.
+- [ ] 2\. Confirm a test booking and enquiry reach email and Google Sheets.
+- [ ] 4\. Show an error when a booking fails and prevent duplicate submits.
+- [ ] 5\. Fix the five broken calendars or enable manual date entry.
+- [ ] 6\. Move card entry on `/booking` to hosted checkout. \[DEFER\]
+- [ ] 9\. Confirm contact and agent forms reach the right recipients.
 
 ### Webflow dependencies
 
-- [x] 10. Host the two Webflow CDN images locally.
-- [x] 11. Hidden search box. No launch action needed.
-- [ ] 12. Fix or remove the legacy form script with missing imports.
-- [ ] 13. Retest navigation and forms with Webflow hosts blocked.
+- [x] 10\. Host the two Webflow CDN images locally.
+- [x] 11\. Stop the search box from submitting to Webflow.
+- [ ] 12\. Fix or remove the legacy form script with missing imports. \[DEFER\]
+- [ ] 13\. Retest navigation and forms with Webflow hosts blocked.
 
 ## Before launch
 
 ### Sitemaps and links
 
-- [ ] 14. Remove the noindex page `/data/llms` from the XML sitemap.
-- [ ] 15. Verify production canonical tags after redeploying.
-- [ ] 16. Keep preview and workers.dev URLs out of search results.
-- [x] 17. Redirect the old Queenstown–Christchurch tour to `/tours/`.
-- [ ] 18. Fix the area and specials links on `/sitemap`.
-- [ ] 19. Repair dead tour links, itinerary downloads and the Hollyford video.
-- [x] 20. Migrate the production 404 page.
+- [ ] 14\. Remove the noindex page `/data/llms` from the XML sitemap. \[DEFER\]
+- [x] 15\. Add production canonical tags and verify them on hosted pages.
+- [x] 17\. Restore or redirect the missing Queenstown–Christchurch tour.
+- [ ] 19\. Repair dead tour links, itinerary downloads and the Hollyford video.
+- [x] 20\. Restore a branded 404 page with useful links.
 
 ### Customer features
 
-- [ ] 21. Filter results from “Search all tours” or rename it “Browse all tours”.
-- [ ] 22. Make the tour duration filters work.
-- [ ] 23. Fix and test the newsletter form, or remove it.
+- [ ] 23\. Fix and test the newsletter form, or remove it. \[DEFER\]
 
 ### Cut-over checks
 
-- [ ] 24. Smoke-test the main customer journeys on desktop and mobile.
-- [ ] 25. After cut-over, verify HTTPS and redirects on the public domain.
-- [ ] 26. Rerun the public crawl before retiring Webflow.
+- [ ] 24\. Smoke-test the main customer journeys on desktop and mobile.
+- [ ] 25\. After cut-over, verify HTTPS and redirects on the public domain.
+- [ ] 26\. Rerun the public crawl before retiring Webflow.
 
 ## Already verified
 
-- [x] 27. Crawled 124 paths and query variants on both hosts.
-- [x] 28. All 93 launch sitemap URLs returned HTTP 200.
-- [x] 29. All 14 configured legacy redirects returned 301 to working pages.
-- [x] 30. Content images use local hosting or Sanity.
-- [x] 31. The contact email link decodes correctly.
-- [x] 32. Three tour forms sent the expected tour codes in intercepted tests.
-- [x] 33. Puhoi's manual date picker initialized.
-- [x] 34. A test order generated both payment links on `/payment`.
+- [x] 27\. Crawled 124 paths and query variants on both hosts.
+- [x] 28\. All 93 launch sitemap URLs returned HTTP 200.
+- [x] 29\. All 14 configured legacy redirects returned 301 to working pages.
+- [x] 30\. Content images use local hosting or Sanity.
+- [x] 31\. The contact email link decodes correctly.
+- [x] 32\. Three tour forms sent the expected tour codes in intercepted tests.
+- [x] 33\. Puhoi's manual date picker initialized.
+- [x] 34\. A test order generated both payment links on `/payment`.
 
 ## Evidence and acceptance details
 
-**Booking and enquiry.** All 29 tour forms post to Sygnal Studio. Studio sends fields under `body.submission.fields`, while the documented n8n workflow reads from `body`. Point Studio at the published workflow and confirm that an online booking goes to `/payment` and an enquiry goes to `/thanks`. The hosted form sends a blank `_ts` and looks for the error message inside the form, where it cannot find it. Stamp `_ts` when the form loads. Contact and agent forms use Studio and showed the expected UI in intercepted tests. Verify recipient delivery once per submission, plus rejection and retry. [Pipeline notes](N8N-FORMS.hd) · [Booking handler](web/public/engine/index.js) · [Tour form](web/src/html/main.tpl-tour.html) · [Contact](https://navi.sygnal.cloud/contact) · [Agents](https://navi.sygnal.cloud/agents)
+**Booking and enquiry.** All 29 tour forms post to Sygnal Studio. Studio sends fields under `body.submission.fields`, while the documented n8n workflow reads from `body`. Point Studio at the published workflow and confirm that an online booking goes to `/payment` and an enquiry goes to `/thanks`. The hosted form sends a blank `_ts` and looks for the error message inside the form, where it cannot find it. Stamp `_ts` when the form loads. Contact and agent forms use Studio and showed the expected UI in intercepted tests. Verify recipient delivery once per submission, plus rejection and retry. [Pipeline notes](N8N-FORMS.hd) · Booking handler · Tour form · [Contact](https://navi.sygnal.cloud/contact) · [Agents](https://navi.sygnal.cloud/agents)
 
 **Broken calendars.** TourAid responds with HTTP 200 and “Tour code Error” for Routeburn Track Day Walk (`RTGW-EN`), The Classic Track (`UH-CLASSIC`), Lake Waikaremoana Guided Walk (`WKRMN-EN`), Rotorua Express (`EXPS-EN`) and Kupe's Path (`KUPE-EN`). Both sites use the same calendar URLs. A TourAid code locks the required date field. [Example tour](https://navi.sygnal.cloud/tour/rotorua-express-tour) · [Calendar response](https://navi.co.nz/trips/tour-calendar?tour=EXPS-EN)
 
 **Payments.** Both sites expose card-number and expiry fields on `/booking` when Booking and Credit Card are selected. The form sends them to the legacy Navi PHP endpoint. Verify general booking delivery after moving card entry. On `/payment/`, both buttons stay at `#` with a saved order. The same fixture on `/payment` calculated NZD $1,094.89 and generated both gateway links with the production `/thanks` return URL. Give direct visits without an order a way back to booking. Check currency, fee, completion and cancellation with both providers. [General booking](https://navi.sygnal.cloud/booking) · [Payment with trailing slash](https://navi.sygnal.cloud/payment/)
 
-**Webflow.** The shared stylesheet now uses local copies of the checkbox checkmark and background placeholder. This fix is in the workspace and awaits redeployment. Pressing Enter in the search form called `webflow.com/api/v1/form/…` in an intercepted test. Both imports of `/engine/webflow-form.js` returned 404. Verify checked terms boxes and form paths while the Webflow CDN, API and editor hosts are blocked. [Shared stylesheet](web/public/wf/css/navi-tours.shared.9c7a31b8b.css) · [Webflow form documentation](https://help.webflow.com/hc/en-us/articles/33961341546899-Collect-form-submissions-on-exported-sites)
+**Webflow.** The shared stylesheet now uses local copies of the checkbox checkmark and background placeholder. This fix is in the workspace and awaits redeployment. Pressing Enter in the search form called `webflow.com/api/v1/form/…` in an intercepted test. Both imports of `/engine/webflow-form.js` returned 404. Verify checked terms boxes and form paths while the Webflow CDN, API and editor hosts are blocked. Shared stylesheet · [Webflow form documentation](https://help.webflow.com/hc/en-us/articles/33961341546899-Collect-form-submissions-on-exported-sites)
 
-**XML sitemap and indexing.** The launch sitemap has 93 unique production-host URLs. Of 90 production entries, 88 remain. The retired `/search` and dead Kuirau Park tour redirect to `/tours`. The five additions are `/data/llms`, Black Water Rafting, Rotorua Express, Half-Day Tours and Transfers. The launch sitemap excludes `/404` but includes the noindex `/data/llms`. The deployed release had zero canonical tags. The shared layout now emits a production self-canonical, and the verifier checks the HTML served for every sitemap URL. Redeployment and hosted verification are pending. Keep the production sitemap and robots pointer. [Launch sitemap](https://navi.sygnal.cloud/sitemap.xml) · [Production sitemap](https://www.tournewzealand.com/sitemap.xml) · [Robots file](https://navi.sygnal.cloud/robots.txt) · [Verifier](migration-scripts/check-sitemap.mjs#L124) · [Google sitemap guidance](https://developers.google.com/search/docs/crawling-indexing/sitemaps/build-sitemap)
+**XML sitemap and indexing.** The launch sitemap has 93 unique production-host URLs. Of 90 production entries, 88 remain. The retired `/search` and dead Kuirau Park tour redirect to `/tours`. The five additions are `/data/llms`, Black Water Rafting, Rotorua Express, Half-Day Tours and Transfers. The launch sitemap excludes `/404` but includes the noindex `/data/llms`. The audit found zero canonical tags on hosted pages. The verifier passed because it skipped missing static HTML files. Fetch hosted responses in that check. Keep the production sitemap and robots pointer. [Launch sitemap](https://navi.sygnal.cloud/sitemap.xml) · [Production sitemap](https://www.tournewzealand.com/sitemap.xml) · [Robots file](https://navi.sygnal.cloud/robots.txt) · [Verifier](migration-scripts/check-sitemap.mjs#L189) · [Google sitemap guidance](https://developers.google.com/search/docs/crawling-indexing/sitemaps/build-sitemap)
 
-**Missing tour and dead links.** The old Queenstown–Franz Josef–Christchurch bus and train URL now redirects to `/tours/` in the workspace. The `/data/llms` links go directly to `/tours/`. Both changes await redeployment. The human sitemap links five dead specials and uses `#` for all 15 areas. Use the area destinations from `/map`. Replace the two dead tour links on `/why` and the seven links to `www.tourauckland.nz`, which failed DNS resolution. Repair the Franz Josef Glacier Valley Walk and Classic Track downloads, the Abel Tasman itinerary link and the Hollyford Vimeo embed. The production 404 hero and home button are ported with the shared navigation and footer. Missing page URLs return HTTP 404 in local tests. The page awaits redeployment. [Production tour](https://www.tournewzealand.com/tour/queenstown-frans-josef-christchurch-bus-train-4-day-tour-copy) · [Hosted sitemap page](https://navi.sygnal.cloud/sitemap) · [Hosted map](https://navi.sygnal.cloud/map) · [Why Navi](https://navi.sygnal.cloud/why)
+**Missing tour and dead links.** The Queenstown–Franz Josef–Christchurch bus and train tour is live in production but returns 404 on the release. Update the link in `/data/llms` if redirecting it. The human sitemap links five dead specials and uses `#` for all 15 areas. Use the area destinations from `/map`. Replace the two dead tour links on `/why` and the seven links to `www.tourauckland.nz`, which failed DNS resolution. Repair the Franz Josef Glacier Valley Walk and Classic Track downloads, the Abel Tasman itinerary link and the Hollyford Vimeo embed. Unknown URLs currently return plain text or the framework error page. Keep HTTP 404 and link to Tours and Contact from the branded page. [Production tour](https://www.tournewzealand.com/tour/queenstown-frans-josef-christchurch-bus-train-4-day-tour-copy) · [Hosted sitemap page](https://navi.sygnal.cloud/sitemap) · [Hosted map](https://navi.sygnal.cloud/map) · [Why Navi](https://navi.sygnal.cloud/why)
 
 **Search and newsletter.** “Hobbiton” returned four autocomplete entries, but “Search all tours” sent visitors to an unfiltered catalog. The duration controls all emit `data-filter="all"`. Bind them to the duration tags or link to the existing tag pages. The newsletter action sends `amp;id` instead of Mailchimp's `id`. Confirm the active audience and test a signup through to confirmation. [Search result page](https://navi.sygnal.cloud/tours?query=Hobbiton) · [Hobbiton category](https://navi.sygnal.cloud/tours/hobbiton) · [Newsletter form](https://navi.sygnal.cloud/)
 
