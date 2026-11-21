@@ -3,36 +3,38 @@
 	"name": "site-navi",
 	"account_id": "9095ee3415dc7ee4e497da2a3c8d1992",
 	"compatibility_date": "2026-11-10",
-	"compatibility_flags": ["nodejs_compat"],
-
+	"compatibility_flags": [
+		"nodejs_compat"
+	],
 	// PRODUCTION — what answers on the live domain, and the only config anything
 	// ever deploys from:
 	//   npm run deploy
 	// wrangler.jsonc is the same Worker minus the route, and exists purely so
 	// `wrangler dev` has a local config. Deploy always means production.
-
 	// The adapter's GENERATED server entry. Not
 	// `@astrojs/cloudflare/entrypoints/server` — that module exports
 	// `createExports(manifest)` and has no fetch handler, so deploying it yields
 	// a Worker that answers nothing. Keep this in step with what
 	// `web/dist/server/wrangler.json` reports after a build.
 	"main": "./web/dist/server/entry.mjs",
-
 	// BOTH ROUTES ARE COMMENTED OUT, DELIBERATELY.
 	//
 	// Attaching a custom domain takes the hostname over from whatever serves it
 	// today, so uncommenting the second line IS the cut-over from Webflow — the
 	// public site moves the moment the deploy succeeds. Neither line goes live
 	// without the PM saying so for that specific deploy.
-	"routes": [],
-	// "routes": [{ "pattern": "navi.sygnal.cloud", "custom_domain": true }],
+	//	"routes": [],
+	"routes": [
+		{
+			"pattern": "navi.sygnal.cloud",
+			"custom_domain": true
+		}
+	],
 	// "routes": [{ "pattern": "www.tournewzealand.com", "custom_domain": true }],
-
 	// True while the custom domains are still commented out, so staging builds
 	// are reachable for review. Set to false at cut-over so there is no second
 	// indexable copy of every page.
 	"workers_dev": true,
-
 	// NO `not_found_handling`, DELIBERATELY — and this is the setting that is
 	// silently wrong either way, so the reasoning is written down.
 	//
@@ -53,12 +55,17 @@
 		"directory": "./web/dist/client",
 		"binding": "ASSETS"
 	},
-
 	// Declared by the adapter in web/dist/server/wrangler.json. An assets-only
 	// deploy did not need these; a Worker does.
-	"kv_namespaces": [{"binding": "SESSION"}],
-	"images": {"binding": "IMAGES"},
-
+	"kv_namespaces": [
+		{
+			"binding": "SESSION",
+			"id": "fb5d535f541041bda4b5e5944a9460e2"
+		}
+	],
+	"images": {
+		"binding": "IMAGES"
+	},
 	"observability": {
 		"enabled": true
 	}
